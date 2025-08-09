@@ -144,18 +144,14 @@ class FCategorySelectionView extends GetView<FCategorySelectionController> {
 
                     // Category selection buttons
                     _buildCategoryButton(
-                      emoji: '🧩',
-                      title: 'Word Puzzles',
-                      subtitle: 'Language & Vocabulary',
+                      emoji: '🗺️',
+                      title: 'Places',
+                      subtitle: 'Places & Geography',
                       description:
-                          'Test your word knowledge with puzzles and vocabulary challenges',
+                          'Test your knowledge of world locations and geography',
                       color: Colors.green,
                       onTap: () {
-                        // Navigate to Word Puzzles category
-                        Get.snackbar(
-                          'Word Puzzles',
-                          'Word Puzzles category selected!',
-                        );
+                        Get.toNamed('/lobby', arguments: "Places");
                       },
                     ),
 
@@ -170,10 +166,7 @@ class FCategorySelectionView extends GetView<FCategorySelectionController> {
                       color: Colors.orange,
                       onTap: () {
                         // Navigate to Science & Math category
-                        Get.snackbar(
-                          'Science & Math',
-                          'Science & Math category selected!',
-                        );
+                        Get.toNamed('/lobby', arguments: "Science & Math");
                       },
                     ),
 
@@ -182,15 +175,12 @@ class FCategorySelectionView extends GetView<FCategorySelectionController> {
                     _buildCategoryButton(
                       emoji: '🌍',
                       title: 'General Knowledge',
-                      subtitle: 'World & Culture',
+                      subtitle: 'World Trivia',
                       description: 'Test your knowledge about general subjects',
                       color: Colors.deepPurple,
                       onTap: () {
                         // Navigate to General Knowledge category
-                        Get.snackbar(
-                          'General Knowledge',
-                          'General Knowledge category selected!',
-                        );
+                        Get.toNamed('/lobby', arguments: "General Knowledge");
                       },
                     ),
 

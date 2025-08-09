@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mindrena/app/data/UserModel.dart';
 import 'package:mindrena/app/data/auth_service.dart';
-import 'package:top_snackbar_flutter/custom_snack_bar.dart';
-import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 class SignInController extends GetxController {
   // Controllers for TextFields
@@ -25,11 +23,57 @@ class SignInController extends GetxController {
   @override
   void onInit() async {
     super.onInit();
-    // Initialize AuthService
     try {
       await _authService.initialize();
+      // Check if already signed in
+      final user = _authService.currentUser;
+      if (user != null) {
+        await _handleFirebaseUser(user); // See below
+      }
     } catch (e) {
       print('Failed to initialize AuthService: $e');
+    }
+  }
+
+  Future<void> _handleFirebaseUser(User user) async {
+    try {
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+
+      if (!userDoc.exists) {
+        final newUser = UserModel(
+          uid: user.uid,
+          username: user.displayName ?? 'Google User',
+          email: user.email ?? '',
+          role: 'user',
+          avatarUrl: user.photoURL ?? '',
+          currentGameId: null,
+          stats: {'gamesPlayed': 0, 'gamesWon': 0, 'totalPoints': 0},
+        );
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .set(newUser.toMap());
+      } else {
+        Get.snackbar(
+          'Welcome Back!',
+          'Signed in successfully',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+        );
+      }
+      Get.offAllNamed('/home');
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Failed to save user data: $e',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     }
   }
 
@@ -85,63 +129,12 @@ class SignInController extends GetxController {
   }
 
   Future<void> goGoogleSignIn() async {
-    // Clear any previous error messages
     generalError.value = '';
-
-    // Start loading
     signingIn.value = true;
-
     try {
       final user = await _authService.signInWithGoogle();
       if (user != null) {
-        try {
-          // Check if user exists in Firestore
-          final userDoc = await FirebaseFirestore.instance
-              .collection('users')
-              .doc(user.uid)
-              .get();
-
-          if (!userDoc.exists) {
-            // User doesn't exist, create new user document
-            final newUser = UserModel(
-              uid: user.uid,
-              username: user.displayName ?? 'Google User',
-              email: user.email ?? '',
-              phone: user.phoneNumber ?? '',
-              role: 'user', // Default role
-              profileImg: user.photoURL ?? '',
-            );
-
-            // Save user to Firestore
-            await FirebaseFirestore.instance
-                .collection('users')
-                .doc(user.uid)
-                .set(newUser.toMap());
-
-            showTopSnackBar(
-              Overlay.of(Get.context!),
-              CustomSnackBar.success(message: 'Account created successfully'),
-            );
-          } else {
-            Get.snackbar(
-              'Welcome Back!',
-              'Signed in successfully',
-              snackPosition: SnackPosition.BOTTOM,
-              backgroundColor: Colors.green,
-              colorText: Colors.white,
-            );
-          }
-
-          Get.offAllNamed('/home');
-        } catch (e) {
-          Get.snackbar(
-            'Error',
-            'Failed to save user data: $e',
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: Colors.red,
-            colorText: Colors.white,
-          );
-        }
+        await _handleFirebaseUser(user);
       } else {
         Get.snackbar(
           'Error',

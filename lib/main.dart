@@ -6,10 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:mindrena/app/data/MyTranslations.dart';
 import 'package:mindrena/app/data/consts_config.dart';
 import 'package:mindrena/app/data/sendNotificationHandler.dart';
 import 'package:mindrena/app/modules/splash/bindings/splash_binding.dart';
-import 'package:mindrena/app/widgets/MyTranslations.dart';
 import 'package:mindrena/firebase_options.dart';
 
 import 'app/routes/app_pages.dart';
@@ -40,7 +40,9 @@ void main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]).then((_) {
-    String? savedLanguage = GetStorage().read('language') ?? 'MYN';
+    GetStorage().remove('language'); // Clear language setting on app start
+    String? savedLanguage = GetStorage().read('language') ?? 'ENG';
+
     runApp(
       GetMaterialApp(
         translations: MyTranslations(),

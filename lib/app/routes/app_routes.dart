@@ -16,6 +16,8 @@ abstract class Routes {
   static const PLAYER_MODE_SELECTION = _Paths.PLAYER_MODE_SELECTION;
   static const LOBBY = _Paths.LOBBY;
   static const EDIT_PROFILE = _Paths.EDIT_PROFILE;
+  static const GAME_SCREEN = _Paths.GAME_SCREEN;
+  static const SHOP = _Paths.SHOP;
 }
 
 abstract class _Paths {
@@ -33,4 +35,6 @@ abstract class _Paths {
   static const PLAYER_MODE_SELECTION = '/player-mode-selection';
   static const LOBBY = '/lobby';
   static const EDIT_PROFILE = '/edit-profile';
+  static const GAME_SCREEN = '/game-screen';
+  static const SHOP = '/shop';
 }

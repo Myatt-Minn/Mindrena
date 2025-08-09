@@ -39,4 +39,13 @@ class ProfileController extends GetxController {
       print("Error fetching user profile: $e");
     }
   }
+
+  Future<void> signOut() async {
+    try {
+      await FirebaseAuth.instance.signOut();
+      Get.offAllNamed('/sign-in'); // Navigate to sign-in page after sign out
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to sign out: $e');
+    }
+  }
 }

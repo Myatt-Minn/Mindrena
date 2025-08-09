@@ -138,11 +138,8 @@ class HomeView extends GetView<HomeController> {
                           'Challenge your visual memory and pattern recognition',
                       color: Colors.purple,
                       onTap: () {
-                        // Navigate to Memory War game
-                        Get.snackbar(
-                          'Coming Soon',
-                          'Memory War game will be available soon!',
-                        );
+                        // Navigate to Memory War category selection
+                        Get.toNamed('/m-category-selection');
                       },
                     ),
 
@@ -181,12 +178,12 @@ class HomeView extends GetView<HomeController> {
                             },
                           ),
                           _buildActionButton(
-                            icon: Icons.leaderboard,
-                            label: 'Leaderboard',
+                            icon: Icons.shopping_cart,
+                            label: 'Shop',
                             onTap: () {
                               Get.snackbar(
                                 'Coming Soon',
-                                'Leaderboard will be available soon!',
+                                'Shop will be available soon!',
                               );
                             },
                           ),

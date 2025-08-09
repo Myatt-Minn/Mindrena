@@ -7,6 +7,8 @@ import '../modules/edit-profile/bindings/edit_profile_binding.dart';
 import '../modules/edit-profile/views/edit_profile_view.dart';
 import '../modules/f_category_selection/bindings/f_category_selection_binding.dart';
 import '../modules/f_category_selection/views/f_category_selection_view.dart';
+import '../modules/game_screen/bindings/game_screen_binding.dart';
+import '../modules/game_screen/views/game_screen_view.dart';
 import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
 import '../modules/lobby/bindings/lobby_binding.dart';
@@ -21,6 +23,8 @@ import '../modules/s_category_selection/bindings/s_category_selection_binding.da
 import '../modules/s_category_selection/views/s_category_selection_view.dart';
 import '../modules/settings/bindings/settings_binding.dart';
 import '../modules/settings/views/settings_view.dart';
+import '../modules/shop/bindings/shop_binding.dart';
+import '../modules/shop/views/shop_view.dart';
 import '../modules/sign-in/bindings/sign_in_binding.dart';
 import '../modules/sign-in/views/sign_in_view.dart';
 import '../modules/splash/bindings/splash_binding.dart';
@@ -98,6 +102,16 @@ class AppPages {
       name: _Paths.EDIT_PROFILE,
       page: () => const EditProfileView(),
       binding: EditProfileBinding(),
+    ),
+    GetPage(
+      name: _Paths.GAME_SCREEN,
+      page: () => const GameScreenView(),
+      binding: GameScreenBinding(),
+    ),
+    GetPage(
+      name: _Paths.SHOP,
+      page: () => const ShopView(),
+      binding: ShopBinding(),
     ),
   ];
 }

@@ -59,43 +59,18 @@ class LobbyView extends GetView<LobbyController> {
             child: SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
-                child: Column(
-                  children: [
-                    const SizedBox(height: 20),
+                child: Obx(
+                  () => Column(
+                    children: [
+                      const SizedBox(height: 20),
 
-                    // Back button and header
-                    Row(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.9),
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                blurRadius: 10,
-                                offset: const Offset(0, 5),
-                              ),
-                            ],
-                          ),
-                          child: IconButton(
-                            icon: const Icon(
-                              Icons.arrow_back_ios,
-                              color: Colors.indigo,
-                            ),
-                            onPressed: () => Get.back(),
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 16,
-                              horizontal: 20,
-                            ),
+                      // Back button and header
+                      Row(
+                        children: [
+                          Container(
                             decoration: BoxDecoration(
                               color: Colors.white.withOpacity(0.9),
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(12),
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.black.withOpacity(0.1),
@@ -104,243 +79,341 @@ class LobbyView extends GetView<LobbyController> {
                                 ),
                               ],
                             ),
-                            child: AnimatedTextKit(
-                              animatedTexts: [
-                                ColorizeAnimatedText(
-                                  'Game Lobby',
-                                  textStyle: const TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
+                            child: IconButton(
+                              icon: const Icon(
+                                Icons.arrow_back_ios,
+                                color: Colors.indigo,
+                              ),
+                              onPressed: () => controller.leaveLobby(),
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 16,
+                                horizontal: 20,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.9),
+                                borderRadius: BorderRadius.circular(15),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.1),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 5),
                                   ),
-                                  colors: [
-                                    Colors.indigo,
-                                    Colors.blue,
-                                    Colors.purple,
-                                    Colors.teal,
-                                  ],
-                                  speed: const Duration(milliseconds: 400),
+                                ],
+                              ),
+                              child: AnimatedTextKit(
+                                animatedTexts: [
+                                  ColorizeAnimatedText(
+                                    '${controller.category} Lobby',
+                                    textStyle: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    colors: [
+                                      Colors.indigo,
+                                      Colors.blue,
+                                      Colors.purple,
+                                      Colors.teal,
+                                    ],
+                                    speed: const Duration(milliseconds: 400),
+                                  ),
+                                ],
+                                isRepeatingAnimation: true,
+                                repeatForever: true,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 40),
+
+                      // Waiting message
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 24,
+                          horizontal: 24,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.95),
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 15,
+                              offset: const Offset(0, 8),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          children: [
+                            AnimatedTextKit(
+                              key: ValueKey(controller.waitingMessage),
+                              animatedTexts: [
+                                WavyAnimatedText(
+                                  controller.waitingMessage,
+                                  textStyle: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.indigo,
+                                  ),
+                                  speed: const Duration(milliseconds: 200),
                                 ),
                               ],
                               isRepeatingAnimation: true,
                               repeatForever: true,
                             ),
-                          ),
+                            const SizedBox(height: 8),
+                            Text(
+                              controller.isSearching.value
+                                  ? 'Looking for another player in ${controller.category}...'
+                                  : controller.players.length == 2
+                                  ? 'Both players connected! Get ready to start!'
+                                  : 'Waiting for the second player to join...',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 40),
-
-                    // Waiting message
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 24,
-                        horizontal: 24,
                       ),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.95),
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 15,
-                            offset: const Offset(0, 8),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        children: [
-                          AnimatedTextKit(
-                            animatedTexts: [
-                              WavyAnimatedText(
-                                'Waiting for another player...',
-                                textStyle: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.indigo,
-                                ),
-                                speed: const Duration(milliseconds: 200),
-                              ),
-                            ],
-                            isRepeatingAnimation: true,
-                            repeatForever: true,
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            'The game will start automatically when another player joins',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.grey.shade600,
+
+                      const SizedBox(height: 40),
+
+                      // Player slots section
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(24),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.95),
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 15,
+                              offset: const Offset(0, 8),
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 40),
-
-                    // Player slots section
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.95),
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 15,
-                            offset: const Offset(0, 8),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.people,
-                                color: Colors.indigo,
-                                size: 24,
-                              ),
-                              const SizedBox(width: 12),
-                              Text(
-                                'Players (1/2)',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
+                          ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.people,
                                   color: Colors.indigo,
+                                  size: 24,
                                 ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 20),
-
-                          // Player 1 (Current player)
-                          _buildPlayerSlot(
-                            playerNumber: 1,
-                            playerName: 'You',
-                            isConnected: true,
-                            isCurrentPlayer: true,
-                          ),
-
-                          const SizedBox(height: 16),
-
-                          // Player 2 (Waiting)
-                          _buildPlayerSlot(
-                            playerNumber: 2,
-                            playerName: 'Waiting...',
-                            isConnected: false,
-                            isCurrentPlayer: false,
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 40),
-
-                    // Loading animation
-                    Container(
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.9),
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 15,
-                            offset: const Offset(0, 8),
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SizedBox(
-                            width: 24,
-                            height: 24,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 3,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                Colors.indigo,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          AnimatedTextKit(
-                            animatedTexts: [
-                              TypewriterAnimatedText(
-                                'Searching for players...',
-                                textStyle: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.grey.shade700,
-                                ),
-                                speed: const Duration(milliseconds: 100),
-                              ),
-                            ],
-                            isRepeatingAnimation: true,
-                            repeatForever: true,
-                            pause: const Duration(seconds: 2),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    // Cancel button
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton.icon(
-                        onPressed: () {
-                          Get.dialog(
-                            AlertDialog(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              title: const Text('Leave Lobby?'),
-                              content: const Text(
-                                'Are you sure you want to leave the lobby?',
-                              ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Get.back(),
-                                  child: const Text('Stay'),
-                                ),
-                                ElevatedButton(
-                                  onPressed: () {
-                                    Get.back(); // Close dialog
-                                    Get.back(); // Go back to previous screen
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.red,
-                                    foregroundColor: Colors.white,
+                                const SizedBox(width: 12),
+                                Text(
+                                  controller.playersCountText,
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.indigo,
                                   ),
-                                  child: const Text('Leave'),
                                 ),
                               ],
                             ),
-                          );
-                        },
-                        icon: const Icon(Icons.exit_to_app),
-                        label: const Text('Leave Lobby'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red.shade400,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
+                            const SizedBox(height: 20),
+
+                            // Player slots based on actual players
+                            ...List.generate(2, (index) {
+                              if (index < controller.players.length) {
+                                final player = controller.players[index];
+                                final isCurrentUser =
+                                    player.uid == controller.currentUser?.uid;
+                                final isReady = controller.isPlayerReady(
+                                  player.uid ?? '',
+                                );
+                                return Padding(
+                                  padding: EdgeInsets.only(
+                                    bottom: index == 0 ? 16 : 0,
+                                  ),
+                                  child: _buildPlayerSlot(
+                                    playerNumber: index + 1,
+                                    playerName: isCurrentUser
+                                        ? 'You (${player.username})'
+                                        : player.username,
+                                    isConnected: true,
+                                    isCurrentPlayer: isCurrentUser,
+                                    avatarUrl: player.avatarUrl,
+                                    isReady: isReady,
+                                  ),
+                                );
+                              } else {
+                                return Padding(
+                                  padding: EdgeInsets.only(
+                                    bottom: index == 0 ? 16 : 0,
+                                  ),
+                                  child: _buildPlayerSlot(
+                                    playerNumber: index + 1,
+                                    playerName: 'Waiting...',
+                                    isConnected: false,
+                                    isCurrentPlayer: false,
+                                    avatarUrl: '',
+                                    isReady: false,
+                                  ),
+                                );
+                              }
+                            }),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(height: 40),
+
+                      // Ready button or Loading animation
+                      if (controller.players.length == 2 &&
+                          controller.gameStatus.value == 'waiting')
+                        Container(
+                          width: double.infinity,
+                          margin: const EdgeInsets.only(bottom: 20),
+                          child: Obx(() {
+                            final isReady = controller.isCurrentUserReady;
+                            return ElevatedButton.icon(
+                              onPressed: isReady
+                                  ? () => controller.cancelPlayerReady()
+                                  : () => controller.setPlayerReady(),
+                              icon: Icon(
+                                isReady
+                                    ? Icons.cancel_outlined
+                                    : Icons.check_circle_outline,
+                              ),
+                              label: Text(
+                                isReady ? 'Cancel Ready' : 'Ready to Start!',
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: isReady
+                                    ? Colors.orange
+                                    : Colors.green,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 16,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                elevation: 8,
+                              ),
+                            );
+                          }),
+                        )
+                      else
+                        Container(
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.9),
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 15,
+                                offset: const Offset(0, 8),
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 3,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Colors.indigo,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              AnimatedTextKit(
+                                key: ValueKey(controller.waitingMessage),
+                                animatedTexts: [
+                                  TypewriterAnimatedText(
+                                    controller.waitingMessage,
+                                    textStyle: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.grey.shade700,
+                                    ),
+                                    speed: const Duration(milliseconds: 100),
+                                  ),
+                                ],
+                                isRepeatingAnimation: true,
+                                repeatForever: true,
+                                pause: const Duration(seconds: 2),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                      const SizedBox(height: 20),
+
+                      // Cancel button
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                            Get.dialog(
+                              AlertDialog(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                title: const Text('Leave Lobby?'),
+                                content: Text(
+                                  controller.players.length == 2
+                                      ? 'Another player is waiting. Are you sure you want to leave?'
+                                      : 'Are you sure you want to leave the lobby?',
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Get.back(),
+                                    child: const Text('Stay'),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      Get.back(); // Close dialog
+                                      controller.leaveLobby();
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.red,
+                                      foregroundColor: Colors.white,
+                                    ),
+                                    child: const Text('Leave'),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                          icon: const Icon(Icons.exit_to_app),
+                          label: const Text('Leave Lobby'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red.shade400,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
                           ),
                         ),
                       ),
-                    ),
 
-                    const SizedBox(height: 20),
-                  ],
+                      const SizedBox(height: 20),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -355,6 +428,8 @@ class LobbyView extends GetView<LobbyController> {
     required String playerName,
     required bool isConnected,
     required bool isCurrentPlayer,
+    required String avatarUrl,
+    required bool isReady,
   }) {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -386,10 +461,24 @@ class LobbyView extends GetView<LobbyController> {
                 width: 2,
               ),
             ),
-            child: Icon(
-              isConnected ? Icons.person : Icons.person_outline,
-              color: isConnected ? Colors.green : Colors.grey,
-              size: 24,
+            child: ClipOval(
+              child: isConnected && avatarUrl.isNotEmpty
+                  ? Image.network(
+                      avatarUrl,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Icon(
+                          Icons.person,
+                          color: isConnected ? Colors.green : Colors.grey,
+                          size: 24,
+                        );
+                      },
+                    )
+                  : Icon(
+                      isConnected ? Icons.person : Icons.person_outline,
+                      color: isConnected ? Colors.green : Colors.grey,
+                      size: 24,
+                    ),
             ),
           ),
 
@@ -402,53 +491,91 @@ class LobbyView extends GetView<LobbyController> {
               children: [
                 Row(
                   children: [
-                    Text(
-                      'Player $playerNumber',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: isConnected ? Colors.green : Colors.grey,
+                    Flexible(
+                      child: Text(
+                        'Player $playerNumber',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: isConnected ? Colors.green : Colors.grey,
+                        ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     if (isCurrentPlayer) ...[
-                      const SizedBox(width: 8),
+                      const SizedBox(width: 6),
                       Container(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
+                          horizontal: 6,
                           vertical: 2,
                         ),
                         decoration: BoxDecoration(
                           color: Colors.blue,
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(8),
                         ),
                         child: const Text(
                           'YOU',
                           style: TextStyle(
-                            fontSize: 10,
+                            fontSize: 9,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
                           ),
                         ),
                       ),
                     ],
+                    if (isConnected && isReady) ...[
+                      const SizedBox(width: 6),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.green,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.check, size: 10, color: Colors.white),
+                            SizedBox(width: 2),
+                            Text(
+                              'READY',
+                              style: TextStyle(
+                                fontSize: 9,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ],
                 ),
+                const SizedBox(height: 4),
                 Text(
                   playerName,
                   style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
           ),
 
-          // Connection status
+          // Connection and ready status
           Container(
             width: 12,
             height: 12,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: isConnected ? Colors.green : Colors.grey,
+              color: isConnected
+                  ? (isReady ? Colors.green : Colors.orange)
+                  : Colors.grey,
             ),
+            child: isConnected && isReady
+                ? const Icon(Icons.check, size: 8, color: Colors.white)
+                : null,
           ),
         ],
       ),

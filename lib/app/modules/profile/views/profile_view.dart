@@ -108,57 +108,6 @@ class ProfileView extends GetView<ProfileController> {
     );
   }
 
-  Widget _buildAchievementTile({
-    required IconData icon,
-    required String title,
-    required String description,
-    required bool isUnlocked,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: isUnlocked
-            ? Colors.green.withOpacity(0.1)
-            : Colors.grey.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: isUnlocked
-              ? Colors.green.withOpacity(0.3)
-              : Colors.grey.withOpacity(0.3),
-        ),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, color: isUnlocked ? Colors.green : Colors.grey, size: 24),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: isUnlocked ? Colors.green : Colors.grey,
-                  ),
-                ),
-                Text(
-                  description,
-                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-                ),
-              ],
-            ),
-          ),
-          if (isUnlocked)
-            Icon(Icons.check_circle, color: Colors.green, size: 20)
-          else
-            Icon(Icons.lock, color: Colors.grey, size: 20),
-        ],
-      ),
-    );
-  }
-
   Widget _buildActionTile({
     required IconData icon,
     required String title,
@@ -326,29 +275,13 @@ class ProfileView extends GetView<ProfileController> {
 
         const SizedBox(height: 20),
 
-        // Achievements section shimmer
-        Shimmer.fromColors(
-          baseColor: Colors.grey.shade300,
-          highlightColor: Colors.grey.shade100,
-          child: Container(
-            width: double.infinity,
-            height: 180,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-            ),
-          ),
-        ),
-
-        const SizedBox(height: 20),
-
         // Account actions shimmer
         Shimmer.fromColors(
           baseColor: Colors.grey.shade300,
           highlightColor: Colors.grey.shade100,
           child: Container(
             width: double.infinity,
-            height: 150,
+            height: 100,
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(20),
@@ -474,9 +407,9 @@ class ProfileView extends GetView<ProfileController> {
                   child: ClipOval(
                     child:
                         (controller.user.value != null &&
-                            controller.user.value!.profileImg.isNotEmpty)
+                            controller.user.value!.avatarUrl.isNotEmpty)
                         ? Image.network(
-                            controller.user.value!.profileImg,
+                            controller.user.value!.avatarUrl,
                             fit: BoxFit.cover,
                           )
                         : Icon(
@@ -535,6 +468,61 @@ class ProfileView extends GetView<ProfileController> {
 
         const SizedBox(height: 20),
 
+        // Current Game Status (if in game)
+        if (controller.user.value?.currentGameId != null &&
+            controller.user.value!.currentGameId!.isNotEmpty)
+          Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Colors.amber.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(15),
+              border: Border.all(color: Colors.amber.withOpacity(0.3)),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  Icon(Icons.videogame_asset, color: Colors.amber, size: 24),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Currently in Game',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.amber.shade700,
+                          ),
+                        ),
+                        Text(
+                          'Game ID: ${controller.user.value!.currentGameId}',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.amber.shade600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Get.toNamed('/game-screen');
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.amber,
+                      foregroundColor: Colors.white,
+                    ),
+                    child: const Text('Resume'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+        const SizedBox(height: 20),
+
         // Statistics Section
         Container(
           width: double.infinity,
@@ -575,7 +563,7 @@ class ProfileView extends GetView<ProfileController> {
                       child: _buildStatCard(
                         icon: Icons.games,
                         title: 'Games Played',
-                        value: '42',
+                        value: '${controller.user.value?.gamesPlayed ?? 0}',
                         color: Colors.blue,
                       ),
                     ),
@@ -584,7 +572,7 @@ class ProfileView extends GetView<ProfileController> {
                       child: _buildStatCard(
                         icon: Icons.emoji_events,
                         title: 'Wins',
-                        value: '28',
+                        value: '${controller.user.value?.gamesWon ?? 0}',
                         color: Colors.green,
                       ),
                     ),
@@ -597,7 +585,8 @@ class ProfileView extends GetView<ProfileController> {
                       child: _buildStatCard(
                         icon: Icons.percent,
                         title: 'Win Rate',
-                        value: '67%',
+                        value:
+                            '${controller.user.value?.winRate.toStringAsFixed(1) ?? 0.0}%',
                         color: Colors.orange,
                       ),
                     ),
@@ -605,73 +594,12 @@ class ProfileView extends GetView<ProfileController> {
                     Expanded(
                       child: _buildStatCard(
                         icon: Icons.star,
-                        title: 'Best Score',
-                        value: '1,250',
+                        title: 'Total Points',
+                        value: '${controller.user.value?.totalPoints ?? 0}',
                         color: Colors.purple,
                       ),
                     ),
                   ],
-                ),
-              ],
-            ),
-          ),
-        ),
-
-        const SizedBox(height: 20),
-
-        // Achievements Section
-        Container(
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.95),
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 20,
-                offset: const Offset(0, 8),
-              ),
-            ],
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Icon(Icons.military_tech, color: Colors.indigo, size: 24),
-                    const SizedBox(width: 12),
-                    Text(
-                      'Achievements',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.indigo,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                _buildAchievementTile(
-                  icon: Icons.flash_on,
-                  title: 'Speed Demon',
-                  description: 'Complete 10 FlashFight games',
-                  isUnlocked: true,
-                ),
-                const SizedBox(height: 8),
-                _buildAchievementTile(
-                  icon: Icons.headphones,
-                  title: 'Sound Master',
-                  description: 'Win 5 SoundIt challenges',
-                  isUnlocked: true,
-                ),
-                const SizedBox(height: 8),
-                _buildAchievementTile(
-                  icon: Icons.psychology,
-                  title: 'Memory Champion',
-                  description: 'Perfect score in Memory War',
-                  isUnlocked: false,
                 ),
               ],
             ),
@@ -704,19 +632,23 @@ class ProfileView extends GetView<ProfileController> {
               ),
               const Divider(height: 1),
               _buildActionTile(
-                icon: Icons.history,
-                title: 'Game History',
-                subtitle: 'View your past games',
-                onTap: () =>
-                    Get.snackbar('Game History', 'Game history coming soon!'),
-              ),
-              const Divider(height: 1),
-              _buildActionTile(
-                icon: Icons.share,
-                title: 'Share Profile',
-                subtitle: 'Share your achievements',
-                onTap: () =>
-                    Get.snackbar('Share', 'Share profile coming soon!'),
+                icon: Icons.logout,
+                title: 'Sign Out',
+                subtitle: 'Sign out of your account',
+                onTap: () {
+                  Get.defaultDialog(
+                    title: 'Sign Out',
+                    middleText: 'Are you sure you want to sign out?',
+                    textConfirm: 'Sign Out',
+                    textCancel: 'Cancel',
+                    confirmTextColor: Colors.white,
+                    buttonColor: Colors.red,
+                    onConfirm: () {
+                      controller.signOut();
+                      Get.back();
+                    },
+                  );
+                },
               ),
             ],
           ),

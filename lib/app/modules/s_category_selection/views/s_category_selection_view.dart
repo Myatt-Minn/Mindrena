@@ -142,35 +142,18 @@ class SCategorySelectionView extends GetView<SCategorySelectionController> {
 
                     const SizedBox(height: 40),
 
-                    // Category selection buttons
-                    _buildCategoryButton(
-                      emoji: '🎮',
-                      title: 'Mobile Legend',
-                      subtitle: 'MOBA Game',
-                      description:
-                          'Test your knowledge about Mobile Legends heroes sounds',
-                      color: Colors.blue,
-                      onTap: () {
-                        // Navigate to Mobile Legend category
-                        Get.toNamed('/lobby');
-                      },
-                    ),
-
                     const SizedBox(height: 20),
 
                     _buildCategoryButton(
-                      emoji: '⚔️',
-                      title: 'Honor of Kings',
-                      subtitle: 'Strategy Game',
+                      emoji: '🐶',
+                      title: 'Animal Sounds',
+                      subtitle: 'Real Animal Sounds',
                       description:
-                          'Challenge yourself with Honor of Kings hero sounds',
+                          'Challenge yourself with various animal sounds',
                       color: Colors.amber,
                       onTap: () {
-                        // Navigate to Honor of Kings category
-                        Get.snackbar(
-                          'Honor of Kings',
-                          'Honor of Kings category selected!',
-                        );
+                        // Navigate to Animal Sounds category
+                        Get.toNamed('/lobby');
                       },
                     ),
 
@@ -184,8 +167,22 @@ class SCategorySelectionView extends GetView<SCategorySelectionController> {
                           'Test your music knowledge and identify popular myanmar songs',
                       color: Colors.pink,
                       onTap: () {
-                        // Navigate to Songs category
-                        Get.snackbar('Songs', 'Songs category selected!');
+                        Get.toNamed('/lobby');
+                      },
+                    ),
+
+                    const SizedBox(height: 20),
+                    // Category selection buttons
+                    _buildCategoryButton(
+                      emoji: '🎮',
+                      title: 'Mobile Legend',
+                      subtitle: 'MOBA Game',
+                      description:
+                          'Test your knowledge about Mobile Legends heroes sounds',
+                      color: Colors.blue,
+                      onTap: () {
+                        // Navigate to Mobile Legend category
+                        Get.toNamed('/lobby');
                       },
                     ),
 

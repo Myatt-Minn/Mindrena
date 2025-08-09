@@ -56,7 +56,7 @@ class PlayerModeSelectionView extends GetView<PlayerModeSelectionController> {
 
           // Main content over the background
           SafeArea(
-            child: Padding(
+            child: SingleChildScrollView(
               padding: const EdgeInsets.all(24.0),
               child: Column(
                 children: [
@@ -106,10 +106,59 @@ class PlayerModeSelectionView extends GetView<PlayerModeSelectionController> {
                           ),
                         ),
                       ),
+                      const SizedBox(width: 12),
+                      // Language selector button
+                      Obx(
+                        () => Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.9),
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 10,
+                                offset: const Offset(0, 5),
+                              ),
+                            ],
+                          ),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(12),
+                              onTap: () => _showLanguageSelector(context),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 12,
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      Icons.language,
+                                      color: Colors.indigo,
+                                      size: 20,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      controller.selectedLanguage.value,
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.indigo,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
 
-                  const SizedBox(height: 60),
+                  const SizedBox(height: 40),
 
                   // Animated subtitle
                   Container(
@@ -146,7 +195,7 @@ class PlayerModeSelectionView extends GetView<PlayerModeSelectionController> {
                     ),
                   ),
 
-                  const Spacer(),
+                  const SizedBox(height: 40),
 
                   // Multi Player Button
                   Container(
@@ -179,7 +228,6 @@ class PlayerModeSelectionView extends GetView<PlayerModeSelectionController> {
                           borderRadius: BorderRadius.circular(25),
                           onTap: () {
                             Get.offAllNamed('/auth-gate');
-                            // Navigate to multiplayer lobby or implement multiplayer logic
                           },
                           child: Padding(
                             padding: const EdgeInsets.symmetric(
@@ -241,7 +289,7 @@ class PlayerModeSelectionView extends GetView<PlayerModeSelectionController> {
                   // Single Player Button
                   Container(
                     width: double.infinity,
-                    margin: const EdgeInsets.only(bottom: 20),
+                    margin: const EdgeInsets.only(bottom: 40),
                     child: Material(
                       elevation: 12,
                       borderRadius: BorderRadius.circular(25),
@@ -278,7 +326,6 @@ class PlayerModeSelectionView extends GetView<PlayerModeSelectionController> {
                                 color: Colors.white,
                               ),
                             );
-                            // Navigate to game or implement single player logic
                           },
                           child: Padding(
                             padding: const EdgeInsets.symmetric(
@@ -337,8 +384,6 @@ class PlayerModeSelectionView extends GetView<PlayerModeSelectionController> {
                     ),
                   ),
 
-                  const Spacer(),
-
                   // Additional info card
                   Container(
                     width: double.infinity,
@@ -354,22 +399,56 @@ class PlayerModeSelectionView extends GetView<PlayerModeSelectionController> {
                         ),
                       ],
                     ),
-                    child: Row(
+                    child: Column(
                       children: [
-                        Icon(
-                          Icons.info_outline,
-                          color: Colors.indigo,
-                          size: 24,
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            'Choose your preferred game mode to start playing!',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.grey.shade700,
-                              fontWeight: FontWeight.w500,
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.info_outline,
+                              color: Colors.indigo,
+                              size: 24,
                             ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                'Choose your preferred game mode to start playing!',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey.shade700,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        const Divider(),
+                        const SizedBox(height: 8),
+                        Obx(
+                          () => Row(
+                            children: [
+                              Icon(
+                                Icons.language,
+                                color: Colors.grey.shade600,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 12),
+                              Text(
+                                'Current Language: ',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey.shade600,
+                                ),
+                              ),
+                              Text(
+                                controller.currentLanguageDisplay,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.indigo,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
@@ -382,6 +461,184 @@ class PlayerModeSelectionView extends GetView<PlayerModeSelectionController> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  void _showLanguageSelector(BuildContext context) {
+    Get.bottomSheet(
+      Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(25),
+            topRight: Radius.circular(25),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 20,
+              offset: const Offset(0, -5),
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Handle bar
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              // Title
+              Row(
+                children: [
+                  Icon(Icons.language, color: Colors.indigo, size: 24),
+                  const SizedBox(width: 12),
+                  Text(
+                    'Select Language',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey.shade800,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+
+              // Language options
+              Obx(
+                () => Column(
+                  children: [
+                    _buildLanguageOption(
+                      code: 'ENG',
+                      name: 'English',
+                      flag: '🇺🇸',
+                      isSelected: controller.selectedLanguage.value == 'ENG',
+                    ),
+                    const SizedBox(height: 12),
+                    _buildLanguageOption(
+                      code: 'MYN',
+                      name: 'Myanmar',
+                      flag: '🇲🇲',
+                      isSelected: controller.selectedLanguage.value == 'MYN',
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              // Close button
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => Get.back(),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.indigo,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                  ),
+                  child: const Text(
+                    'Done',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+
+              // Bottom padding for safe area
+              const SizedBox(height: 20),
+            ],
+          ),
+        ),
+      ),
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+    );
+  }
+
+  Widget _buildLanguageOption({
+    required String code,
+    required String name,
+    required String flag,
+    required bool isSelected,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(15),
+        onTap: () {
+          controller.toggleLanguage(code);
+          Get.back();
+        },
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? Colors.indigo.withOpacity(0.1)
+                : Colors.grey.withOpacity(0.05),
+            borderRadius: BorderRadius.circular(15),
+            border: Border.all(
+              color: isSelected
+                  ? Colors.indigo.withOpacity(0.3)
+                  : Colors.grey.withOpacity(0.2),
+              width: isSelected ? 2 : 1,
+            ),
+          ),
+          child: Row(
+            children: [
+              Text(flag, style: const TextStyle(fontSize: 24)),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      name,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: isSelected
+                            ? Colors.indigo
+                            : Colors.grey.shade800,
+                      ),
+                    ),
+                    Text(
+                      code,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: isSelected
+                            ? Colors.indigo.shade600
+                            : Colors.grey.shade600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (isSelected)
+                Icon(Icons.check_circle, color: Colors.indigo, size: 24)
+              else
+                Icon(
+                  Icons.radio_button_unchecked,
+                  color: Colors.grey.shade400,
+                  size: 24,
+                ),
+            ],
+          ),
+        ),
       ),
     );
   }
