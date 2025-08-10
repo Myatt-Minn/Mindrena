@@ -29,15 +29,12 @@ class AuthGateController extends GetxController {
         _checkAuthentication();
       }
     });
-
-    // Initial check for internet and authentication
-    _checkInternetConnection();
   }
 
   Future<void> _checkInternetConnection() async {
     isLoading.value = true; // Start loading
     final result = await _connectivity.checkConnectivity();
-    if (result == ConnectivityResult.none) {
+    if (result.contains(ConnectivityResult.none)) {
       hasInternet.value = false;
       Get.offAllNamed('/no-internet');
     } else {

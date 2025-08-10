@@ -27,7 +27,7 @@ class SignInView extends GetView<SignInController> {
                       end: Alignment.bottomRight,
                       colors: [
                         Colors.blue.shade50,
-                        Colors.indigo.shade50,
+                        Colors.purple.shade50,
                         Colors.purple.shade50,
                       ],
                     ),
@@ -88,7 +88,7 @@ class SignInView extends GetView<SignInController> {
                               return const Icon(
                                 Icons.psychology,
                                 size: 60,
-                                color: Colors.indigo,
+                                color: Colors.purple,
                               );
                             },
                           ),
@@ -132,7 +132,7 @@ class SignInView extends GetView<SignInController> {
                                             fontWeight: FontWeight.bold,
                                           ),
                                           colors: [
-                                            Colors.indigo,
+                                            Colors.purple,
                                             Colors.blue,
                                             Colors.purple,
                                             Colors.teal,
@@ -244,7 +244,7 @@ class SignInView extends GetView<SignInController> {
                                     return const CircularProgressIndicator(
                                       strokeWidth: 3,
                                       valueColor: AlwaysStoppedAnimation<Color>(
-                                        Colors.indigo,
+                                        Colors.purple,
                                       ),
                                     );
                                   },

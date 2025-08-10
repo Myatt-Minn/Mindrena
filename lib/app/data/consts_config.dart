@@ -12,8 +12,8 @@ class ConstsConfig {
   static const String companyEmail = "myat.magic.store@gmail.com";
   static const String phoneNumber = " 09 777 000 992 , 09 456 373 078";
   static const int deliveryfee = 2000;
-  static const Color primarycolor = Color(0xFF3A0CA3);
-  static const Color primaryColorLight = Color(0xFF5F0FCD);
+  static const Color primarycolor = Colors.purple;
+  static const Color primaryColorLight = Colors.purpleAccent;
   static const Color secondarycolor = Color(0xFF9D4EDD);
   static const Color containerColor = Color(0xFF00a86b);
   static const Color bgColor = Color(0xFFF5F9FF);

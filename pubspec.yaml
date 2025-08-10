@@ -57,6 +57,7 @@ dependencies:
   auto_size_text: ^3.0.0
   google_sign_in: ^7.1.1
   top_snackbar_flutter: ^3.3.0
+  smooth_page_indicator: ^1.2.0
 
 dev_dependencies:
   flutter_test:

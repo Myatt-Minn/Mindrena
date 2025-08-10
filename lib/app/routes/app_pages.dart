@@ -7,6 +7,8 @@ import '../modules/edit-profile/bindings/edit_profile_binding.dart';
 import '../modules/edit-profile/views/edit_profile_view.dart';
 import '../modules/f_category_selection/bindings/f_category_selection_binding.dart';
 import '../modules/f_category_selection/views/f_category_selection_view.dart';
+import '../modules/friends/bindings/friends_binding.dart';
+import '../modules/friends/views/friends_view.dart';
 import '../modules/game_screen/bindings/game_screen_binding.dart';
 import '../modules/game_screen/views/game_screen_view.dart';
 import '../modules/home/bindings/home_binding.dart';
@@ -112,6 +114,11 @@ class AppPages {
       name: _Paths.SHOP,
       page: () => const ShopView(),
       binding: ShopBinding(),
+    ),
+    GetPage(
+      name: _Paths.FRIENDS,
+      page: () => const FriendsView(),
+      binding: FriendsBinding(),
     ),
   ];
 }

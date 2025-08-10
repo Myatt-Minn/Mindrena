@@ -18,6 +18,7 @@ abstract class Routes {
   static const EDIT_PROFILE = _Paths.EDIT_PROFILE;
   static const GAME_SCREEN = _Paths.GAME_SCREEN;
   static const SHOP = _Paths.SHOP;
+  static const FRIENDS = _Paths.FRIENDS;
 }
 
 abstract class _Paths {
@@ -37,4 +38,5 @@ abstract class _Paths {
   static const EDIT_PROFILE = '/edit-profile';
   static const GAME_SCREEN = '/game-screen';
   static const SHOP = '/shop';
+  static const FRIENDS = '/friends';
 }

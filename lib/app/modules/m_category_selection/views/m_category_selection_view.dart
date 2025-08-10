@@ -27,7 +27,7 @@ class MCategorySelectionView extends GetView<MCategorySelectionController> {
                       end: Alignment.bottomRight,
                       colors: [
                         Colors.blue.shade50,
-                        Colors.indigo.shade50,
+                        Colors.purple.shade50,
                         Colors.purple.shade50,
                       ],
                     ),
@@ -81,7 +81,7 @@ class MCategorySelectionView extends GetView<MCategorySelectionController> {
                           child: IconButton(
                             icon: const Icon(
                               Icons.arrow_back_ios,
-                              color: Colors.indigo,
+                              color: Colors.purple,
                             ),
                             onPressed: () => Get.back(),
                           ),
@@ -116,7 +116,7 @@ class MCategorySelectionView extends GetView<MCategorySelectionController> {
                                   fontWeight: FontWeight.bold,
                                 ),
                                 colors: [
-                                  Colors.indigo,
+                                  Colors.purple,
                                   Colors.blue,
                                   Colors.purple,
                                   Colors.teal,
@@ -168,8 +168,6 @@ class MCategorySelectionView extends GetView<MCategorySelectionController> {
                         Get.toNamed('/lobby');
                       },
                     ),
-
-                 
 
                     const SizedBox(height: 40),
 

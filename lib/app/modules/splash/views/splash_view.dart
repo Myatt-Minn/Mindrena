@@ -28,7 +28,7 @@ class SplashView extends GetView<SplashController> {
                       end: Alignment.bottomRight,
                       colors: [
                         Colors.blue.shade50,
-                        Colors.indigo.shade50,
+                        Colors.purple.shade50,
                         Colors.purple.shade50,
                       ],
                     ),
@@ -77,7 +77,7 @@ class SplashView extends GetView<SplashController> {
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
-                  color: Colors.indigo.shade700,
+                  color: Colors.purple.shade700,
                 ),
               ),
             ),
@@ -111,7 +111,7 @@ class SplashView extends GetView<SplashController> {
                                   offset: const Offset(0, 15),
                                 ),
                                 BoxShadow(
-                                  color: Colors.indigo.withOpacity(0.3),
+                                  color: Colors.purple.withOpacity(0.3),
                                   blurRadius: 40,
                                   offset: const Offset(0, 0),
                                 ),
@@ -130,7 +130,7 @@ class SplashView extends GetView<SplashController> {
                                           begin: Alignment.topLeft,
                                           end: Alignment.bottomRight,
                                           colors: [
-                                            Colors.indigo.shade400,
+                                            Colors.purple.shade400,
                                             Colors.purple.shade400,
                                           ],
                                         ),
@@ -181,7 +181,7 @@ class SplashView extends GetView<SplashController> {
                                 fontWeight: FontWeight.bold,
                               ),
                               colors: [
-                                Colors.indigo,
+                                Colors.purple,
                                 Colors.blue,
                                 Colors.purple,
                                 Colors.teal,
@@ -242,7 +242,7 @@ class SplashView extends GetView<SplashController> {
                               return const CircularProgressIndicator(
                                 strokeWidth: 4,
                                 valueColor: AlwaysStoppedAnimation<Color>(
-                                  Colors.indigo,
+                                  Colors.purple,
                                 ),
                               );
                             },

@@ -28,7 +28,7 @@ class ProfileView extends GetView<ProfileController> {
                       end: Alignment.bottomRight,
                       colors: [
                         Colors.blue.shade50,
-                        Colors.indigo.shade50,
+                        Colors.purple.shade50,
                         Colors.purple.shade50,
                       ],
                     ),
@@ -316,7 +316,7 @@ class ProfileView extends GetView<ProfileController> {
                 ],
               ),
               child: IconButton(
-                icon: const Icon(Icons.arrow_back_ios, color: Colors.indigo),
+                icon: const Icon(Icons.arrow_back_ios, color: Colors.purple),
                 onPressed: () => Get.back(),
               ),
             ),
@@ -348,7 +348,7 @@ class ProfileView extends GetView<ProfileController> {
                           fontWeight: FontWeight.bold,
                         ),
                         colors: [
-                          Colors.indigo,
+                          Colors.purple,
                           Colors.blue,
                           Colors.purple,
                           Colors.teal,
@@ -391,14 +391,14 @@ class ProfileView extends GetView<ProfileController> {
                   height: 100,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Colors.indigo.withOpacity(0.1),
+                    color: Colors.purple.withOpacity(0.1),
                     border: Border.all(
-                      color: Colors.indigo.withOpacity(0.3),
+                      color: Colors.purple.withOpacity(0.3),
                       width: 3,
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.indigo.withOpacity(0.2),
+                        color: Colors.purple.withOpacity(0.2),
                         blurRadius: 15,
                         offset: const Offset(0, 5),
                       ),
@@ -415,7 +415,7 @@ class ProfileView extends GetView<ProfileController> {
                         : Icon(
                             Icons.person,
                             size: 50,
-                            color: Colors.indigo.shade400,
+                            color: Colors.purple.shade400,
                           ),
                   ),
                 ),
@@ -450,7 +450,7 @@ class ProfileView extends GetView<ProfileController> {
                   icon: const Icon(Icons.edit, size: 20),
                   label: const Text('Edit Profile'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.indigo,
+                    backgroundColor: Colors.purple,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(
                       horizontal: 24,
@@ -544,14 +544,14 @@ class ProfileView extends GetView<ProfileController> {
               children: [
                 Row(
                   children: [
-                    Icon(Icons.bar_chart, color: Colors.indigo, size: 24),
+                    Icon(Icons.bar_chart, color: Colors.purple, size: 24),
                     const SizedBox(width: 12),
                     Text(
                       'Game Statistics',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: Colors.indigo,
+                        color: Colors.purple,
                       ),
                     ),
                   ],

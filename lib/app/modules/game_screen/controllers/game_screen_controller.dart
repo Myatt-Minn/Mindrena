@@ -31,6 +31,7 @@ class GameScreenController extends GetxController {
   final isGameFinished = false.obs;
   final finalResults = <Map<String, dynamic>>[].obs;
   final isMovingToNextQuestion = false.obs;
+  final lastProcessedQuestionIndex = (-1).obs;
 
   // Timer for countdown
   Timer? _questionTimer;
@@ -137,6 +138,8 @@ class GameScreenController extends GetxController {
       isAnswerSubmitted.value = false;
       selectedAnswer.value = -1;
       isMovingToNextQuestion.value = false;
+      lastProcessedQuestionIndex.value =
+          -1; // Reset processed question tracking
       print(
         'Question changed from $previousQuestionIndex to ${currentQuestionIndex.value}',
       );
@@ -202,6 +205,16 @@ class GameScreenController extends GetxController {
               'Question start time too old/future ($timeSinceStart seconds), not starting timer',
             );
           }
+        }
+
+        // Check if both players have answered (always check, but respect timing)
+        if (gameStatus.value == 'active') {
+          // Use a small delay to ensure all state updates are complete
+          Future.delayed(const Duration(milliseconds: 100), () {
+            if (gameStatus.value == 'active' && !isMovingToNextQuestion.value) {
+              _checkIfBothPlayersAnswered();
+            }
+          });
         }
       }
     }
@@ -328,10 +341,38 @@ class GameScreenController extends GetxController {
 
       print('Submitting answer: $answerIndex for user: $userId');
 
-      // Update answer in Firestore
-      await _firestore.collection('games').doc(gameId.value).update({
-        'answers.$userId': FieldValue.arrayUnion([answerIndex.toString()]),
-      });
+      // Update answer in Firestore with explicit question index to ensure proper tracking
+      final currentQuestionIdx = currentQuestionIndex.value;
+
+      // First, get current answers to ensure we're updating the right index
+      final gameDoc = await _firestore
+          .collection('games')
+          .doc(gameId.value)
+          .get();
+      if (gameDoc.exists) {
+        final gameData = gameDoc.data()!;
+        final currentAnswers = Map<String, dynamic>.from(
+          gameData['answers'] ?? {},
+        );
+        final userAnswers = List<String>.from(currentAnswers[userId] ?? []);
+
+        // Ensure the answers array is the right length for the current question
+        while (userAnswers.length <= currentQuestionIdx) {
+          userAnswers.add('-1'); // Placeholder for unanswered questions
+        }
+
+        // Set the answer for the current question
+        userAnswers[currentQuestionIdx] = answerIndex.toString();
+
+        // Update Firestore with the complete answers array
+        await _firestore.collection('games').doc(gameId.value).update({
+          'answers.$userId': userAnswers,
+        });
+
+        print(
+          'Updated answers array for question $currentQuestionIdx: $userAnswers',
+        );
+      }
 
       // Calculate score if answer is correct
       final correctIndex = currentQuestion.value?['correctIndex'] ?? -1;
@@ -346,12 +387,113 @@ class GameScreenController extends GetxController {
       }
 
       print('Answer submitted successfully');
+
+      // Check if both players have answered after a short delay to allow Firestore sync
+      Future.delayed(const Duration(milliseconds: 500), () {
+        if (gameStatus.value == 'active' && !isMovingToNextQuestion.value) {
+          print('Checking if both players answered after answer submission');
+          _checkIfBothPlayersAnswered();
+        }
+      });
     } catch (e) {
       print('Error submitting answer: $e');
       Get.snackbar('Error', 'Failed to submit answer: $e');
       // Reset state on error
       isAnswerSubmitted.value = false;
       selectedAnswer.value = -1;
+    }
+  }
+
+  void _checkIfBothPlayersAnswered() {
+    // Don't proceed if we're already moving to next question or game is not active
+    if (isMovingToNextQuestion.value || gameStatus.value != 'active') {
+      print(
+        'Skipping both players check - isMovingToNextQuestion: ${isMovingToNextQuestion.value}, gameStatus: ${gameStatus.value}',
+      );
+      return;
+    }
+
+    // Ensure we have at least 2 players
+    if (playerIds.length < 2) {
+      print(
+        'Skipping both players check - not enough players: ${playerIds.length}',
+      );
+      return;
+    }
+
+    // Don't check if we've already processed this question
+    if (lastProcessedQuestionIndex.value == currentQuestionIndex.value) {
+      print(
+        'Skipping both players check - already processed question ${currentQuestionIndex.value}',
+      );
+      return;
+    }
+
+    // Check if all players have answered the current question
+    bool allPlayersAnswered = true;
+    List<String> playersWithAnswers = [];
+    List<String> playersWithoutAnswers = [];
+    final currentUserId = _auth.currentUser?.uid;
+
+    for (String playerId in playerIds) {
+      final playerAnswers = answers[playerId] ?? [];
+      // Fix: Check if player has answered the current question specifically
+      // The array length should be greater than the current question index
+      bool hasAnswered = playerAnswers.length > currentQuestionIndex.value;
+
+      // For the current user, also check if they have locally submitted an answer
+      // This handles cases where Firestore hasn't updated yet but the user has submitted
+      if (!hasAnswered &&
+          playerId == currentUserId &&
+          isAnswerSubmitted.value) {
+        hasAnswered = true;
+        print('Using local submission state for current user: $playerId');
+      }
+
+      print(
+        'Player $playerId: answers=${playerAnswers.length}, current question=${currentQuestionIndex.value}, hasAnswered=$hasAnswered',
+      );
+
+      if (hasAnswered) {
+        playersWithAnswers.add(playerId);
+      } else {
+        playersWithoutAnswers.add(playerId);
+        allPlayersAnswered = false;
+      }
+    }
+
+    print(
+      'Question ${currentQuestionIndex.value}: Players with answers: $playersWithAnswers (${playersWithAnswers.length}), without answers: $playersWithoutAnswers (${playersWithoutAnswers.length})',
+    );
+
+    if (allPlayersAnswered && playerIds.length >= 2) {
+      print(
+        'All ${playerIds.length} players have answered question ${currentQuestionIndex.value}, moving to next question early',
+      );
+
+      // Mark this question as processed to prevent duplicate processing
+      lastProcessedQuestionIndex.value = currentQuestionIndex.value;
+
+      // Cancel the current timer since we're moving early
+      _questionTimer?.cancel();
+
+      // Set flag to prevent timer-based movement
+      isMovingToNextQuestion.value = true;
+
+      // Move to next question after a brief delay to show answer feedback
+      _questionMoveDebounce?.cancel();
+      _questionMoveDebounce = Timer(const Duration(milliseconds: 2000), () {
+        if (gameStatus.value == 'active') {
+          print(
+            'Executing early move to next question from both players answered',
+          );
+          _moveToNextQuestion();
+        }
+      });
+    } else {
+      print(
+        'Not all players answered yet - waiting for: $playersWithoutAnswers',
+      );
     }
   }
 
@@ -382,13 +524,30 @@ class GameScreenController extends GetxController {
 
   Future<void> _finishGame() async {
     try {
+      // Check if game is already finished to prevent duplicate processing
+      final gameDoc = await _firestore
+          .collection('games')
+          .doc(gameId.value)
+          .get();
+      if (gameDoc.exists && gameDoc.data()?['status'] == 'finished') {
+        print('Game already finished, skipping duplicate finish');
+        return;
+      }
+
       await _firestore.collection('games').doc(gameId.value).update({
         'status': 'finished',
         'finishedAt': FieldValue.serverTimestamp(),
+        'statsUpdated': false, // Flag to track if stats have been updated
       });
 
-      // Update player statistics
-      await _updatePlayerStats();
+      // Only update stats once from one client to prevent duplicates
+      final currentUserId = _auth.currentUser?.uid;
+      if (currentUserId != null &&
+          playerIds.isNotEmpty &&
+          currentUserId == playerIds.first) {
+        print('Updating player stats (as first player)');
+        await _updatePlayerStats();
+      }
     } catch (e) {
       Get.snackbar('Error', 'Failed to finish game: $e');
     }
@@ -396,31 +555,65 @@ class GameScreenController extends GetxController {
 
   Future<void> _updatePlayerStats() async {
     try {
+      // Check if stats have already been updated for this game
+      final gameDoc = await _firestore
+          .collection('games')
+          .doc(gameId.value)
+          .get();
+      if (gameDoc.exists && gameDoc.data()?['statsUpdated'] == true) {
+        print('Stats already updated for this game, skipping');
+        return;
+      }
+
       final batch = _firestore.batch();
+      final gameRef = _firestore.collection('games').doc(gameId.value);
+
+      // Calculate winner(s) properly
+      final allScores = scores.values.toList();
+      final maxScore = allScores.isNotEmpty
+          ? allScores.reduce((a, b) => a > b ? a : b)
+          : 0;
+
+      // Count how many players have the max score (for tie handling)
+      final winnersCount = scores.values
+          .where((score) => score == maxScore && score > 0)
+          .length;
+      final isTie = winnersCount > 1;
+
+      print(
+        'Max score: $maxScore, Winners count: $winnersCount, Is tie: $isTie',
+      );
 
       for (String playerId in playerIds) {
         final playerScore = scores[playerId] ?? 0;
         final userRef = _firestore.collection('users').doc(playerId);
 
-        // Determine if player won (highest score)
-        final allScores = scores.values.toList();
-        final maxScore = allScores.isNotEmpty
-            ? allScores.reduce((a, b) => a > b ? a : b)
-            : 0;
+        // Player wins only if they have the highest score AND it's not a tie
+        // OR if it's a tie, they still get a win (you can change this logic if needed)
         final hasWon = playerScore == maxScore && playerScore > 0;
 
+        print('Player $playerId: score=$playerScore, hasWon=$hasWon');
+
+        // Update basic stats
         batch.update(userRef, {
           'stats.gamesPlayed': FieldValue.increment(1),
           'stats.totalPoints': FieldValue.increment(playerScore),
           'currentGameId': FieldValue.delete(),
         });
 
+        // Update wins - in case of tie, both players get a win
+        // If you want ties to not count as wins, add: && !isTie
         if (hasWon) {
           batch.update(userRef, {'stats.gamesWon': FieldValue.increment(1)});
+          print('Incrementing gamesWon for player $playerId');
         }
       }
 
+      // Mark stats as updated to prevent duplicate updates
+      batch.update(gameRef, {'statsUpdated': true});
+
       await batch.commit();
+      print('Player stats updated successfully');
     } catch (e) {
       print('Error updating player stats: $e');
     }
@@ -457,7 +650,7 @@ class GameScreenController extends GetxController {
   }
 
   void playAgain() {
-    Get.offNamed('/f-category-selection');
+    Get.back();
   }
 
   // Getters for UI
@@ -491,8 +684,9 @@ class GameScreenController extends GetxController {
   }
 
   bool get isCorrectAnswer {
-    if (currentQuestion.value == null || selectedAnswer.value == -1)
+    if (currentQuestion.value == null || selectedAnswer.value == -1) {
       return false;
+    }
     return selectedAnswer.value == currentQuestion.value!['correctIndex'];
   }
 

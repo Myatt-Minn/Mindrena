@@ -50,7 +50,7 @@ class LobbyController extends GetxController {
           context: Get.context!,
           type: QuickAlertType.info,
           title: 'Game Mechanics',
-          text: '''Here's how the quiz game works:
+          text: '''
 
 🕐 Timer: You get 10 seconds to answer each question
 
@@ -64,7 +64,7 @@ class LobbyController extends GetxController {
 
 Good luck and have fun! 🎮''',
           confirmBtnText: 'Got it!',
-          confirmBtnColor: Colors.indigo,
+          confirmBtnColor: Colors.purple,
           onConfirmBtnTap: () {
             Get.back();
             // Mark that the user has seen this info
@@ -198,11 +198,16 @@ Good luck and have fun! 🎮''',
 
   Future<void> _createGame(List<String> playerIds) async {
     try {
-      // Fetch random questions for the category
-      final questions = await _getRandomQuestions(category, 10);
-
+      // Generate unique game ID first
       final gameRef = _firestore.collection('games').doc();
       gameId.value = gameRef.id;
+
+      // Use the new deterministic question selection method
+      final questions = await _getUniqueQuestionsForGame(
+        category,
+        10,
+        playerIds,
+      );
 
       // Initialize player states and scores
       Map<String, dynamic> playerStates = {};
@@ -226,21 +231,225 @@ Good luck and have fun! 🎮''',
         'startedAt': FieldValue.serverTimestamp(),
         'finishedAt': null,
         'status': 'waiting',
+        'usedQuestionIds': questions
+            .map((q) => q['id'])
+            .toList(), // Track used questions
       });
 
-      // Update users' currentGameId
+      // Update users' currentGameId and track their used questions
       final batch = _firestore.batch();
       for (String playerId in playerIds) {
         final userRef = _firestore.collection('users').doc(playerId);
         batch.update(userRef, {'currentGameId': gameId.value});
+
+        // Update user's question history to avoid repeats
+        final questionIds = questions.map((q) => q['id']).toList();
+        batch.update(userRef, {
+          'recentQuestions.$category': FieldValue.arrayUnion(questionIds),
+        });
       }
       await batch.commit();
+
+      print(
+        'Game created with questions: ${questions.map((q) => q['id']).toList()}',
+      );
     } catch (e) {
       Get.snackbar('Error', 'Failed to create game: $e');
     }
   }
 
-  Future<List<Map<String, dynamic>>> _getRandomQuestions(
+  // Unique question selection per player to avoid repeats
+  Future<List<Map<String, dynamic>>> _getUniqueQuestionsForGame(
+    String category,
+    int count,
+    List<String> playerIds,
+  ) async {
+    try {
+      print(
+        'Getting unique questions for players: $playerIds in category: $category',
+      );
+
+      // Get all questions for the category
+      final questionsQuery = await _firestore
+          .collection('questions')
+          .where('category', isEqualTo: category)
+          .get();
+
+      if (questionsQuery.docs.isEmpty) {
+        throw Exception('No questions found for category: $category');
+      }
+
+      final allQuestions = questionsQuery.docs
+          .map((doc) => {'id': doc.id, ...doc.data()})
+          .toList();
+
+      print('Total questions available: ${allQuestions.length}');
+
+      // Get recently used questions for all players
+      Set<String> recentQuestions = {};
+      for (String playerId in playerIds) {
+        try {
+          final userDoc = await _firestore
+              .collection('users')
+              .doc(playerId)
+              .get();
+          if (userDoc.exists) {
+            final userData = userDoc.data() as Map<String, dynamic>;
+            final playerRecentQuestions =
+                userData['recentQuestions']?[category] as List<dynamic>?;
+            if (playerRecentQuestions != null) {
+              recentQuestions.addAll(playerRecentQuestions.cast<String>());
+            }
+          }
+        } catch (e) {
+          print('Error getting recent questions for player $playerId: $e');
+        }
+      }
+
+      print('Recent questions to avoid: ${recentQuestions.length}');
+
+      // Filter out recently used questions
+      final availableQuestions = allQuestions
+          .where((question) => !recentQuestions.contains(question['id']))
+          .toList();
+
+      print(
+        'Available questions after filtering: ${availableQuestions.length}',
+      );
+
+      // If we don't have enough unique questions, clear history and use all
+      if (availableQuestions.length < count) {
+        print(
+          'Not enough unique questions, clearing history and using all questions',
+        );
+        // Clear recent questions for these players
+        final batch = _firestore.batch();
+        for (String playerId in playerIds) {
+          final userRef = _firestore.collection('users').doc(playerId);
+          batch.update(userRef, {'recentQuestions.$category': []});
+        }
+        await batch.commit();
+
+        // Use all questions with better randomization
+        allQuestions.shuffle(Random(DateTime.now().millisecondsSinceEpoch));
+        return allQuestions.take(count).toList();
+      }
+
+      // Shuffle available questions and select required count
+      availableQuestions.shuffle(Random(DateTime.now().millisecondsSinceEpoch));
+      final selectedQuestions = availableQuestions.take(count).toList();
+
+      print(
+        'Selected unique questions: ${selectedQuestions.map((q) => q['id']).toList()}',
+      );
+      return selectedQuestions;
+    } catch (e) {
+      print('Error in _getUniqueQuestionsForGame: $e');
+      // Fallback to basic random selection
+      return await _getRandomQuestionsImproved(category, count);
+    }
+  }
+
+  // Improved method that ensures better randomization and no duplicates
+  Future<List<Map<String, dynamic>>> _getRandomQuestionsImproved(
+    String category,
+    int count,
+  ) async {
+    try {
+      // Get all questions for the category first
+      final questionsQuery = await _firestore
+          .collection('questions')
+          .where('category', isEqualTo: category)
+          .get();
+
+      if (questionsQuery.docs.isEmpty) {
+        throw Exception('No questions found for category: $category');
+      }
+
+      // Convert to list with proper structure
+      final allQuestions = questionsQuery.docs.map((doc) {
+        final data = doc.data();
+        return {
+          'id': doc.id,
+          'text': data['text'],
+          'options': List<String>.from(data['options'] ?? []),
+          'correctIndex': data['correctIndex'] ?? 0,
+          'randomSeed': data['randomSeed'] ?? Random().nextDouble(),
+        };
+      }).toList();
+
+      print('Total questions available for $category: ${allQuestions.length}');
+
+      // Ensure we have enough unique questions
+      if (allQuestions.length < count) {
+        print(
+          'Warning: Only ${allQuestions.length} questions available, but $count requested',
+        );
+        // Shuffle and return all available questions
+        allQuestions.shuffle(Random());
+        return allQuestions.take(allQuestions.length).toList();
+      }
+
+      // Use multiple randomization passes for better distribution
+      final random = Random();
+
+      // First shuffle based on randomSeed
+      allQuestions.sort(
+        (a, b) =>
+            (a['randomSeed'] as double).compareTo(b['randomSeed'] as double),
+      );
+
+      // Then apply additional randomization
+      for (int i = 0; i < 3; i++) {
+        allQuestions.shuffle(random);
+      }
+
+      // Use a time-based seed for additional randomness
+      final timeSeed = DateTime.now().millisecondsSinceEpoch;
+      final timeRandom = Random(timeSeed);
+
+      // Final selection with time-based randomization
+      final selectedQuestions = <Map<String, dynamic>>[];
+      final usedIndices = <int>{};
+
+      while (selectedQuestions.length < count &&
+          usedIndices.length < allQuestions.length) {
+        final randomIndex = timeRandom.nextInt(allQuestions.length);
+        if (!usedIndices.contains(randomIndex)) {
+          usedIndices.add(randomIndex);
+          final question = Map<String, dynamic>.from(allQuestions[randomIndex]);
+          // Remove randomSeed from final question data
+          question.remove('randomSeed');
+          selectedQuestions.add(question);
+        }
+      }
+
+      print(
+        'Selected ${selectedQuestions.length} questions using improved randomization',
+      );
+
+      // Log selected question IDs for debugging
+      final questionIds = selectedQuestions.map((q) => q['id']).toList();
+      print('Selected question IDs: $questionIds');
+
+      // Verify no duplicates
+      final uniqueIds = questionIds.toSet();
+      if (uniqueIds.length != questionIds.length) {
+        print(
+          'WARNING: Duplicate questions detected! Falling back to simple method.',
+        );
+        return await _getRandomQuestionsFallback(category, count);
+      }
+
+      return selectedQuestions;
+    } catch (e) {
+      print('Improved random selection failed: $e');
+      return await _getRandomQuestionsFallback(category, count);
+    }
+  }
+
+  // Fallback method for when improved method fails
+  Future<List<Map<String, dynamic>>> _getRandomQuestionsFallback(
     String category,
     int count,
   ) async {
@@ -259,16 +468,74 @@ Good luck and have fun! 🎮''',
         return {
           'id': doc.id,
           'text': data['text'],
-          'options': data['options'],
-          'correctIndex': data['correctIndex'],
+          'options': List<String>.from(data['options'] ?? []),
+          'correctIndex': data['correctIndex'] ?? 0,
         };
       }).toList();
 
-      // Shuffle and take random questions
-      allQuestions.shuffle(Random());
-      return allQuestions.take(count).toList();
+      print('Total questions available for $category: ${allQuestions.length}');
+
+      // Check if we have enough questions
+      if (allQuestions.length < count) {
+        print(
+          'Warning: Only ${allQuestions.length} questions available, but $count requested',
+        );
+        // Return all available questions if we don't have enough
+        allQuestions.shuffle(Random());
+        return allQuestions;
+      }
+
+      // Use multiple randomization passes for better distribution
+      final random = Random();
+      final selectedQuestions = <Map<String, dynamic>>[];
+      final availableQuestions = List<Map<String, dynamic>>.from(allQuestions);
+
+      // Apply multiple shuffles for better randomization
+      for (int i = 0; i < 5; i++) {
+        availableQuestions.shuffle(random);
+      }
+
+      // Use Fisher-Yates shuffle algorithm for maximum randomness
+      for (int i = availableQuestions.length - 1; i > 0; i--) {
+        final j = random.nextInt(i + 1);
+        final temp = availableQuestions[i];
+        availableQuestions[i] = availableQuestions[j];
+        availableQuestions[j] = temp;
+      }
+
+      // Select questions without replacement
+      for (int i = 0; i < count && i < availableQuestions.length; i++) {
+        selectedQuestions.add(availableQuestions[i]);
+      }
+
+      print(
+        'Selected ${selectedQuestions.length} random questions for game (fallback method)',
+      );
+
+      // Log the selected question IDs for debugging
+      final questionIds = selectedQuestions.map((q) => q['id']).toList();
+      print('Selected question IDs: $questionIds');
+
+      // Verify no duplicates
+      final uniqueIds = questionIds.toSet();
+      if (uniqueIds.length != questionIds.length) {
+        print('ERROR: Duplicate questions in fallback method!');
+        // Remove duplicates manually
+        final uniqueQuestions = <Map<String, dynamic>>[];
+        final seenIds = <String>{};
+        for (final question in selectedQuestions) {
+          final id = question['id'] as String;
+          if (!seenIds.contains(id)) {
+            seenIds.add(id);
+            uniqueQuestions.add(question);
+          }
+        }
+        return uniqueQuestions.take(count).toList();
+      }
+
+      return selectedQuestions;
     } catch (e) {
-      print('Error fetching questions: $e');
+      print('Error fetching questions (fallback): $e');
       // Return default questions if fetch fails
       return [
         {

@@ -27,7 +27,7 @@ class LobbyView extends GetView<LobbyController> {
                       end: Alignment.bottomRight,
                       colors: [
                         Colors.blue.shade50,
-                        Colors.indigo.shade50,
+                        Colors.purple.shade50,
                         Colors.purple.shade50,
                       ],
                     ),
@@ -82,7 +82,7 @@ class LobbyView extends GetView<LobbyController> {
                             child: IconButton(
                               icon: const Icon(
                                 Icons.arrow_back_ios,
-                                color: Colors.indigo,
+                                color: Colors.purple,
                               ),
                               onPressed: () => controller.leaveLobby(),
                             ),
@@ -114,7 +114,7 @@ class LobbyView extends GetView<LobbyController> {
                                       fontWeight: FontWeight.bold,
                                     ),
                                     colors: [
-                                      Colors.indigo,
+                                      Colors.purple,
                                       Colors.blue,
                                       Colors.purple,
                                       Colors.teal,
@@ -160,7 +160,7 @@ class LobbyView extends GetView<LobbyController> {
                                   textStyle: TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.indigo,
+                                    color: Colors.purple,
                                   ),
                                   speed: const Duration(milliseconds: 200),
                                 ),
@@ -209,7 +209,7 @@ class LobbyView extends GetView<LobbyController> {
                               children: [
                                 Icon(
                                   Icons.people,
-                                  color: Colors.indigo,
+                                  color: Colors.purple,
                                   size: 24,
                                 ),
                                 const SizedBox(width: 12),
@@ -218,7 +218,7 @@ class LobbyView extends GetView<LobbyController> {
                                   style: TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.indigo,
+                                    color: Colors.purple,
                                   ),
                                 ),
                               ],
@@ -334,7 +334,7 @@ class LobbyView extends GetView<LobbyController> {
                                 child: CircularProgressIndicator(
                                   strokeWidth: 3,
                                   valueColor: AlwaysStoppedAnimation<Color>(
-                                    Colors.indigo,
+                                    Colors.purple,
                                   ),
                                 ),
                               ),

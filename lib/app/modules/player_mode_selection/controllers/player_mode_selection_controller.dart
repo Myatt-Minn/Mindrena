@@ -27,7 +27,11 @@ class PlayerModeSelectionController extends GetxController {
     super.onInit();
     selectedLanguage.value = storage.read('language') ?? 'ENG';
     languageSelected.value = currentLanguageDisplay;
-    updateLocale();
+
+    // Defer the locale update until after the build is complete
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      updateLocale();
+    });
   }
 
   void updateLocale() {

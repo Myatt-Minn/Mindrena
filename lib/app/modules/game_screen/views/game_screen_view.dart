@@ -27,7 +27,7 @@ class GameScreenView extends GetView<GameScreenController> {
                       end: Alignment.bottomRight,
                       colors: [
                         Colors.blue.shade50,
-                        Colors.indigo.shade50,
+                        Colors.purple.shade50,
                         Colors.purple.shade50,
                       ],
                     ),
@@ -440,44 +440,90 @@ class GameScreenView extends GetView<GameScreenController> {
     return Obx(() {
       if (!controller.isAnswerSubmitted.value) return const SizedBox();
 
-      return Container(
-        margin: const EdgeInsets.only(top: 16),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: controller.isCorrectAnswer
-              ? Colors.green.shade50
-              : Colors.red.shade50,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: controller.isCorrectAnswer
-                ? Colors.green.shade300
-                : Colors.red.shade300,
-          ),
-        ),
-        child: Row(
-          children: [
-            Icon(
-              controller.isCorrectAnswer ? Icons.check_circle : Icons.cancel,
+      // Check if both players have answered
+      bool bothPlayersAnswered = true;
+      for (String playerId in controller.playerIds) {
+        final playerAnswers = controller.answers[playerId] ?? [];
+        if (playerAnswers.length <= controller.currentQuestionIndex.value) {
+          bothPlayersAnswered = false;
+          break;
+        }
+      }
+
+      return Column(
+        children: [
+          Container(
+            margin: const EdgeInsets.only(top: 16),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
               color: controller.isCorrectAnswer
-                  ? Colors.green.shade600
-                  : Colors.red.shade600,
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                controller.isCorrectAnswer
-                    ? 'Correct! Well done!'
-                    : 'Incorrect. The correct answer was highlighted.',
-                style: TextStyle(
-                  color: controller.isCorrectAnswer
-                      ? Colors.green.shade700
-                      : Colors.red.shade700,
-                  fontWeight: FontWeight.w600,
-                ),
+                  ? Colors.green.shade50
+                  : Colors.red.shade50,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: controller.isCorrectAnswer
+                    ? Colors.green.shade300
+                    : Colors.red.shade300,
               ),
             ),
-          ],
-        ),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      controller.isCorrectAnswer
+                          ? Icons.check_circle
+                          : Icons.cancel,
+                      color: controller.isCorrectAnswer
+                          ? Colors.green.shade600
+                          : Colors.red.shade600,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        controller.isCorrectAnswer
+                            ? 'Correct! Well done!'
+                            : 'Incorrect. The correct answer was highlighted.',
+                        style: TextStyle(
+                          color: controller.isCorrectAnswer
+                              ? Colors.green.shade700
+                              : Colors.red.shade700,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          // Show both players answered indicator
+          if (bothPlayersAnswered && controller.playerIds.length >= 2)
+            Container(
+              margin: const EdgeInsets.only(top: 8),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.blue.shade50,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.blue.shade300),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.people, color: Colors.blue.shade600, size: 20),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Both players answered! Moving next!',
+                    style: TextStyle(
+                      color: Colors.blue.shade700,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+        ],
       );
     });
   }

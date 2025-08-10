@@ -30,7 +30,7 @@ class SettingsView extends GetView<SettingsController> {
                       end: Alignment.bottomRight,
                       colors: [
                         Colors.blue.shade50,
-                        Colors.indigo.shade50,
+                        Colors.purple.shade50,
                         Colors.purple.shade50,
                       ],
                     ),
@@ -84,7 +84,7 @@ class SettingsView extends GetView<SettingsController> {
                           child: IconButton(
                             icon: const Icon(
                               Icons.arrow_back_ios,
-                              color: Colors.indigo,
+                              color: Colors.purple,
                             ),
                             onPressed: () => Get.back(),
                           ),
@@ -117,7 +117,7 @@ class SettingsView extends GetView<SettingsController> {
                                       fontWeight: FontWeight.bold,
                                     ),
                                     colors: [
-                                      Colors.indigo,
+                                      Colors.purple,
                                       Colors.blue,
                                       Colors.purple,
                                       Colors.teal,
@@ -135,37 +135,6 @@ class SettingsView extends GetView<SettingsController> {
                     ),
 
                     const SizedBox(height: 30),
-
-                    // Account Section
-                    _buildSectionCard(
-                      title: 'Account',
-                      icon: Icons.account_circle,
-                      children: [
-                        _buildSettingsTile(
-                          icon: Icons.person,
-                          title: 'Profile',
-                          subtitle: 'Manage your profile information',
-                          onTap: () {
-                            Get.snackbar(
-                              'Profile',
-                              'Profile management coming soon!',
-                            );
-                          },
-                        ),
-                        const Divider(height: 1),
-                        _buildSettingsTile(
-                          icon: Icons.logout,
-                          title: 'Sign Out',
-                          subtitle: 'Sign out from your account',
-                          titleColor: Colors.red,
-                          onTap: () {
-                            _showSignOutDialog(context);
-                          },
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 20),
 
                     // Game Settings Section
                     _buildSectionCard(
@@ -318,14 +287,14 @@ class SettingsView extends GetView<SettingsController> {
             padding: const EdgeInsets.all(20),
             child: Row(
               children: [
-                Icon(icon, color: Colors.indigo, size: 24),
+                Icon(icon, color: Colors.purple, size: 24),
                 const SizedBox(width: 12),
                 Text(
                   title,
                   style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: Colors.indigo,
+                    color: Colors.purple,
                   ),
                 ),
               ],
@@ -420,25 +389,23 @@ class SettingsView extends GetView<SettingsController> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: Colors.indigo.withOpacity(0.1),
+              color: Colors.purple.withOpacity(0.1),
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: Colors.indigo.withOpacity(0.3)),
+              border: Border.all(color: Colors.purple.withOpacity(0.3)),
             ),
             child: DropdownButtonHideUnderline(
               child: DropdownButton<String>(
                 value: 'English',
                 isDense: true,
-                icon: const Icon(Icons.arrow_drop_down, color: Colors.indigo),
-                items: ['English', 'မြန်မာ', '中文', 'العربية'].map((
-                  String value,
-                ) {
+                icon: const Icon(Icons.arrow_drop_down, color: Colors.purple),
+                items: ['English', 'မြန်မာ'].map((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
                     child: Text(
                       value,
                       style: const TextStyle(
                         fontSize: 14,
-                        color: Colors.indigo,
+                        color: Colors.purple,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -488,7 +455,7 @@ class SettingsView extends GetView<SettingsController> {
             onChanged: (bool value) {
               Get.snackbar('Sound', value ? 'Sound enabled' : 'Sound disabled');
             },
-            activeColor: Colors.indigo,
+            activeColor: Colors.purple,
           ),
         ],
       ),
@@ -529,7 +496,7 @@ class SettingsView extends GetView<SettingsController> {
                 value ? 'Notifications enabled' : 'Notifications disabled',
               );
             },
-            activeColor: Colors.indigo,
+            activeColor: Colors.purple,
           ),
         ],
       ),
@@ -546,7 +513,7 @@ class SettingsView extends GetView<SettingsController> {
           ),
           title: const Text(
             'Sign Out',
-            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.indigo),
+            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.purple),
           ),
           content: const Text(
             'Are you sure you want to sign out?',

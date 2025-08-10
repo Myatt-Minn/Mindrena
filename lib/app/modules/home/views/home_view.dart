@@ -27,7 +27,7 @@ class HomeView extends GetView<HomeController> {
                       end: Alignment.bottomRight,
                       colors: [
                         Colors.blue.shade50,
-                        Colors.indigo.shade50,
+                        Colors.purple.shade50,
                         Colors.purple.shade50,
                       ],
                     ),
@@ -88,9 +88,10 @@ class HomeView extends GetView<HomeController> {
                                   fontWeight: FontWeight.bold,
                                 ),
                                 colors: [
-                                  Colors.indigo,
-                                  Colors.blue,
                                   Colors.purple,
+                                  Colors.purple,
+                                  Colors.blue,
+
                                   Colors.teal,
                                 ],
                                 speed: const Duration(milliseconds: 400),
@@ -171,7 +172,7 @@ class HomeView extends GetView<HomeController> {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           _buildActionButton(
-                            icon: Icons.person,
+                            icon: Icons.person_pin_rounded,
                             label: 'Profile',
                             onTap: () {
                               Get.toNamed('/profile');
@@ -188,10 +189,10 @@ class HomeView extends GetView<HomeController> {
                             },
                           ),
                           _buildActionButton(
-                            icon: Icons.settings,
-                            label: 'Settings',
+                            icon: Icons.group,
+                            label: 'Friends',
                             onTap: () {
-                              Get.toNamed('/settings');
+                              Get.toNamed('/friends');
                             },
                           ),
                         ],

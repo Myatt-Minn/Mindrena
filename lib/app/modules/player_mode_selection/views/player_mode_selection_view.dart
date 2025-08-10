@@ -27,7 +27,7 @@ class PlayerModeSelectionView extends GetView<PlayerModeSelectionController> {
                       end: Alignment.bottomRight,
                       colors: [
                         Colors.blue.shade50,
-                        Colors.indigo.shade50,
+                        Colors.purple.shade50,
                         Colors.purple.shade50,
                       ],
                     ),
@@ -92,10 +92,10 @@ class PlayerModeSelectionView extends GetView<PlayerModeSelectionController> {
                                     fontWeight: FontWeight.bold,
                                   ),
                                   colors: [
-                                    Colors.indigo,
-                                    Colors.blue,
+                                    Colors.purple,
                                     Colors.purple,
                                     Colors.teal,
+                                    Colors.blue,
                                   ],
                                   speed: const Duration(milliseconds: 400),
                                 ),
@@ -136,7 +136,7 @@ class PlayerModeSelectionView extends GetView<PlayerModeSelectionController> {
                                   children: [
                                     Icon(
                                       Icons.language,
-                                      color: Colors.indigo,
+                                      color: Colors.purple,
                                       size: 20,
                                     ),
                                     const SizedBox(width: 8),
@@ -145,7 +145,7 @@ class PlayerModeSelectionView extends GetView<PlayerModeSelectionController> {
                                       style: TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.bold,
-                                        color: Colors.indigo,
+                                        color: Colors.purple,
                                       ),
                                     ),
                                   ],
@@ -255,7 +255,7 @@ class PlayerModeSelectionView extends GetView<PlayerModeSelectionController> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       const Text(
-                                        'Two Player',
+                                        'Two Players',
                                         style: TextStyle(
                                           fontSize: 24,
                                           fontWeight: FontWeight.bold,
@@ -264,7 +264,7 @@ class PlayerModeSelectionView extends GetView<PlayerModeSelectionController> {
                                       ),
                                       const SizedBox(height: 4),
                                       Text(
-                                        'Play with your friend or partner',
+                                        'Play with your friend/partner or random online opponent',
                                         style: TextStyle(
                                           fontSize: 16,
                                           color: Colors.white.withOpacity(0.9),
@@ -301,7 +301,7 @@ class PlayerModeSelectionView extends GetView<PlayerModeSelectionController> {
                             end: Alignment.bottomRight,
                             colors: [
                               Colors.blue.shade400,
-                              Colors.indigo.shade500,
+                              Colors.purple.shade500,
                             ],
                           ),
                           borderRadius: BorderRadius.circular(25),
@@ -405,7 +405,7 @@ class PlayerModeSelectionView extends GetView<PlayerModeSelectionController> {
                           children: [
                             Icon(
                               Icons.info_outline,
-                              color: Colors.indigo,
+                              color: Colors.purple,
                               size: 24,
                             ),
                             const SizedBox(width: 12),
@@ -445,7 +445,7 @@ class PlayerModeSelectionView extends GetView<PlayerModeSelectionController> {
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.indigo,
+                                  color: Colors.purple,
                                 ),
                               ),
                             ],
@@ -501,7 +501,7 @@ class PlayerModeSelectionView extends GetView<PlayerModeSelectionController> {
               // Title
               Row(
                 children: [
-                  Icon(Icons.language, color: Colors.indigo, size: 24),
+                  Icon(Icons.language, color: Colors.purple, size: 24),
                   const SizedBox(width: 12),
                   Text(
                     'Select Language',
@@ -544,7 +544,7 @@ class PlayerModeSelectionView extends GetView<PlayerModeSelectionController> {
                 child: ElevatedButton(
                   onPressed: () => Get.back(),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.indigo,
+                    backgroundColor: Colors.purple,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
@@ -588,12 +588,12 @@ class PlayerModeSelectionView extends GetView<PlayerModeSelectionController> {
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: isSelected
-                ? Colors.indigo.withOpacity(0.1)
+                ? Colors.purple.withOpacity(0.1)
                 : Colors.grey.withOpacity(0.05),
             borderRadius: BorderRadius.circular(15),
             border: Border.all(
               color: isSelected
-                  ? Colors.indigo.withOpacity(0.3)
+                  ? Colors.purple.withOpacity(0.3)
                   : Colors.grey.withOpacity(0.2),
               width: isSelected ? 2 : 1,
             ),
@@ -612,7 +612,7 @@ class PlayerModeSelectionView extends GetView<PlayerModeSelectionController> {
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: isSelected
-                            ? Colors.indigo
+                            ? Colors.purple
                             : Colors.grey.shade800,
                       ),
                     ),
@@ -621,7 +621,7 @@ class PlayerModeSelectionView extends GetView<PlayerModeSelectionController> {
                       style: TextStyle(
                         fontSize: 12,
                         color: isSelected
-                            ? Colors.indigo.shade600
+                            ? Colors.purple.shade600
                             : Colors.grey.shade600,
                       ),
                     ),
@@ -629,7 +629,7 @@ class PlayerModeSelectionView extends GetView<PlayerModeSelectionController> {
                 ),
               ),
               if (isSelected)
-                Icon(Icons.check_circle, color: Colors.indigo, size: 24)
+                Icon(Icons.check_circle, color: Colors.purple, size: 24)
               else
                 Icon(
                   Icons.radio_button_unchecked,

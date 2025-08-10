@@ -36,6 +36,7 @@ void main() async {
   FirebaseMessaging.onBackgroundMessage(handleBackgroundMessage);
   final storage = GetStorage();
   bool isDarkMode = storage.read('darkMode') ?? false; // Read saved preference
+
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,

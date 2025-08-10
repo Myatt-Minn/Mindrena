@@ -6,6 +6,9 @@ class UserModel {
   String? currentGameId;
   String? role; // Optional role field
   Map<String, dynamic> stats;
+  List<String> friends; // List of friend UIDs
+  List<String> friendRequests; // List of pending friend request UIDs
+  List<String> sentRequests; // List of sent friend request UIDs
 
   UserModel({
     this.uid,
@@ -15,6 +18,9 @@ class UserModel {
     this.currentGameId,
     this.role, // Optional role field
     required this.stats,
+    this.friends = const [],
+    this.friendRequests = const [],
+    this.sentRequests = const [],
   });
 
   // Convert UserModel to a map for Firestore storage
@@ -27,6 +33,9 @@ class UserModel {
       'currentGameId': currentGameId,
       'role': role, // Include role in the map
       'stats': stats,
+      'friends': friends,
+      'friendRequests': friendRequests,
+      'sentRequests': sentRequests,
     };
   }
 
@@ -41,6 +50,9 @@ class UserModel {
       role: map['role'], // Optional role field
       stats:
           map['stats'] ?? {'gamesPlayed': 0, 'gamesWon': 0, 'totalPoints': 0},
+      friends: List<String>.from(map['friends'] ?? []),
+      friendRequests: List<String>.from(map['friendRequests'] ?? []),
+      sentRequests: List<String>.from(map['sentRequests'] ?? []),
     );
   }
 
@@ -69,5 +81,40 @@ class UserModel {
 
   void addPoints(int points) {
     stats['totalPoints'] = (stats['totalPoints'] ?? 0) + points;
+  }
+
+  // Friend management helper methods
+  bool isFriend(String uid) => friends.contains(uid);
+  bool hasPendingRequest(String uid) => friendRequests.contains(uid);
+  bool hasSentRequest(String uid) => sentRequests.contains(uid);
+
+  void addFriend(String uid) {
+    if (!friends.contains(uid)) {
+      friends = [...friends, uid];
+    }
+  }
+
+  void removeFriend(String uid) {
+    friends = friends.where((id) => id != uid).toList();
+  }
+
+  void addFriendRequest(String uid) {
+    if (!friendRequests.contains(uid)) {
+      friendRequests = [...friendRequests, uid];
+    }
+  }
+
+  void removeFriendRequest(String uid) {
+    friendRequests = friendRequests.where((id) => id != uid).toList();
+  }
+
+  void addSentRequest(String uid) {
+    if (!sentRequests.contains(uid)) {
+      sentRequests = [...sentRequests, uid];
+    }
+  }
+
+  void removeSentRequest(String uid) {
+    sentRequests = sentRequests.where((id) => id != uid).toList();
   }
 }
