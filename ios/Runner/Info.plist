@@ -31,19 +31,44 @@
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	
+	<!-- iOS 14 and later permissions -->
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app needs access to photo library to save game screenshots and avatars.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>This app needs access to camera to take profile photos.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>This app needs access to save photos to your photo library.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This app needs access to microphone for voice features in games.</string>
+	
+	<!-- Network and connectivity -->
+	<key>NSNetworkUsageDescription</key>
+	<string>This app requires network access to connect with Firebase and play multiplayer games.</string>
+	
+	<!-- Push Notifications -->
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+		<string>background-fetch</string>
+	</array>
+	
+	<!-- Privacy settings -->
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+	
+	<!-- Minimum iOS version -->
+	<key>MinimumOSVersion</key>
+	<string>13.0</string>
 </dict>
 </plist>

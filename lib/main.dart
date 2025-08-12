@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -17,25 +15,13 @@ import 'app/routes/app_pages.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init();
-  SendNotificationHandler.initialized();
-  FirebaseMessaging.onBackgroundMessage(handleBackgroundMessage);
 
-  if (Platform.isAndroid) {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
-  } else if (Platform.isIOS) {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-      name: "agrilibmm",
-    );
-  }
+  // Initialize Firebase for all platforms
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   SendNotificationHandler.initialized();
   await SendNotificationHandler().initNotification();
   FirebaseMessaging.onBackgroundMessage(handleBackgroundMessage);
-  final storage = GetStorage();
-  bool isDarkMode = storage.read('darkMode') ?? false; // Read saved preference
 
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -59,7 +45,7 @@ void main() async {
         debugShowCheckedModeBanner: false,
         theme: ThemeData.light(),
         darkTheme: ThemeData.dark(),
-        themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
+        themeMode: ThemeMode.light,
         //initialRoute: isFirstTime ? AppPages.ON_BOARDING : AppPages.MY_HOME,
         initialRoute: AppPages.INITIAL,
         initialBinding: SplashBinding(),

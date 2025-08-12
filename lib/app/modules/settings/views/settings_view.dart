@@ -1,10 +1,7 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
-import 'package:top_snackbar_flutter/custom_snack_bar.dart';
-import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 import '../controllers/settings_controller.dart';
 
@@ -500,57 +497,6 @@ class SettingsView extends GetView<SettingsController> {
           ),
         ],
       ),
-    );
-  }
-
-  void _showSignOutDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          title: const Text(
-            'Sign Out',
-            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.purple),
-          ),
-          content: const Text(
-            'Are you sure you want to sign out?',
-            style: TextStyle(fontSize: 16),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Get.back(),
-              child: Text(
-                'Cancel',
-                style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                FirebaseAuth.instance.signOut();
-                Get.back();
-                showTopSnackBar(
-                  Overlay.of(context),
-                  CustomSnackBar.success(
-                    message:
-                        "Good job, your release is successful. Have a nice day",
-                  ),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              child: const Text('Sign Out'),
-            ),
-          ],
-        );
-      },
     );
   }
 }
