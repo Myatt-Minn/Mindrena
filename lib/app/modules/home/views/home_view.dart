@@ -1,4 +1,5 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
@@ -79,26 +80,82 @@ class HomeView extends GetView<HomeController> {
                       ),
                       child: Column(
                         children: [
-                          AnimatedTextKit(
-                            animatedTexts: [
-                              ColorizeAnimatedText(
-                                'Choose Your Game',
-                                textStyle: const TextStyle(
-                                  fontSize: 28,
-                                  fontWeight: FontWeight.bold,
+                          // Header with notification icon
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: AnimatedTextKit(
+                                  animatedTexts: [
+                                    ColorizeAnimatedText(
+                                      'Choose Your Game',
+                                      textStyle: const TextStyle(
+                                        fontSize: 28,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      colors: [
+                                        Colors.purple,
+                                        Colors.purple,
+                                        Colors.blue,
+                                        Colors.teal,
+                                      ],
+                                      speed: const Duration(milliseconds: 400),
+                                    ),
+                                  ],
+                                  isRepeatingAnimation: true,
+                                  repeatForever: true,
                                 ),
-                                colors: [
-                                  Colors.purple,
-                                  Colors.purple,
-                                  Colors.blue,
-
-                                  Colors.teal,
-                                ],
-                                speed: const Duration(milliseconds: 400),
+                              ),
+                              // Invitation notification badge
+                              Obx(
+                                () => controller.hasPendingInvitations
+                                    ? Container(
+                                        decoration: BoxDecoration(
+                                          color: Colors.red,
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: IconButton(
+                                          icon: Stack(
+                                            children: [
+                                              Icon(
+                                                Icons.mail,
+                                                color: Colors.white,
+                                                size: 24,
+                                              ),
+                                              if (controller
+                                                      .pendingInvitationsCount >
+                                                  0)
+                                                Positioned(
+                                                  right: 0,
+                                                  top: 0,
+                                                  child: Container(
+                                                    padding: EdgeInsets.all(2),
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.yellow,
+                                                      shape: BoxShape.circle,
+                                                    ),
+                                                    child: Text(
+                                                      '${controller.pendingInvitationsCount}',
+                                                      style: TextStyle(
+                                                        color: Colors.black,
+                                                        fontSize: 10,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                            ],
+                                          ),
+                                          onPressed: () {
+                                            // Show pending invitations
+                                            _showPendingInvitations();
+                                          },
+                                        ),
+                                      )
+                                    : SizedBox.shrink(),
                               ),
                             ],
-                            isRepeatingAnimation: true,
-                            repeatForever: true,
                           ),
                           const SizedBox(height: 8),
                           Text(
@@ -199,7 +256,26 @@ class HomeView extends GetView<HomeController> {
                       ),
                     ),
 
-                    const SizedBox(height: 20),
+                    TextButton(
+                      onPressed: () {
+                        Get.toNamed('/settings');
+                      },
+                      child: AutoSizeText(
+                        'Manage Preferences and Get Help -> Settings',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          decoration: TextDecoration.underline,
+                          decorationColor: Colors.white,
+                        ),
+
+                        maxLines: 1,
+                        minFontSize: 12,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+
+                    const SizedBox(height: 16),
                   ],
                 ),
               ),
@@ -324,6 +400,87 @@ class HomeView extends GetView<HomeController> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  void _showPendingInvitations() {
+    if (controller.pendingInvitations.isEmpty) {
+      Get.snackbar(
+        'No Invitations',
+        'You don\'t have any pending game invitations.',
+        backgroundColor: Colors.orange,
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+    Get.dialog(
+      AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            Icon(Icons.mail, color: Colors.purple),
+            SizedBox(width: 8),
+            Text('Game Invitations'),
+          ],
+        ),
+        content: SizedBox(
+          width: double.maxFinite,
+          height: 300,
+          child: ListView.builder(
+            itemCount: controller.pendingInvitations.length,
+            itemBuilder: (context, index) {
+              final invitation = controller.pendingInvitations[index];
+              return Card(
+                child: ListTile(
+                  leading: CircleAvatar(
+                    backgroundImage:
+                        invitation['inviterAvatarUrl'] != null &&
+                            invitation['inviterAvatarUrl'].isNotEmpty
+                        ? NetworkImage(invitation['inviterAvatarUrl'])
+                        : null,
+                    child:
+                        invitation['inviterAvatarUrl'] == null ||
+                            invitation['inviterAvatarUrl'].isEmpty
+                        ? Icon(Icons.person)
+                        : null,
+                  ),
+                  title: Text('${invitation['inviterUsername']}'),
+                  subtitle: Text('Category: ${invitation['category']}'),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.close, color: Colors.red),
+                        onPressed: () {
+                          // Decline invitation
+                          controller.declineInvitation(invitation['id']);
+                          controller.pendingInvitations.removeAt(index);
+                        },
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.check, color: Colors.green),
+                        onPressed: () {
+                          // Accept invitation
+                          controller.acceptInvitation(
+                            invitation,
+                            invitation['id'],
+                          );
+                          controller.pendingInvitations.removeAt(index);
+                          Get.back();
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+        actions: [
+          TextButton(onPressed: () => Get.back(), child: Text('Close')),
+        ],
       ),
     );
   }

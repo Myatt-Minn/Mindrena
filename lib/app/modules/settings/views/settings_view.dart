@@ -155,10 +155,10 @@ class SettingsView extends GetView<SettingsController> {
                       children: [
                         _buildSettingsTile(
                           icon: Icons.help_outline,
-                          title: 'Help & FAQ',
+                          title: 'User Guide',
                           subtitle: 'Get help and find answers',
                           onTap: () {
-                            Get.snackbar('Help', 'Help section coming soon!');
+                            Get.toNamed('/user-guides');
                           },
                         ),
                         const Divider(height: 1),
@@ -167,10 +167,7 @@ class SettingsView extends GetView<SettingsController> {
                           title: 'Send Feedback',
                           subtitle: 'Share your thoughts with us',
                           onTap: () {
-                            Get.snackbar(
-                              'Feedback',
-                              'Feedback form coming soon!',
-                            );
+                            Get.toNamed('/user-feedback');
                           },
                         ),
                         const Divider(height: 1),

@@ -17,6 +17,8 @@ import '../modules/lobby/bindings/lobby_binding.dart';
 import '../modules/lobby/views/lobby_view.dart';
 import '../modules/m_category_selection/bindings/m_category_selection_binding.dart';
 import '../modules/m_category_selection/views/m_category_selection_view.dart';
+import '../modules/opponent_type_selection/bindings/opponent_type_selection_binding.dart';
+import '../modules/opponent_type_selection/views/opponent_type_selection_view.dart';
 import '../modules/player_mode_selection/bindings/player_mode_selection_binding.dart';
 import '../modules/player_mode_selection/views/player_mode_selection_view.dart';
 import '../modules/profile/bindings/profile_binding.dart';
@@ -31,6 +33,10 @@ import '../modules/sign-in/bindings/sign_in_binding.dart';
 import '../modules/sign-in/views/sign_in_view.dart';
 import '../modules/splash/bindings/splash_binding.dart';
 import '../modules/splash/views/splash_view.dart';
+import '../modules/user_feedback/bindings/user_feedback_binding.dart';
+import '../modules/user_feedback/views/user_feedback_view.dart';
+import '../modules/user_guides/bindings/user_guides_binding.dart';
+import '../modules/user_guides/views/user_guides_view.dart';
 
 part 'app_routes.dart';
 
@@ -119,6 +125,21 @@ class AppPages {
       name: _Paths.FRIENDS,
       page: () => const FriendsView(),
       binding: FriendsBinding(),
+    ),
+    GetPage(
+      name: _Paths.USER_GUIDES,
+      page: () => const UserGuidesView(),
+      binding: UserGuidesBinding(),
+    ),
+    GetPage(
+      name: _Paths.USER_FEEDBACK,
+      page: () => const UserFeedbackView(),
+      binding: UserFeedbackBinding(),
+    ),
+    GetPage(
+      name: _Paths.OPPONENT_TYPE_SELECTION,
+      page: () => const OpponentTypeSelectionView(),
+      binding: OpponentTypeSelectionBinding(),
     ),
   ];
 }

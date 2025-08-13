@@ -170,17 +170,16 @@ class LobbyView extends GetView<LobbyController> {
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              controller.isSearching.value
-                                  ? 'Looking for another player in ${controller.category}...'
-                                  : controller.players.length == 2
-                                  ? 'Both players connected! Get ready to start!'
-                                  : 'Waiting for the second player to join...',
+                              _getStatusMessage(),
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 16,
                                 color: Colors.grey.shade600,
                               ),
                             ),
+                            // Show game mode indicator
+                            const SizedBox(height: 8),
+                            _buildGameModeIndicator(),
                           ],
                         ),
                       ),
@@ -416,6 +415,73 @@ class LobbyView extends GetView<LobbyController> {
                   ),
                 ),
               ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _getStatusMessage() {
+    if (controller.isSearching.value) {
+      switch (controller.gameMode) {
+        case 'friend_invitation':
+          return 'Waiting for ${controller.friendName} to accept your invitation...';
+        case 'friend_accepted':
+          return 'Joining ${controller.friendName}\'s game...';
+        default:
+          return 'Looking for another player in ${controller.category}...';
+      }
+    } else {
+      if (controller.players.length == 2) {
+        return 'Both players joined! Get ready to start!';
+      } else {
+        return 'Waiting for the second player to join...';
+      }
+    }
+  }
+
+  Widget _buildGameModeIndicator() {
+    Color indicatorColor;
+    IconData indicatorIcon;
+    String indicatorText;
+
+    switch (controller.gameMode) {
+      case 'friend_invitation':
+        indicatorColor = Colors.purple;
+        indicatorIcon = Icons.person_add;
+        indicatorText = 'Friend Invitation';
+        break;
+      case 'friend_accepted':
+        indicatorColor = Colors.green;
+        indicatorIcon = Icons.group;
+        indicatorText = 'Playing with Friend';
+        break;
+      default:
+        indicatorColor = Colors.blue;
+        indicatorIcon = Icons.shuffle;
+        indicatorText = 'Random Match';
+        break;
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: indicatorColor.withOpacity(0.1),
+        border: Border.all(color: indicatorColor.withOpacity(0.3)),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(indicatorIcon, size: 16, color: indicatorColor),
+          const SizedBox(width: 6),
+          Text(
+            indicatorText,
+            style: TextStyle(
+              fontSize: 12,
+              color: indicatorColor,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ],

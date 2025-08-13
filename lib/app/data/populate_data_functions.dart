@@ -471,3 +471,252 @@ Future<void> populateAppAds() async {
     print("❌ Failed to add ads: $e");
   }
 }
+
+Future<void> populateSampleUserGuides() async {
+  try {
+    final firestore = FirebaseFirestore.instance;
+
+    // Sample user guide data
+    final sampleGuides = [
+      {
+        'title': 'getting-started',
+        'guide_items': [
+          {
+            'description': 'Learn the basics of using Mindrena quiz app',
+            'content':
+                'Welcome to Mindrena! This is your ultimate quiz companion...',
+            'images': [],
+            'video_url': '',
+            'last_updated': '2025-08-13',
+          },
+          {
+            'description': 'Set up your personal profile',
+            'content':
+                'To get started, go to Settings and complete your profile...',
+            'images': [],
+            'video_url': '',
+            'last_updated': '2025-08-13',
+          },
+          {
+            'description': 'Navigate through the app easily',
+            'content':
+                'The main screen shows your dashboard with recent activities...',
+            'images': [],
+            'video_url': '',
+            'last_updated': '2025-08-13',
+          },
+        ],
+      },
+      {
+        'title': 'quizzes',
+        'guide_items': [
+          {
+            'description': 'How to begin playing quizzes',
+            'content': 'Browse available quizzes from the home screen...',
+            'images': [],
+            'video_url': '',
+            'last_updated': '2025-08-13',
+          },
+          {
+            'description': 'Explore different types of quizzes',
+            'content': 'Mindrena offers various categories like Science...',
+            'images': [],
+            'video_url': '',
+            'last_updated': '2025-08-13',
+          },
+          {
+            'description': 'How points and scoring work',
+            'content': 'Earn points for correct answers. Faster responses...',
+            'images': [],
+            'video_url': '',
+            'last_updated': '2025-08-13',
+          },
+        ],
+      },
+      {
+        'id': 3,
+        'title': 'friends',
+        'guide_items': [
+          {
+            'id': 7,
+            'guide_id': 3,
+            'title': 'Adding Friends',
+            'description': 'Connect with other players',
+            'content':
+                'Use the Friends tab to search for other players by username or email. Send friend requests and wait for acceptance. You can also accept incoming friend requests from the notifications.',
+            'images': [],
+            'video_url': '',
+            'last_updated': '2025-08-13',
+          },
+          {
+            'id': 8,
+            'guide_id': 3,
+            'title': 'Challenging Friends',
+            'description': 'Compete with your friends',
+            'content':
+                'Challenge your friends to quiz battles! Select a quiz and invite friends to compete. You\'ll see real-time results and can compare scores at the end.',
+            'images': [],
+            'video_url': '',
+            'last_updated': '2025-08-13',
+          },
+          {
+            'id': 9,
+            'guide_id': 3,
+            'title': 'Friend Leaderboards',
+            'description': 'See how you rank among friends',
+            'content':
+                'Check the Friends Leaderboard to see your ranking among your friends. Compare total points, completed quizzes, and achievements with your friend circle.',
+            'images': [],
+            'video_url': '',
+            'last_updated': '2025-08-13',
+          },
+        ],
+      },
+      {
+        'id': 4,
+        'title': 'account',
+        'guide_items': [
+          {
+            'id': 10,
+            'guide_id': 4,
+            'title': 'Managing Your Account',
+            'description': 'Account settings and preferences',
+            'content':
+                'Access your account settings through the Settings tab. Here you can update your profile information, change password, manage notifications, and adjust app preferences.',
+            'images': [],
+            'video_url': '',
+            'last_updated': '2025-08-13',
+          },
+          {
+            'id': 11,
+            'guide_id': 4,
+            'title': 'Notification Settings',
+            'description': 'Control your notifications',
+            'content':
+                'Customize which notifications you receive. You can enable/disable friend requests, quiz invitations, achievement unlocks, and daily quiz reminders.',
+            'images': [],
+            'video_url': '',
+            'last_updated': '2025-08-13',
+          },
+          {
+            'id': 12,
+            'guide_id': 4,
+            'title': 'Privacy Settings',
+            'description': 'Manage your privacy preferences',
+            'content':
+                'Control who can find you, send friend requests, and see your quiz history. You can set your profile to public, friends-only, or private mode.',
+            'images': [],
+            'video_url': '',
+            'last_updated': '2025-08-13',
+          },
+        ],
+      },
+      {
+        'id': 5,
+        'title': 'troubleshooting',
+        'guide_items': [
+          {
+            'id': 13,
+            'guide_id': 5,
+            'title': 'Connection Issues',
+            'description': 'Solving internet connectivity problems',
+            'content':
+                'If you\'re experiencing connection issues, check your internet connection first. The app requires a stable internet connection to sync data and compete with friends. Try switching between WiFi and mobile data.',
+            'images': [],
+            'video_url': '',
+            'last_updated': '2025-08-13',
+          },
+          {
+            'id': 14,
+            'guide_id': 5,
+            'title': 'Quiz Not Loading',
+            'description': 'What to do when quizzes won\'t load',
+            'content':
+                'If quizzes aren\'t loading, try refreshing the app by pulling down on the quiz list. If the problem persists, restart the app or check your internet connection.',
+            'images': [],
+            'video_url': '',
+            'last_updated': '2025-08-13',
+          },
+          {
+            'id': 15,
+            'guide_id': 5,
+            'title': 'Login Problems',
+            'description': 'Trouble signing in to your account',
+            'content':
+                'If you can\'t log in, verify your email and password. Use the "Forgot Password" option to reset your password. For Google Sign-In issues, make sure Google Play Services is updated.',
+            'images': [],
+            'video_url': '',
+            'last_updated': '2025-08-13',
+          },
+        ],
+      },
+      {
+        'id': 6,
+        'title': 'general',
+        'guide_items': [
+          {
+            'id': 16,
+            'guide_id': 6,
+            'title': 'App Features Overview',
+            'description': 'Complete overview of Mindrena features',
+            'content':
+                'Mindrena offers quiz competitions, friend challenges, leaderboards, achievements, profile customization, and much more. Explore all features to get the most out of your quiz experience.',
+            'images': [],
+            'video_url': '',
+            'last_updated': '2025-08-13',
+          },
+          {
+            'id': 17,
+            'guide_id': 6,
+            'title': 'Tips for Better Performance',
+            'description': 'Get the most out of Mindrena',
+            'content':
+                'To improve your quiz performance: practice regularly, read questions carefully, manage your time wisely, and learn from incorrect answers. Consistent practice leads to better scores!',
+            'images': [],
+            'video_url': '',
+            'last_updated': '2025-08-13',
+          },
+          {
+            'id': 18,
+            'guide_id': 6,
+            'title': 'Contact Support',
+            'description': 'How to get help when needed',
+            'content':
+                'Need help? Contact our support team through the Settings menu. You can also check our FAQ section or join our community forums for quick answers to common questions.',
+            'images': [],
+            'video_url': '',
+            'last_updated': '2025-08-13',
+          },
+        ],
+      },
+      // Add other guides here...
+    ];
+
+    for (final guide in sampleGuides) {
+      // 1. Add guide to user_guides
+      final guideRef = await firestore.collection('user_guides').add({
+        'title': guide['title'],
+        'last_updated': DateTime.now().toIso8601String(),
+      });
+
+      final guideId = guideRef.id;
+
+      // 2. Add related guide_items
+      for (final item in guide['guide_items'] as List) {
+        await firestore.collection('guide_items').add({
+          'user_guide_id': guideId, // FK to user_guides
+          'title': guide['title'], // same as parent guide title
+          'description': item['description'],
+          'content': item['content'],
+          'images': item['images'],
+          'video_url': item['video_url'],
+          'last_updated': item['last_updated'],
+        });
+      }
+    }
+
+    print('Sample user guides and guide items populated successfully!');
+  } catch (e) {
+    print('Error loading sample user guides: $e');
+  }
+}

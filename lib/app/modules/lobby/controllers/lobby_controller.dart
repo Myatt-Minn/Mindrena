@@ -14,8 +14,12 @@ class LobbyController extends GetxController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GetStorage _storage = GetStorage();
 
+  // Parse arguments to support both old string format and new map format
+  late final String category;
+  late final String gameMode;
+  late final String? friendName;
+
   // Observable variables
-  final String category = Get.arguments ?? 'General Knowledge';
   var isSearching = true.obs;
   var matchmakingEntryId = ''.obs;
   var gameId = ''.obs;
@@ -34,6 +38,19 @@ class LobbyController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+
+    // Parse arguments - support both old string format and new map format
+    final arguments = Get.arguments;
+    if (arguments is Map<String, dynamic>) {
+      category = arguments['category'] ?? 'General Knowledge';
+      gameMode = arguments['gameMode'] ?? 'random';
+      friendName = arguments['invitedFriend'] ?? arguments['friendName'];
+    } else {
+      category = arguments?.toString() ?? 'General Knowledge';
+      gameMode = 'random';
+      friendName = null;
+    }
+
     startMatchmaking();
     _showGameMechanicsInfo();
   }

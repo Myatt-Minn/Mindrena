@@ -2,14 +2,19 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
+import 'package:shimmer/shimmer.dart';
 
-import '../controllers/f_category_selection_controller.dart';
+import '../controllers/opponent_type_selection_controller.dart';
 
-class FCategorySelectionView extends GetView<FCategorySelectionController> {
-  const FCategorySelectionView({super.key});
+class OpponentTypeSelectionView
+    extends GetView<OpponentTypeSelectionController> {
+  const OpponentTypeSelectionView({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Get the category from arguments
+    final String category = Get.arguments ?? 'General Knowledge';
+
     return Scaffold(
       body: Stack(
         children: [
@@ -110,7 +115,7 @@ class FCategorySelectionView extends GetView<FCategorySelectionController> {
                           AnimatedTextKit(
                             animatedTexts: [
                               ColorizeAnimatedText(
-                                'Quiz Categories',
+                                'Choose Opponent',
                                 textStyle: const TextStyle(
                                   fontSize: 28,
                                   fontWeight: FontWeight.bold,
@@ -129,7 +134,7 @@ class FCategorySelectionView extends GetView<FCategorySelectionController> {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            'Choose your FlashFight quiz category',
+                            'Select how you want to play $category',
                             style: TextStyle(
                               fontSize: 16,
                               color: Colors.grey.shade600,
@@ -142,54 +147,47 @@ class FCategorySelectionView extends GetView<FCategorySelectionController> {
 
                     const SizedBox(height: 40),
 
-                    // Category selection buttons
-                    _buildCategoryButton(
-                      emoji: '🗺️',
-                      title: 'Places',
-                      subtitle: 'Places & Geography',
+                    // Opponent type selection buttons
+                    _buildOpponentTypeButton(
+                      emoji: '🎮',
+                      title: 'Online Random Opponent',
+                      subtitle: 'Quick Match',
                       description:
-                          'Test your knowledge of world locations and geography',
+                          'Find a random player online for instant gameplay',
                       color: Colors.green,
                       onTap: () {
+                        // Navigate to lobby with random matchmaking
                         Get.toNamed(
-                          '/opponent-type-selection',
-                          arguments: "Places",
+                          '/lobby',
+                          arguments: {
+                            'category': category,
+                            'gameMode': 'random',
+                          },
                         );
                       },
                     ),
 
                     const SizedBox(height: 20),
 
-                    _buildCategoryButton(
-                      emoji: '🔬',
-                      title: 'Science & Math',
-                      subtitle: 'STEM Knowledge',
-                      description:
-                          'Challenge yourself with science, technology, and mathematics',
-                      color: Colors.orange,
-                      onTap: () {
-                        // Navigate to Science & Math category
-                        Get.toNamed(
-                          '/opponent-type-selection',
-                          arguments: "Science & Math",
-                        );
-                      },
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    _buildCategoryButton(
-                      emoji: '🌍',
-                      title: 'General Knowledge',
-                      subtitle: 'World Trivia',
-                      description: 'Test your knowledge about general subjects',
+                    _buildOpponentTypeButton(
+                      emoji: '👥',
+                      title: 'Invite Friend',
+                      subtitle: 'Play with Friends',
+                      description: 'Send game invitations to your friends',
                       color: Colors.deepPurple,
-                      onTap: () {
-                        // Navigate to General Knowledge category
-                        Get.toNamed(
-                          '/opponent-type-selection',
-                          arguments: "General Knowledge",
-                        );
+                      onTap: () async {
+                        // Use HomeController to show invite friends dialog
+                        try {
+                          controller.inviteFriend(category);
+                        } catch (e) {
+                          // If HomeController is not found, show error
+                          Get.snackbar(
+                            'Error',
+                            'Unable to access friends list. Please try again.',
+                            backgroundColor: Colors.red,
+                            colorText: Colors.white,
+                          );
+                        }
                       },
                     ),
 
@@ -202,23 +200,37 @@ class FCategorySelectionView extends GetView<FCategorySelectionController> {
                         color: Colors.white.withOpacity(0.8),
                         borderRadius: BorderRadius.circular(15),
                       ),
-                      child: Row(
+                      child: Column(
                         children: [
-                          Icon(
-                            Icons.quiz,
-                            color: Colors.grey.shade600,
-                            size: 20,
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              'Fast-paced quiz battles await you!',
-                              style: TextStyle(
-                                fontSize: 14,
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.info_outline,
                                 color: Colors.grey.shade600,
-                                fontWeight: FontWeight.w500,
+                                size: 20,
                               ),
-                            ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  'Game Rules',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.grey.shade700,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          _buildInfoRow(Icons.timer, '10 seconds per question'),
+                          _buildInfoRow(
+                            Icons.star,
+                            '10 points for correct answers',
+                          ),
+                          _buildInfoRow(
+                            Icons.emoji_events,
+                            'Best of 10 questions wins',
                           ),
                         ],
                       ),
@@ -235,7 +247,7 @@ class FCategorySelectionView extends GetView<FCategorySelectionController> {
     );
   }
 
-  Widget _buildCategoryButton({
+  Widget _buildOpponentTypeButton({
     required String emoji,
     required String title,
     required String subtitle,
@@ -281,45 +293,82 @@ class FCategorySelectionView extends GetView<FCategorySelectionController> {
 
                 const SizedBox(width: 16),
 
-                // Category info
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: color,
-                        ),
-                      ),
-                      Text(
-                        subtitle,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey.shade600,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        description,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey.shade500,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
+                Obx(() {
+                  return controller.isLoading.value
+                      ? Expanded(
+                          child: Center(
+                            child: Shimmer(
+                              gradient: LinearGradient(
+                                colors: [
+                                  Colors.grey.shade300,
+                                  Colors.grey.shade100,
+                                ],
+                                stops: const [0.4, 0.6],
+                                begin: Alignment(-1, 0),
+                                end: Alignment(1, 0),
+                              ),
+                              child: Container(
+                                height: 20,
+                                width: 100,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        )
+                      : Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                title,
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: color,
+                                ),
+                              ),
+                              Text(
+                                subtitle,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey.shade600,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                description,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey.shade500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                }), // Opponent type info
                 // Arrow icon
                 Icon(Icons.arrow_forward_ios, color: color, size: 20),
               ],
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildInfoRow(IconData icon, String text) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          Icon(icon, size: 16, color: Colors.grey.shade600),
+          const SizedBox(width: 8),
+          Text(
+            text,
+            style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+          ),
+        ],
       ),
     );
   }
