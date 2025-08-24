@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "401918120039",
+    "project_id": "xstore-faa86",
+    "storage_bucket": "xstore-faa86.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:401918120039:android:6032376fe30c6a50a584c2",
+        "android_client_info": {
+          "package_name": "com.mindrena.mindrena"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "401918120039-l1fl7ultmc0qs2s3aoreq3ek0i9e7bed.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mindrena.mindrena",
+            "certificate_hash": "226f0d1eff26c9453e0234654543877881a47f3b"
+          }
+        },
+        {
+          "client_id": "401918120039-n4uajef4al7a2cgaukaedo36p9qf4u4i.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBCyqG9xKEr2-1RCzM3nOCQq4b3uj3woY0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "401918120039-n4uajef4al7a2cgaukaedo36p9qf4u4i.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "401918120039-kff7a97lbja1ddljuod3u31i0nif78e2.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mindrena.mindrena"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
