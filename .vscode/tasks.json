@@ -1,0 +1,15 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Check Flutter App",
+			"type": "shell",
+			"command": "flutter analyze --no-preamble",
+			"group": "build",
+			"isBackground": false,
+			"problemMatcher": [
+				"$flutter"
+			]
+		}
+	]
+}

@@ -117,4 +117,31 @@ class UserModel {
   void removeSentRequest(String uid) {
     sentRequests = sentRequests.where((id) => id != uid).toList();
   }
+
+  // Copy with method for updating user data
+  UserModel copyWith({
+    String? uid,
+    String? username,
+    String? email,
+    String? avatarUrl,
+    String? currentGameId,
+    String? role,
+    Map<String, dynamic>? stats,
+    List<String>? friends,
+    List<String>? friendRequests,
+    List<String>? sentRequests,
+  }) {
+    return UserModel(
+      uid: uid ?? this.uid,
+      username: username ?? this.username,
+      email: email ?? this.email,
+      avatarUrl: avatarUrl ?? this.avatarUrl,
+      currentGameId: currentGameId ?? this.currentGameId,
+      role: role ?? this.role,
+      stats: stats ?? this.stats,
+      friends: friends ?? this.friends,
+      friendRequests: friendRequests ?? this.friendRequests,
+      sentRequests: sentRequests ?? this.sentRequests,
+    );
+  }
 }

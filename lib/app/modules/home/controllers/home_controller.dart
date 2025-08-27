@@ -5,9 +5,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:mindrena/app/data/AdDataModel.dart';
 import 'package:mindrena/app/data/UserModel.dart';
 import 'package:mindrena/app/data/adOnboardingDialog.dart';
+import 'package:mindrena/app/data/consts_config.dart';
 
 class HomeController extends GetxController {
   //TODO: Implement HomeController
@@ -23,18 +25,39 @@ class HomeController extends GetxController {
   var sentInvitations = <String>[].obs;
   StreamSubscription? _invitationSubscription;
 
+  // Audio player for background music
+  late AudioPlayer _audioPlayer;
+  var isMusicEnabled = true.obs;
+  var isMusicPlaying = false.obs;
+
   @override
   void onInit() async {
     super.onInit();
+
+    // Initialize audio player
+    _audioPlayer = AudioPlayer();
+    _storage.remove('music_enabled'); // Reset music preference for testing
+    // Load music preferences from storage
+    final storedValue = _storage.read('music_enabled');
+    print('Stored music preference: $storedValue');
+    isMusicEnabled.value = storedValue ?? true;
+    print('Music enabled after loading: ${isMusicEnabled.value}');
     // Initialize the controller and check for ads
     await _checkAndShowAdDialog();
+
     // Start listening for game invitations
     _startInvitationListening();
+
+    // Start background music if enabled
+    if (isMusicEnabled.value) {
+      await _startBackgroundMusic();
+    }
   }
 
   @override
   void onClose() {
     _invitationSubscription?.cancel();
+    _audioPlayer.dispose();
     super.onClose();
   }
 
@@ -45,14 +68,21 @@ class HomeController extends GetxController {
       bool isFirstTime = _storage.read('is_first_time') ?? true;
 
       if (isFirstTime) {
-        // Mark that the user has opened the app for the first time
         _storage.write('is_first_time', false);
         print('First time user - skipping ad dialog');
         return;
       }
 
-      // Check if dialog was already shown today
+      // Current date in yyyy-MM-dd format
       String today = DateTime.now().toIso8601String().split('T')[0];
+
+      // Check last date the ad was shown
+      String? lastShownDate = _storage.read('last_ad_shown_date');
+
+      if (lastShownDate == today) {
+        print('Ad already shown today - skipping');
+        return;
+      }
 
       // Fetch ads from Firebase
       List<AdData> ads = await _fetchActiveAds();
@@ -64,9 +94,8 @@ class HomeController extends GetxController {
           AdOnboardingDialog(
             ads: ads,
             onComplete: () {
-              // Save the date when dialog was shown
+              // Save today's date so we don't show again today
               _storage.write('last_ad_shown_date', today);
-              isAdDialogShown.value = false;
             },
           ),
           barrierDismissible: false,
@@ -103,6 +132,7 @@ class HomeController extends GetxController {
     final user = _auth.currentUser;
     if (user == null) return;
 
+    // Listen for incoming invitations
     _invitationSubscription = _firestore
         .collection('game_invitations')
         .where('invitedUserId', isEqualTo: user.uid)
@@ -123,6 +153,31 @@ class HomeController extends GetxController {
           }
         });
 
+    // Listen for sent invitations status changes
+    _firestore
+        .collection('game_invitations')
+        .where('inviterUserId', isEqualTo: user.uid)
+        .snapshots()
+        .listen((snapshot) {
+          for (var change in snapshot.docChanges) {
+            if (change.type == DocumentChangeType.modified ||
+                change.type == DocumentChangeType.removed) {
+              final invitation = change.doc.data();
+              if (invitation != null) {
+                final status = invitation['status'] as String;
+                final invitedUserId = invitation['invitedUserId'] as String;
+
+                // Remove from sent invitations if declined, expired, or accepted
+                if (status == 'declined' ||
+                    status == 'expired' ||
+                    status == 'accepted') {
+                  sentInvitations.remove(invitedUserId);
+                }
+              }
+            }
+          }
+        });
+
     // Also clean up expired invitations periodically
     _cleanupExpiredInvitations();
   }
@@ -131,6 +186,8 @@ class HomeController extends GetxController {
   void _cleanupExpiredInvitations() {
     Timer.periodic(Duration(minutes: 1), (timer) {
       final now = DateTime.now();
+
+      // Clean up pending invitations
       pendingInvitations.removeWhere((invitation) {
         final expiresAt = invitation['expiresAt'] as Timestamp?;
         if (expiresAt != null) {
@@ -138,7 +195,45 @@ class HomeController extends GetxController {
         }
         return false;
       });
+
+      // Clean up expired sent invitations by checking Firestore
+      _cleanupExpiredSentInvitations();
     });
+  }
+
+  /// Clean up expired sent invitations from Firestore
+  Future<void> _cleanupExpiredSentInvitations() async {
+    try {
+      final user = _auth.currentUser;
+      if (user == null) return;
+
+      final now = Timestamp.now();
+
+      // Query for expired invitations sent by current user
+      final expiredInvitations = await _firestore
+          .collection('game_invitations')
+          .where('inviterUserId', isEqualTo: user.uid)
+          .where('status', isEqualTo: 'pending')
+          .where('expiresAt', isLessThan: now)
+          .get();
+
+      // Update expired invitations and clear from sent list
+      for (var doc in expiredInvitations.docs) {
+        final data = doc.data();
+        final invitedUserId = data['invitedUserId'] as String;
+
+        // Update status to expired
+        await doc.reference.update({
+          'status': 'expired',
+          'expiredAt': FieldValue.serverTimestamp(),
+        });
+
+        // Remove from sent invitations list
+        sentInvitations.remove(invitedUserId);
+      }
+    } catch (e) {
+      print('Error cleaning up expired sent invitations: $e');
+    }
   }
 
   /// Handle incoming invitation
@@ -214,7 +309,7 @@ class HomeController extends GetxController {
                 Get.back();
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green,
+                backgroundColor: ConstsConfig.primarycolor,
                 foregroundColor: Colors.white,
               ),
               child: Text('Accept'),
@@ -248,6 +343,10 @@ class HomeController extends GetxController {
         (invitation) => invitation['id'] == invitationId,
       );
 
+      // Clear the invitation from the inviter's sent list
+      final inviterUserId = invitationData['inviterUserId'] as String;
+      _notifyInviterOfAcceptance(inviterUserId, user.uid);
+
       // Navigate to lobby with the invited category and friend mode
       final category = invitationData['category'] as String;
       final inviterUsername = invitationData['inviterUsername'] as String;
@@ -272,20 +371,57 @@ class HomeController extends GetxController {
     }
   }
 
+  /// Notify inviter that invitation was accepted (clear from their sent list)
+  void _notifyInviterOfAcceptance(String inviterUserId, String invitedUserId) {
+    // If the current user is the inviter, remove from sent invitations
+    final currentUser = _auth.currentUser;
+    if (currentUser != null && currentUser.uid == inviterUserId) {
+      sentInvitations.remove(invitedUserId);
+    }
+  }
+
   /// Decline a game invitation
   Future<void> declineInvitation(String invitationId) async {
     try {
-      await _firestore.collection('game_invitations').doc(invitationId).update({
-        'status': 'declined',
-        'respondedAt': FieldValue.serverTimestamp(),
-      });
+      // Get invitation data before updating to know who sent it
+      final invitationDoc = await _firestore
+          .collection('game_invitations')
+          .doc(invitationId)
+          .get();
 
-      // Remove from pending invitations
-      pendingInvitations.removeWhere(
-        (invitation) => invitation['id'] == invitationId,
-      );
+      if (invitationDoc.exists) {
+        final invitationData = invitationDoc.data() as Map<String, dynamic>;
+        final inviterUserId = invitationData['inviterUserId'] as String;
+
+        // Update invitation status
+        await _firestore
+            .collection('game_invitations')
+            .doc(invitationId)
+            .update({
+              'status': 'declined',
+              'respondedAt': FieldValue.serverTimestamp(),
+            });
+
+        // Remove from pending invitations
+        pendingInvitations.removeWhere(
+          (invitation) => invitation['id'] == invitationId,
+        );
+
+        // Clear the invitation from the inviter's sent list
+        // (This helps the inviter know they can invite again)
+        _notifyInviterOfDecline(inviterUserId, invitationData['invitedUserId']);
+      }
     } catch (e) {
       print('Error declining invitation: $e');
+    }
+  }
+
+  /// Notify inviter that invitation was declined (clear from their sent list)
+  void _notifyInviterOfDecline(String inviterUserId, String invitedUserId) {
+    // If the current user is the inviter, remove from sent invitations
+    final currentUser = _auth.currentUser;
+    if (currentUser != null && currentUser.uid == inviterUserId) {
+      sentInvitations.remove(invitedUserId);
     }
   }
 
@@ -705,7 +841,7 @@ class HomeController extends GetxController {
         },
       );
 
-      // Auto-remove from sent list after 5 minutes
+      // Auto-remove from sent list after 5 minutes (backup cleanup)
       Future.delayed(Duration(minutes: 5), () {
         sentInvitations.remove(friend.uid);
       });
@@ -730,4 +866,134 @@ class HomeController extends GetxController {
 
   /// Check if current user is authenticated
   bool get isAuthenticated => _auth.currentUser != null;
+
+  /// Clear sent invitations (call this when leaving lobby or game ends)
+  void clearSentInvitations() {
+    sentInvitations.clear();
+  }
+
+  /// Clear specific sent invitation
+  void clearSentInvitation(String friendUid) {
+    sentInvitations.remove(friendUid);
+  }
+
+  /// Clear all invitation data (useful for logout or app reset)
+  void clearAllInvitationData() {
+    pendingInvitations.clear();
+    sentInvitations.clear();
+    _invitationSubscription?.cancel();
+  }
+
+  // ============ BACKGROUND MUSIC METHODS ============
+
+  /// Start playing background music
+  Future<void> _startBackgroundMusic() async {
+    try {
+      await _audioPlayer.setAsset('assets/background_music.mp3');
+      await _audioPlayer.setLoopMode(LoopMode.all);
+      await _audioPlayer.setVolume(0.3); // Set volume to 30%
+      await _audioPlayer.play();
+      isMusicPlaying.value = true;
+
+      print('Background music started successfully');
+    } catch (e) {
+      print('Error starting background music: $e');
+      isMusicPlaying.value = false;
+    }
+  }
+
+  /// Stop background music
+  Future<void> stopBackgroundMusic() async {
+    try {
+      await _audioPlayer.stop();
+      isMusicPlaying.value = false;
+      print('Background music stopped');
+    } catch (e) {
+      print('Error stopping background music: $e');
+    }
+  }
+
+  /// Pause background music
+  Future<void> pauseBackgroundMusic() async {
+    try {
+      await _audioPlayer.pause();
+      isMusicPlaying.value = false;
+      print('Background music paused');
+    } catch (e) {
+      print('Error pausing background music: $e');
+    }
+  }
+
+  /// Resume background music
+  Future<void> resumeBackgroundMusic() async {
+    try {
+      await _audioPlayer.play();
+      isMusicPlaying.value = true;
+      print('Background music resumed');
+    } catch (e) {
+      print('Error resuming background music: $e');
+    }
+  }
+
+  /// Set background music enabled/disabled state
+  Future<void> setMusicEnabled(bool enabled) async {
+    print('Setting music enabled to: $enabled');
+
+    if (enabled == isMusicEnabled.value) {
+      print('Music state already matches requested state');
+      return; // No change needed
+    }
+
+    isMusicEnabled.value = enabled;
+
+    if (enabled) {
+      await _startBackgroundMusic();
+      print('Music started');
+    } else {
+      await stopBackgroundMusic();
+      print('Music stopped');
+    }
+
+    // Save preference to storage
+    await _storage.write('music_enabled', enabled);
+    print('Saved music preference: $enabled');
+
+    // Verify storage
+    final savedValue = _storage.read('music_enabled');
+    print('Verified saved value: $savedValue');
+  }
+
+  /// Toggle background music on/off
+  Future<void> toggleBackgroundMusic() async {
+    await setMusicEnabled(!isMusicEnabled.value);
+  }
+
+  /// Set background music volume (0.0 to 1.0)
+  Future<void> setMusicVolume(double volume) async {
+    try {
+      await _audioPlayer.setVolume(volume.clamp(0.0, 1.0));
+      print('Music volume set to: ${volume.clamp(0.0, 1.0)}');
+    } catch (e) {
+      print('Error setting music volume: $e');
+    }
+  }
+
+  /// Check if music is currently playing
+  bool get isMusicCurrentlyPlaying => isMusicPlaying.value;
+
+  /// Check if music is enabled in settings
+  bool get isMusicEnabledInSettings => isMusicEnabled.value;
+
+  /// Force reload music settings from storage (useful for debugging)
+  void reloadMusicSettings() {
+    final storedValue = _storage.read('music_enabled');
+    print(
+      'Reloading music settings. Stored: $storedValue, Current: ${isMusicEnabled.value}',
+    );
+
+    if (storedValue != null) {
+      isMusicEnabled.value = storedValue;
+      print('Updated music enabled to: ${isMusicEnabled.value}');
+    }
+  }
 }

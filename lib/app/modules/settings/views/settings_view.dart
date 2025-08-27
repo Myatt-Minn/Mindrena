@@ -2,6 +2,7 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
+import 'package:mindrena/app/modules/home/controllers/home_controller.dart';
 
 import '../controllers/settings_controller.dart';
 
@@ -444,13 +445,16 @@ class SettingsView extends GetView<SettingsController> {
               ],
             ),
           ),
-          Switch(
-            value: true,
-            onChanged: (bool value) {
-              Get.snackbar('Sound', value ? 'Sound enabled' : 'Sound disabled');
-            },
-            activeColor: Colors.purple,
-          ),
+          Obx(() {
+            final homeController = Get.find<HomeController>();
+            return Switch(
+              value: homeController.isMusicEnabled.value,
+              onChanged: (bool value) async {
+                await homeController.setMusicEnabled(value);
+              },
+              activeColor: Colors.purple,
+            );
+          }),
         ],
       ),
     );

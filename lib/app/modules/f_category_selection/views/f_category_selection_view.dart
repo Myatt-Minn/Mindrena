@@ -144,7 +144,7 @@ class FCategorySelectionView extends GetView<FCategorySelectionController> {
 
                     // Category selection buttons
                     _buildCategoryButton(
-                      emoji: '🗺️',
+                      emoji: 'assets/map.gif',
                       title: 'Places',
                       subtitle: 'Places & Geography',
                       description:
@@ -161,7 +161,7 @@ class FCategorySelectionView extends GetView<FCategorySelectionController> {
                     const SizedBox(height: 20),
 
                     _buildCategoryButton(
-                      emoji: '🔬',
+                      emoji: 'assets/rings.gif',
                       title: 'Science & Math',
                       subtitle: 'STEM Knowledge',
                       description:
@@ -179,7 +179,7 @@ class FCategorySelectionView extends GetView<FCategorySelectionController> {
                     const SizedBox(height: 20),
 
                     _buildCategoryButton(
-                      emoji: '🌍',
+                      emoji: 'assets/international.gif',
                       title: 'General Knowledge',
                       subtitle: 'World Trivia',
                       description: 'Test your knowledge about general subjects',
@@ -275,7 +275,23 @@ class FCategorySelectionView extends GetView<FCategorySelectionController> {
                     border: Border.all(color: color.withOpacity(0.3), width: 2),
                   ),
                   child: Center(
-                    child: Text(emoji, style: const TextStyle(fontSize: 28)),
+                    child: Image.asset(
+                      emoji,
+                      width: 40,
+                      height: 40,
+                      errorBuilder: (context, error, stackTrace) {
+                        // Fallback icon based on the game type
+                        IconData fallbackIcon = Icons.games;
+                        if (emoji.contains('map')) {
+                          fallbackIcon = Icons.map;
+                        } else if (emoji.contains('rings')) {
+                          fallbackIcon = Icons.science;
+                        } else if (emoji.contains('international')) {
+                          fallbackIcon = Icons.flash_on;
+                        }
+                        return Icon(fallbackIcon, color: color, size: 30);
+                      },
+                    ),
                   ),
                 ),
 

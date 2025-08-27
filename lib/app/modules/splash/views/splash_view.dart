@@ -16,25 +16,31 @@ class SplashView extends GetView<SplashController> {
         children: [
           // Full screen Lottie background
           Positioned.fill(
-            child: Lottie.asset(
-              'assets/gameBackground.json',
-              fit: BoxFit.cover,
-              repeat: true,
-              errorBuilder: (context, error, stackTrace) {
-                return Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        Colors.blue.shade50,
-                        Colors.purple.shade50,
-                        Colors.purple.shade50,
-                      ],
+            child: SizedBox(
+              width: double.infinity,
+              height: double.infinity,
+              child: Lottie.asset(
+                'assets/gameBackground.json',
+                fit: BoxFit.fill,
+                repeat: true,
+                width: double.infinity,
+                height: double.infinity,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Colors.blue.shade50,
+                          Colors.purple.shade50,
+                          Colors.purple.shade50,
+                        ],
+                      ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
           ),
 
@@ -232,23 +238,19 @@ class SplashView extends GetView<SplashController> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        SizedBox(
-                          width: 80,
-                          height: 80,
-                          child: Lottie.asset(
-                            'assets/splashLoading.json',
-                            fit: BoxFit.contain,
-                            errorBuilder: (context, error, stackTrace) {
-                              return const CircularProgressIndicator(
-                                strokeWidth: 4,
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  Colors.purple,
-                                ),
-                              );
-                            },
-                          ),
+                        Image.asset(
+                          'assets/loading.gif',
+                          width: 50,
+                          height: 50,
+                          errorBuilder: (context, error, stackTrace) {
+                            return const Icon(
+                              Icons.hourglass_empty,
+                              size: 50,
+                              color: Colors.grey,
+                            );
+                          },
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 22),
                         AnimatedTextKit(
                           animatedTexts: [
                             WavyAnimatedText(
@@ -268,7 +270,7 @@ class SplashView extends GetView<SplashController> {
                     ),
                   ),
 
-                  const SizedBox(height: 80),
+                  const SizedBox(height: 60),
                 ],
               ),
             ),
@@ -276,7 +278,7 @@ class SplashView extends GetView<SplashController> {
 
           // Footer with copyright
           Positioned(
-            bottom: 30,
+            bottom: 50,
             left: 0,
             right: 0,
             child: Center(

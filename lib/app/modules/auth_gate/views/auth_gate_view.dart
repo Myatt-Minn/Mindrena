@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:lottie/lottie.dart';
 
 import '../controllers/auth_gate_controller.dart';
 
@@ -15,7 +14,7 @@ class AuthGateView extends GetView<AuthGateController> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Lottie.asset('assets/loading_ani.json', width: 100, height: 100),
+              Image.asset('assets/loading.gif', width: 100, height: 100),
               const SizedBox(height: 20),
               Text(
                 controller.hasInternet.value

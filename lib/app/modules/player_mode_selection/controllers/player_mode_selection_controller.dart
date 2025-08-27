@@ -3,11 +3,11 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
 class PlayerModeSelectionController extends GetxController {
-  //TODO: Implement PlayerModeSelectionController
+  // Observable variables
+  final selectedLanguage = 'ENG'.obs;
+  final isLoaded = false.obs;
 
-  var selectedLanguage = 'MYN'.obs;
-  var languageSelected = 'Myanmar'.obs;
-
+  // Storage instance
   final storage = GetStorage();
 
   // Get the display name for the selected language
@@ -18,36 +18,70 @@ class PlayerModeSelectionController extends GetxController {
       case 'MYN':
         return 'Myanmar';
       default:
-        return 'Myanmar';
+        return 'English'; // Default to English
     }
   }
 
   @override
   void onInit() {
     super.onInit();
-    selectedLanguage.value = storage.read('language') ?? 'ENG';
-    languageSelected.value = currentLanguageDisplay;
-
-    // Defer the locale update until after the build is complete
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      updateLocale();
-    });
+    // Load saved language preference
+    _loadSavedLanguage();
   }
 
-  void updateLocale() {
-    if (selectedLanguage.value == 'ENG') {
-      Get.updateLocale(const Locale('en', 'US'));
-    } else {
-      Get.updateLocale(const Locale('my', 'MM'));
+  @override
+  void onReady() {
+    super.onReady();
+    // Preload images after the controller is ready
+    _preloadImages();
+    // Update locale after everything is initialized
+    updateLocale();
+  }
+
+  /// Load saved language preference from storage
+  void _loadSavedLanguage() {
+    final savedLanguage = storage.read('language');
+    if (savedLanguage != null &&
+        (savedLanguage == 'ENG' || savedLanguage == 'MYN')) {
+      selectedLanguage.value = savedLanguage;
     }
   }
 
-  void toggleLanguage(String language) {
-    selectedLanguage.value = language;
-    storage.write('language', language); // Save to storage
-    updateLocale(); // Apply the new language
+  /// Preload images to avoid loading delays
+  Future<void> _preloadImages() async {
+    try {
+      // Use a proper context from Get if available, otherwise skip preloading
+      final context = Get.context;
+      if (context != null) {
+        await precacheImage(const AssetImage('assets/Two_Player.gif'), context);
+        await precacheImage(
+          const AssetImage('assets/Single_Player.gif'),
+          context,
+        );
+      }
+      isLoaded.value = true;
+    } catch (e) {
+      // If preloading fails, still mark as loaded
+      isLoaded.value = true;
+      print('Image preloading failed: $e');
+    }
+  }
 
-    // Update the language display name
-    languageSelected.value = currentLanguageDisplay;
+  /// Update app locale based on selected language
+  void updateLocale() {
+    final locale = selectedLanguage.value == 'ENG'
+        ? const Locale('en', 'US')
+        : const Locale('my', 'MM');
+
+    Get.updateLocale(locale);
+  }
+
+  /// Toggle language and save preference
+  void toggleLanguage(String language) {
+    if (language == 'ENG' || language == 'MYN') {
+      selectedLanguage.value = language;
+      storage.write('language', language);
+      updateLocale();
+    }
   }
 }

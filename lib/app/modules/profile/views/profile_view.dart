@@ -445,7 +445,7 @@ class ProfileView extends GetView<ProfileController> {
                 // Edit Profile Button
                 ElevatedButton.icon(
                   onPressed: () {
-                    Get.snackbar('Edit Profile', 'Edit profile coming soon!');
+                    Get.toNamed('/edit-profile');
                   },
                   icon: const Icon(Icons.edit, size: 20),
                   label: const Text('Edit Profile'),
@@ -465,61 +465,6 @@ class ProfileView extends GetView<ProfileController> {
             ),
           ),
         ),
-
-        const SizedBox(height: 20),
-
-        // Current Game Status (if in game)
-        if (controller.user.value?.currentGameId != null &&
-            controller.user.value!.currentGameId!.isNotEmpty)
-          Container(
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: Colors.amber.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(15),
-              border: Border.all(color: Colors.amber.withOpacity(0.3)),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  Icon(Icons.videogame_asset, color: Colors.amber, size: 24),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Currently in Game',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.amber.shade700,
-                          ),
-                        ),
-                        Text(
-                          'Game ID: ${controller.user.value!.currentGameId}',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.amber.shade600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      Get.toNamed('/game-screen');
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.amber,
-                      foregroundColor: Colors.white,
-                    ),
-                    child: const Text('Resume'),
-                  ),
-                ],
-              ),
-            ),
-          ),
 
         const SizedBox(height: 20),
 
@@ -629,6 +574,13 @@ class ProfileView extends GetView<ProfileController> {
                 title: 'Settings',
                 subtitle: 'Manage your preferences',
                 onTap: () => Get.toNamed('/settings'),
+              ),
+              const Divider(height: 1),
+              _buildActionTile(
+                icon: Icons.settings,
+                title: 'Game Mode Selection',
+                subtitle: 'Go back to Game Mode Selection',
+                onTap: () => Get.offAllNamed('/player-mode-selection'),
               ),
               const Divider(height: 1),
               _buildActionTile(

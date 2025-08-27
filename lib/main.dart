@@ -22,7 +22,6 @@ void main() async {
   SendNotificationHandler.initialized();
   await SendNotificationHandler().initNotification();
   FirebaseMessaging.onBackgroundMessage(handleBackgroundMessage);
-
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,

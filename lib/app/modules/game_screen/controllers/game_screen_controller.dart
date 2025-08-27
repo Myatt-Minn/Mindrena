@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
+import 'package:just_audio/just_audio.dart';
+import 'package:mindrena/app/modules/home/controllers/home_controller.dart';
 
 import '../../../data/UserModel.dart';
 
@@ -33,15 +35,42 @@ class GameScreenController extends GetxController {
   final isMovingToNextQuestion = false.obs;
   final lastProcessedQuestionIndex = (-1).obs;
 
+  // Track if game has started (to play sound for first question)
+  var _gameHasStarted = false;
+
   // Timer for countdown
   Timer? _questionTimer;
   StreamSubscription<DocumentSnapshot>? _gameSubscription;
   Timer? _timerStartDebounce;
   Timer? _questionMoveDebounce;
 
+  // Audio player for countdown sound
+  late AudioPlayer _countdownPlayer;
+
+  // Audio player for game completion sound
+  late AudioPlayer _gameCompletePlayer;
+
+  // Track if game completion sound has been played
+  var _gameCompleteSoundPlayed = false;
+
   @override
   void onInit() {
     super.onInit();
+
+    // Initialize countdown audio player
+    _countdownPlayer = AudioPlayer();
+
+    // Initialize game complete audio player
+    _gameCompletePlayer = AudioPlayer();
+
+    // Clear sent invitations since game is starting
+    try {
+      final homeController = Get.find<HomeController>();
+      homeController.clearSentInvitations();
+    } catch (e) {
+      // HomeController might not be available, ignore
+      print('Could not clear sent invitations in game: $e');
+    }
 
     // Get arguments from route
     final args = Get.arguments as Map<String, dynamic>?;
@@ -61,6 +90,8 @@ class GameScreenController extends GetxController {
     _gameSubscription?.cancel();
     _timerStartDebounce?.cancel();
     _questionMoveDebounce?.cancel();
+    _countdownPlayer.dispose();
+    _gameCompletePlayer.dispose();
     super.onClose();
   }
 
@@ -114,6 +145,7 @@ class GameScreenController extends GetxController {
     );
 
     final previousQuestionIndex = currentQuestionIndex.value;
+    final previousGameStatus = gameStatus.value;
     gameStatus.value = gameData['status'] ?? 'loading';
     currentQuestionIndex.value = gameData['currentQuestionIndex'] ?? 0;
     questions.value = List<Map<String, dynamic>>.from(
@@ -126,6 +158,10 @@ class GameScreenController extends GetxController {
           .toDate();
       print('Question start time set: ${questionStartTime.value}');
     }
+
+    // Check if game just became active (first question start)
+    final gameJustStarted =
+        previousGameStatus != 'active' && gameStatus.value == 'active';
 
     // Check if we moved to a new question
     final questionChanged = previousQuestionIndex != currentQuestionIndex.value;
@@ -151,6 +187,20 @@ class GameScreenController extends GetxController {
     // Update current question
     if (questions.isNotEmpty && currentQuestionIndex.value < questions.length) {
       currentQuestion.value = questions[currentQuestionIndex.value];
+
+      // Play countdown sound for new question AFTER setting current question
+      if (questionChanged) {
+        _playCountdownSound();
+      }
+
+      // Play countdown sound when game just starts AFTER setting current question
+      if (gameJustStarted && !_gameHasStarted) {
+        _gameHasStarted = true;
+        print(
+          'Game just became active, playing countdown sound for first question',
+        );
+        _playCountdownSound();
+      }
 
       // Check if current user has answered this question
       final userId = _auth.currentUser?.uid;
@@ -222,6 +272,13 @@ class GameScreenController extends GetxController {
     // Check if game is finished
     if (gameStatus.value == 'finished') {
       isGameFinished.value = true;
+
+      // Play game complete sound once
+      if (!_gameCompleteSoundPlayed) {
+        _gameCompleteSoundPlayed = true;
+        _playGameCompleteSound();
+      }
+
       _calculateFinalResults();
     }
   }
@@ -626,10 +683,32 @@ class GameScreenController extends GetxController {
       final player = players[i];
       final playerId = playerIds[i];
       final playerScore = scores[playerId] ?? 0;
+      final playerAnswers = answers[playerId] ?? [];
+
+      // Calculate correct answers count
+      int correctAnswers = 0;
+      for (int j = 0; j < playerAnswers.length && j < questions.length; j++) {
+        final userAnswer = int.tryParse(playerAnswers[j]) ?? -1;
+        final correctAnswer = questions[j]['correctIndex'] ?? -1;
+        if (userAnswer == correctAnswer && userAnswer != -1) {
+          correctAnswers++;
+        }
+      }
+
+      // Calculate accuracy percentage
+      final totalAnswered = playerAnswers
+          .where((answer) => answer != '-1')
+          .length;
+      final accuracy = totalAnswered > 0
+          ? (correctAnswers / totalAnswered * 100).round()
+          : 0;
 
       finalResults.add({
         'player': player,
         'score': playerScore,
+        'correctAnswers': correctAnswers,
+        'totalQuestions': questions.length,
+        'accuracy': accuracy,
         'rank': 1, // Will be calculated after sorting
       });
     }
@@ -646,6 +725,17 @@ class GameScreenController extends GetxController {
   }
 
   void exitGame() {
+    // Resume background music when returning to home
+    try {
+      final homeController = Get.find<HomeController>();
+      if (homeController.isMusicEnabledInSettings) {
+        homeController.resumeBackgroundMusic();
+        print('Background music resumed after game exit');
+      }
+    } catch (e) {
+      print('Could not resume background music: $e');
+    }
+
     Get.offAllNamed('/home');
   }
 
@@ -693,5 +783,72 @@ class GameScreenController extends GetxController {
   int get questionProgress {
     if (questions.isEmpty) return 0;
     return ((currentQuestionIndex.value + 1) / questions.length * 100).round();
+  }
+
+  // Check if current question is an image-based question (like flags)
+  bool get isImageQuestion {
+    if (currentQuestion.value == null) return false;
+    return currentQuestion.value!.containsKey('image') &&
+        currentQuestion.value!['image'] != null &&
+        currentQuestion.value!['image'].toString().isNotEmpty;
+  }
+
+  // Check if current question is an audio-based question (like sounds)
+  bool get isAudioQuestion {
+    if (currentQuestion.value == null) return false;
+    return currentQuestion.value!.containsKey('audio') &&
+        currentQuestion.value!['audio'] != null &&
+        currentQuestion.value!['audio'].toString().isNotEmpty;
+  }
+
+  // Get the image URL for the current question
+  String? get currentQuestionImageUrl {
+    if (currentQuestion.value == null || !isImageQuestion) return null;
+    return currentQuestion.value!['image'] as String?;
+  }
+
+  // Get the audio URL for the current question
+  String? get currentQuestionAudioUrl {
+    if (currentQuestion.value == null || !isAudioQuestion) return null;
+    return currentQuestion.value!['audio'] as String?;
+  }
+
+  // ============ AUDIO METHODS ============
+
+  /// Play countdown sound when a new question starts
+  /// For audio questions (Sounds category), play the question audio instead
+  Future<void> _playCountdownSound() async {
+    try {
+      // For audio questions, play the question audio instead of countdown
+      if (isAudioQuestion && currentQuestionAudioUrl != null) {
+        print('Playing question audio: $currentQuestionAudioUrl');
+        await _countdownPlayer.setUrl(currentQuestionAudioUrl!);
+        await _countdownPlayer.setVolume(
+          0.8,
+        ); // Set volume to 80% for question audio
+        await _countdownPlayer.play();
+        print('Question audio started playing');
+      } else {
+        // For other question types, play the countdown sound
+        await _countdownPlayer.setAsset('assets/countdown.mp3');
+        await _countdownPlayer.setVolume(0.6); // Set volume to 60%
+        await _countdownPlayer.play();
+        print('Countdown sound played for non-audio question');
+      }
+    } catch (e) {
+      print('Error playing audio: $e');
+    }
+  }
+
+  /// Play game complete sound when the game finishes
+  Future<void> _playGameCompleteSound() async {
+    try {
+      await _gameCompletePlayer.setAsset('assets/game_complete.mp3');
+      await _gameCompletePlayer.setVolume(0.7); // Set volume to 70%
+      await _gameCompletePlayer.play();
+      print('Game complete sound played');
+    } catch (e) {
+      print('Error playing game complete sound: $e');
+    }
   }
 }
