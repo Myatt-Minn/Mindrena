@@ -50,16 +50,16 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBCyqG9xKEr2-1RCzM3nOCQq4b3uj3woY0',
-    appId: '1:401918120039:android:6032376fe30c6a50a584c2',
+    apiKey: '',
+    appId: '',
     messagingSenderId: '401918120039',
     projectId: 'xstore-faa86',
     storageBucket: 'xstore-faa86.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyCjNpGU84PfBOvAls36EZMpncen8N-1078',
-    appId: '1:401918120039:ios:62e8cbfd3abd124ca584c2',
+    apiKey: '',
+    appId: '',
     messagingSenderId: '401918120039',
     projectId: 'xstore-faa86',
     storageBucket: 'xstore-faa86.appspot.com',
