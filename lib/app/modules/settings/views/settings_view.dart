@@ -2,6 +2,7 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
+import 'package:mindrena/app/modules/home/controllers/home_controller.dart';
 
 import '../controllers/settings_controller.dart';
 
@@ -108,7 +109,7 @@ class SettingsView extends GetView<SettingsController> {
                               child: AnimatedTextKit(
                                 animatedTexts: [
                                   ColorizeAnimatedText(
-                                    'Settings',
+                                    'settings'.tr,
                                     textStyle: const TextStyle(
                                       fontSize: 24,
                                       fontWeight: FontWeight.bold,
@@ -135,7 +136,7 @@ class SettingsView extends GetView<SettingsController> {
 
                     // Game Settings Section
                     _buildSectionCard(
-                      title: 'Game Settings',
+                      title: 'game_settings'.tr,
                       icon: Icons.gamepad,
                       children: [
                         _buildLanguageToggle(),
@@ -150,13 +151,13 @@ class SettingsView extends GetView<SettingsController> {
 
                     // Support Section
                     _buildSectionCard(
-                      title: 'Support',
+                      title: 'support'.tr,
                       icon: Icons.help,
                       children: [
                         _buildSettingsTile(
                           icon: Icons.help_outline,
-                          title: 'User Guide',
-                          subtitle: 'Get help and find answers',
+                          title: 'user_guide'.tr,
+                          subtitle: 'get_help'.tr,
                           onTap: () {
                             Get.toNamed('/user-guides');
                           },
@@ -164,8 +165,8 @@ class SettingsView extends GetView<SettingsController> {
                         const Divider(height: 1),
                         _buildSettingsTile(
                           icon: Icons.feedback,
-                          title: 'Send Feedback',
-                          subtitle: 'Share your thoughts with us',
+                          title: 'send_feedback'.tr,
+                          subtitle: 'share_your_thoughts'.tr,
                           onTap: () {
                             Get.toNamed('/user-feedback');
                           },
@@ -173,12 +174,12 @@ class SettingsView extends GetView<SettingsController> {
                         const Divider(height: 1),
                         _buildSettingsTile(
                           icon: Icons.star_rate,
-                          title: 'Rate App',
-                          subtitle: 'Rate us on the app store',
+                          title: 'rate_app'.tr,
+                          subtitle: 'rate_us_on_store'.tr,
                           onTap: () {
                             Get.snackbar(
-                              'Rate App',
-                              'Thank you for your support!',
+                              'rate_app'.tr,
+                              'thank_you_for_support'.tr,
                             );
                           },
                         ),
@@ -189,12 +190,12 @@ class SettingsView extends GetView<SettingsController> {
 
                     // About Section
                     _buildSectionCard(
-                      title: 'About',
+                      title: 'about'.tr,
                       icon: Icons.info,
                       children: [
                         _buildSettingsTile(
                           icon: Icons.info_outline,
-                          title: 'Version',
+                          title: 'version'.tr,
                           subtitle: '1.0.0',
                           showArrow: false,
                           onTap: () {},
@@ -202,24 +203,24 @@ class SettingsView extends GetView<SettingsController> {
                         const Divider(height: 1),
                         _buildSettingsTile(
                           icon: Icons.privacy_tip,
-                          title: 'Privacy Policy',
-                          subtitle: 'Read our privacy policy',
+                          title: 'privacy_policy'.tr,
+                          subtitle: 'read_privacy_policy'.tr,
                           onTap: () {
                             Get.snackbar(
-                              'Privacy',
-                              'Privacy policy coming soon!',
+                              'privacy_policy'.tr,
+                              'privacy_policy_soon'.tr,
                             );
                           },
                         ),
                         const Divider(height: 1),
                         _buildSettingsTile(
                           icon: Icons.description,
-                          title: 'Terms of Service',
-                          subtitle: 'Read our terms of service',
+                          title: 'terms_of_service'.tr,
+                          subtitle: 'read_terms_of_service'.tr,
                           onTap: () {
                             Get.snackbar(
-                              'Terms',
-                              'Terms of service coming soon!',
+                              'terms_of_service'.tr,
+                              'terms_of_service_soon'.tr,
                             );
                           },
                         ),
@@ -236,7 +237,9 @@ class SettingsView extends GetView<SettingsController> {
                         borderRadius: BorderRadius.circular(15),
                       ),
                       child: Text(
-                        '© ${DateTime.now().year} Mindrena. All rights reserved.',
+                        'all_rights_reserved'.trParams({
+                          'year': DateTime.now().year.toString(),
+                        }),
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.grey.shade600,
@@ -366,7 +369,7 @@ class SettingsView extends GetView<SettingsController> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Language',
+                  'language'.tr,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -374,7 +377,7 @@ class SettingsView extends GetView<SettingsController> {
                   ),
                 ),
                 Text(
-                  'Choose your preferred language',
+                  'choose_language'.tr,
                   style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
                 ),
               ],
@@ -389,25 +392,37 @@ class SettingsView extends GetView<SettingsController> {
             ),
             child: DropdownButtonHideUnderline(
               child: DropdownButton<String>(
-                value: 'English',
+                value: Get.locale?.languageCode == 'my' ? 'my' : 'en',
                 isDense: true,
                 icon: const Icon(Icons.arrow_drop_down, color: Colors.purple),
-                items: ['English', 'မြန်မာ'].map((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(
-                      value,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: Colors.purple,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  );
-                }).toList(),
+                items:
+                    [
+                      {'code': 'en', 'name': 'english'.tr},
+                      {'code': 'my', 'name': 'myanmar'.tr},
+                    ].map((Map<String, String> lang) {
+                      final value = lang['name']!;
+                      return DropdownMenuItem<String>(
+                        value: lang['code']!,
+                        child: Text(
+                          value,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.purple,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      );
+                    }).toList(),
                 onChanged: (String? newValue) {
                   if (newValue != null) {
-                    Get.snackbar('Language', 'Language changed to $newValue');
+                    final locale = newValue == 'en'
+                        ? const Locale('en', 'US')
+                        : const Locale('my', 'MM');
+                    Get.updateLocale(locale);
+                    Get.snackbar(
+                      'language'.tr,
+                      'Language changed to ${newValue == 'en' ? 'english'.tr : 'myanmar'.tr}',
+                    );
                   }
                 },
               ),
@@ -430,7 +445,7 @@ class SettingsView extends GetView<SettingsController> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Sound Effects',
+                  'sound_effects'.tr,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -438,19 +453,22 @@ class SettingsView extends GetView<SettingsController> {
                   ),
                 ),
                 Text(
-                  'Enable or disable sound effects',
+                  'enable_disable_sound'.tr,
                   style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
                 ),
               ],
             ),
           ),
-          Switch(
-            value: true,
-            onChanged: (bool value) {
-              Get.snackbar('Sound', value ? 'Sound enabled' : 'Sound disabled');
-            },
-            activeColor: Colors.purple,
-          ),
+          Obx(() {
+            final homeController = Get.find<HomeController>();
+            return Switch(
+              value: homeController.isMusicEnabled.value,
+              onChanged: (bool value) async {
+                await homeController.setMusicEnabled(value);
+              },
+              activeColor: Colors.purple,
+            );
+          }),
         ],
       ),
     );
@@ -468,7 +486,7 @@ class SettingsView extends GetView<SettingsController> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Notifications',
+                  'notifications'.tr,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -476,7 +494,7 @@ class SettingsView extends GetView<SettingsController> {
                   ),
                 ),
                 Text(
-                  'Receive game updates and challenges',
+                  'receive_updates'.tr,
                   style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
                 ),
               ],
@@ -486,8 +504,10 @@ class SettingsView extends GetView<SettingsController> {
             value: true,
             onChanged: (bool value) {
               Get.snackbar(
-                'Notifications',
-                value ? 'Notifications enabled' : 'Notifications disabled',
+                'notifications'.tr,
+                value
+                    ? 'notifications_enabled'.tr
+                    : 'notifications_disabled'.tr,
               );
             },
             activeColor: Colors.purple,

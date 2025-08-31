@@ -15,25 +15,31 @@ class MCategorySelectionView extends GetView<MCategorySelectionController> {
         children: [
           // Full screen Lottie background
           Positioned.fill(
-            child: Lottie.asset(
-              'assets/gameBackground.json',
-              fit: BoxFit.cover,
-              repeat: true,
-              errorBuilder: (context, error, stackTrace) {
-                return Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        Colors.blue.shade50,
-                        Colors.purple.shade50,
-                        Colors.purple.shade50,
-                      ],
+            child: SizedBox(
+              width: double.infinity,
+              height: double.infinity,
+              child: Lottie.asset(
+                'assets/gameBackground.json',
+                fit: BoxFit.fill,
+                repeat: true,
+                width: double.infinity,
+                height: double.infinity,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Colors.blue.shade50,
+                          Colors.purple.shade50,
+                          Colors.purple.shade50,
+                        ],
+                      ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
           ),
 
@@ -145,27 +151,33 @@ class MCategorySelectionView extends GetView<MCategorySelectionController> {
                     const SizedBox(height: 20),
 
                     _buildCategoryButton(
-                      emoji: '🖼️',
+                      emoji: 'assets/picture.gif',
                       title: 'Images',
                       subtitle: 'Quick Image Quiz',
                       description: 'Memorize and identify images',
                       color: Colors.amber,
                       onTap: () {
                         // Navigate to Animal Sounds category
-                        Get.toNamed('/lobby');
+                        Get.toNamed(
+                          '/opponent-type-selection',
+                          arguments: "MemorizeImage",
+                        );
                       },
                     ),
 
                     const SizedBox(height: 20),
 
                     _buildCategoryButton(
-                      emoji: '🎥',
+                      emoji: 'assets/video_player.gif',
                       title: 'Videos',
                       subtitle: 'Quick Video Quiz',
                       description: 'Memorize and identify videos',
                       color: Colors.pink,
                       onTap: () {
-                        Get.toNamed('/lobby');
+                        Get.toNamed(
+                          '/opponent-type-selection',
+                          arguments: "MemorizeVideo",
+                        );
                       },
                     ),
 
@@ -200,7 +212,7 @@ class MCategorySelectionView extends GetView<MCategorySelectionController> {
                       ),
                     ),
 
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 30),
                   ],
                 ),
               ),
@@ -251,7 +263,21 @@ class MCategorySelectionView extends GetView<MCategorySelectionController> {
                     border: Border.all(color: color.withOpacity(0.3), width: 2),
                   ),
                   child: Center(
-                    child: Text(emoji, style: const TextStyle(fontSize: 28)),
+                    child: Image.asset(
+                      emoji,
+                      width: 40,
+                      height: 40,
+                      errorBuilder: (context, error, stackTrace) {
+                        // Fallback icon based on the game type
+                        IconData fallbackIcon = Icons.games;
+                        if (emoji.contains('picture')) {
+                          fallbackIcon = Icons.image;
+                        } else if (emoji.contains('video_player')) {
+                          fallbackIcon = Icons.videocam;
+                        }
+                        return Icon(fallbackIcon, color: color, size: 30);
+                      },
+                    ),
                   ),
                 ),
 

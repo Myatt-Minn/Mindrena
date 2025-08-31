@@ -45,7 +45,7 @@ class SignInController extends GetxController {
       if (!userDoc.exists) {
         final newUser = UserModel(
           uid: user.uid,
-          username: user.displayName ?? 'Google User',
+          username: user.displayName ?? 'google_user_fallback'.tr,
           email: user.email ?? '',
           role: 'user',
           avatarUrl: user.photoURL ?? '',
@@ -58,8 +58,8 @@ class SignInController extends GetxController {
             .set(newUser.toMap());
       } else {
         Get.snackbar(
-          'Welcome Back!',
-          'Signed in successfully',
+          'welcome_back'.tr,
+          'signed_in_successfully'.tr,
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.green,
           colorText: Colors.white,
@@ -68,8 +68,8 @@ class SignInController extends GetxController {
       Get.offAllNamed('/home');
     } catch (e) {
       Get.snackbar(
-        'Error',
-        'Failed to save user data: $e',
+        'error'.tr,
+        'failed_to_save_user_data'.trParams({'error': '$e'}),
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red,
         colorText: Colors.white,
@@ -93,10 +93,11 @@ class SignInController extends GetxController {
         Get.offAllNamed('/home');
       } else {
         // Sign in failed but no exception was thrown
-        generalError.value = _authService.lastError ?? 'Google sign-in failed';
+        generalError.value =
+            (_authService.lastError ?? 'google_sign_in_failed').tr;
       }
     } catch (e) {
-      generalError.value = 'Google sign-in error: $e';
+      generalError.value = 'google_sign_in_error'.trParams({'error': '$e'});
     } finally {
       // Stop loading
       signingIn.value = false;
@@ -109,19 +110,19 @@ class SignInController extends GetxController {
 
     // Email validation
     if (emailController.text.trim().isEmpty) {
-      emailError.value = 'Please enter your email.';
+      emailError.value = 'please_enter_email'.tr;
       isValid = false;
     } else if (!GetUtils.isEmail(emailController.text.trim())) {
-      emailError.value = 'Please enter a valid email address.';
+      emailError.value = 'please_enter_valid_email'.tr;
       isValid = false;
     }
 
     // Password validation
     if (passwordController.text.trim().isEmpty) {
-      passwordError.value = 'Please enter your password.';
+      passwordError.value = 'please_enter_password'.tr;
       isValid = false;
     } else if (passwordController.text.trim().length < 6) {
-      passwordError.value = 'Password must be at least 6 characters long.';
+      passwordError.value = 'password_min_length'.tr;
       isValid = false;
     }
 
@@ -137,15 +138,15 @@ class SignInController extends GetxController {
         await _handleFirebaseUser(user);
       } else {
         Get.snackbar(
-          'Error',
-          'Failed to sign in with Google',
+          'error'.tr,
+          'failed_to_sign_in_google'.tr,
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.red,
           colorText: Colors.white,
         );
       }
     } catch (e) {
-      generalError.value = 'Google sign-in error: $e';
+      generalError.value = 'google_sign_in_error'.trParams({'error': '$e'});
     } finally {
       signingIn.value = false;
     }

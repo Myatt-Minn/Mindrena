@@ -1,3 +1,5 @@
+import 'package:get/get.dart';
+
 class FeedBackModel {
   final String feedbackId;
   final String userId;
@@ -134,32 +136,32 @@ class FeedBackModel {
   String get feedbackTypeDisplay {
     switch (feedbackType.toLowerCase()) {
       case 'product':
-        return 'Product Review';
+        return 'feedback_type_product'.tr;
       case 'service':
-        return 'Service Feedback';
+        return 'feedback_type_service'.tr;
       case 'delivery':
-        return 'Delivery Feedback';
+        return 'feedback_type_delivery'.tr;
       case 'app':
-        return 'App Feedback';
+        return 'feedback_type_app'.tr;
       case 'general':
-        return 'General Feedback';
+        return 'feedback_type_general'.tr;
       default:
-        return 'Feedback';
+        return 'feedback_type_default'.tr;
     }
   }
 
   String get statusDisplay {
     switch (status.toLowerCase()) {
       case 'pending':
-        return 'Pending Review';
+        return 'feedback_status_pending'.tr;
       case 'reviewed':
-        return 'Reviewed';
+        return 'feedback_status_reviewed'.tr;
       case 'resolved':
-        return 'Resolved';
+        return 'feedback_status_resolved'.tr;
       case 'rejected':
-        return 'Rejected';
+        return 'feedback_status_rejected'.tr;
       default:
-        return 'Unknown';
+        return 'feedback_status_unknown'.tr;
     }
   }
 }

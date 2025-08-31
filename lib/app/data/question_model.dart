@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:get/get.dart';
 import 'package:html_unescape/html_unescape.dart';
 
 TriviaQuestionResponse triviaQuestionResponseFromJson(String str) =>
@@ -46,12 +47,13 @@ class Question {
     }
 
     return Question(
-      questionText: decodeHtmlEntities(json['question'] ?? 'N/A'),
-      correctAnswer: decodeHtmlEntities(json['correct_answer'] ?? 'N/A'),
-      incorrectAnswers:
-          (json['incorrect_answers'] as List<dynamic>? ?? [])
-              .map((answer) => decodeHtmlEntities(answer.toString()))
-              .toList(),
+      questionText: decodeHtmlEntities(json['question'] ?? 'not_available'.tr),
+      correctAnswer: decodeHtmlEntities(
+        json['correct_answer'] ?? 'not_available'.tr,
+      ),
+      incorrectAnswers: (json['incorrect_answers'] as List<dynamic>? ?? [])
+          .map((answer) => decodeHtmlEntities(answer.toString()))
+          .toList(),
     );
   }
   Map<String, dynamic> toJson() => {

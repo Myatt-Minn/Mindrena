@@ -6,8 +6,9 @@ class QuestionsService {
   Future<List<Question>> getQuestions({
     required int categoryId,
     required String difficulty,
+    required String type,
   }) async {
-    String url = 'https://opentdb.com/api.php?amount=10&type=multiple';
+    String url = 'https://opentdb.com/api.php?amount=10&type=$type';
 
     if (categoryId != 0) {
       url += '&category=$categoryId';

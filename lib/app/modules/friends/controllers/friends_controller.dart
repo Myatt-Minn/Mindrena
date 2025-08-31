@@ -408,13 +408,6 @@ class FriendsController extends GetxController {
 
       // Refresh friends list
       await _loadFriends();
-
-      Get.snackbar(
-        'Info',
-        'Removed ${friend.username} from friends',
-        backgroundColor: Colors.orange,
-        colorText: Colors.white,
-      );
     } catch (e) {
       print('Error removing friend: $e');
       Get.snackbar('Error', 'Failed to remove friend');

@@ -14,8 +14,8 @@ class UserGuidesView extends GetView<UserGuidesController> {
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        title: const Text(
-          'User Guides',
+        title: Text(
+          'user_guides'.tr,
           style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
         backgroundColor: ConstsConfig.secondarycolor,
@@ -107,8 +107,8 @@ class UserGuidesView extends GetView<UserGuidesController> {
             ),
           ),
           const SizedBox(height: 16),
-          const Text(
-            'How can we help you?',
+          Text(
+            'how_can_we_help'.tr,
             style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
@@ -117,7 +117,7 @@ class UserGuidesView extends GetView<UserGuidesController> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Find answers and learn how to use our app effectively',
+            'find_answers_and_learn'.tr,
             style: TextStyle(
               fontSize: 15,
               color: Colors.grey[600],
@@ -131,26 +131,17 @@ class UserGuidesView extends GetView<UserGuidesController> {
   }
 
   String _getCategoryDisplayName(String category) {
-    switch (category) {
-      case 'all':
-        return 'All';
-      case 'getting-started':
-        return 'Getting Started';
-      case 'shopping':
-        return 'Shopping';
-      case 'account':
-        return 'Account';
-      case 'troubleshooting':
-        return 'Troubleshooting';
-      case 'general':
-        return 'General';
-      case 'friends':
-        return 'Friends';
-      case 'quizzes':
-        return 'Quizzes';
-      default:
-        return category;
-    }
+    // Use a map for cleaner, translatable category names
+    final categoryMap = {
+      'getting-started': 'category_getting-started'.tr,
+      'account': 'category_account'.tr,
+      'troubleshooting': 'category_troubleshooting'.tr,
+      'friends': 'category_friends'.tr,
+      'quizzes': 'category_quizzes'.tr,
+      'general': 'category_general'.tr,
+    };
+    // Return the display name or the original title if not found
+    return categoryMap[category] ?? category;
   }
 
   Widget _buildGuideCard(UserGuideCategoryModel guide) {
@@ -235,7 +226,7 @@ class UserGuidesView extends GetView<UserGuidesController> {
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        '${guide.items.length} helpful guides',
+                        '${guide.items.length} ${'helpful_guides'.tr}',
                         style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                       ),
                       const SizedBox(height: 8),
@@ -251,7 +242,7 @@ class UserGuidesView extends GetView<UserGuidesController> {
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
-                          'Tap to explore',
+                          'tap_to_explore'.tr,
                           style: TextStyle(
                             color: _getCategoryColor(guide.title),
                             fontSize: 12,
@@ -288,8 +279,6 @@ class UserGuidesView extends GetView<UserGuidesController> {
     switch (category) {
       case 'getting-started':
         return Colors.green;
-      case 'shopping':
-        return Colors.blue;
       case 'account':
         return Colors.purple;
       case 'friends':
@@ -309,8 +298,6 @@ class UserGuidesView extends GetView<UserGuidesController> {
     switch (category) {
       case 'getting-started':
         return Icons.rocket_launch_rounded;
-      case 'shopping':
-        return Icons.shopping_bag_rounded;
       case 'account':
         return Icons.account_circle_rounded;
       case 'friends':
@@ -367,7 +354,7 @@ class UserGuidesView extends GetView<UserGuidesController> {
             ),
             const SizedBox(height: 24),
             Text(
-              'No guides available',
+              'no_guides_available'.tr,
               style: TextStyle(
                 fontSize: 20,
                 color: Colors.grey[700],
@@ -376,7 +363,7 @@ class UserGuidesView extends GetView<UserGuidesController> {
             ),
             const SizedBox(height: 12),
             Text(
-              'Check back later for helpful guides\nand tutorials',
+              'check_back_later_for_guides'.tr,
               style: TextStyle(
                 fontSize: 15,
                 color: Colors.grey[500],
@@ -431,7 +418,7 @@ class UserGuidesView extends GetView<UserGuidesController> {
             ),
             const SizedBox(height: 24),
             Text(
-              'Oops! Something went wrong',
+              'oops_something_went_wrong'.tr,
               style: TextStyle(
                 fontSize: 20,
                 color: Colors.grey[700],
@@ -473,8 +460,8 @@ class UserGuidesView extends GetView<UserGuidesController> {
               child: ElevatedButton.icon(
                 onPressed: () => controller.refreshGuides(),
                 icon: const Icon(Icons.refresh_rounded, color: Colors.white),
-                label: const Text(
-                  'Try Again',
+                label: Text(
+                  'try_again'.tr,
                   style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w600,

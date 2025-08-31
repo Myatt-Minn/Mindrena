@@ -158,6 +158,7 @@ class SgFDifficultySelectionView
                           arguments: {
                             'category': controller.selectedCategory.value,
                             'difficulty': 'Easy',
+                            'type': controller.selectedType.value,
                           },
                         );
                       },
@@ -179,6 +180,7 @@ class SgFDifficultySelectionView
                           arguments: {
                             'category': controller.selectedCategory.value,
                             'difficulty': 'Medium',
+                            'type': controller.selectedType.value,
                           },
                         );
                       },
@@ -199,6 +201,7 @@ class SgFDifficultySelectionView
                           arguments: {
                             'category': controller.selectedCategory.value,
                             'difficulty': 'Hard',
+                            'type': controller.selectedType.value,
                           },
                         );
                       },

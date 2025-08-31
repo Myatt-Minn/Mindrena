@@ -45,7 +45,10 @@ class ProfileController extends GetxController {
       await FirebaseAuth.instance.signOut();
       Get.offAllNamed('/sign-in'); // Navigate to sign-in page after sign out
     } catch (e) {
-      Get.snackbar('Error', 'Failed to sign out: $e');
+      Get.snackbar(
+        'error'.tr,
+        'sign_out_error'.trParams({'error': e.toString()}),
+      );
     }
   }
 }

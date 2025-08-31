@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:mindrena/app/data/UserModel.dart';
+import 'package:mindrena/app/modules/home/controllers/home_controller.dart';
 import 'package:quickalert/quickalert.dart';
 
 class LobbyController extends GetxController {
@@ -38,7 +39,14 @@ class LobbyController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-
+    // Stop background music when game starts
+    try {
+      final homeController = Get.find<HomeController>();
+      homeController.stopBackgroundMusic();
+      print('Background music stopped for game screen');
+    } catch (e) {
+      print('Could not stop background music: $e');
+    }
     // Parse arguments - support both old string format and new map format
     final arguments = Get.arguments;
     if (arguments is Map<String, dynamic>) {
@@ -96,6 +104,16 @@ Good luck and have fun! 🎮''',
   void onClose() {
     _matchmakingSubscription?.cancel();
     _gameSubscription?.cancel();
+
+    // Clear sent invitations when leaving lobby
+    try {
+      final homeController = Get.find<HomeController>();
+      homeController.clearSentInvitations();
+    } catch (e) {
+      // HomeController might not be available, ignore
+      print('Could not clear sent invitations: $e');
+    }
+
     super.onClose();
   }
 
@@ -286,9 +304,21 @@ Good luck and have fun! 🎮''',
         'Getting unique questions for players: $playerIds in category: $category',
       );
 
-      // Get all questions for the category
+      // Get all questions for the category - use appropriate collection based on category
+      String collectionName;
+      if (category == 'Flags' || category == 'PlacesImages') {
+        collectionName = 'image_questions';
+      } else if (category == 'Sounds') {
+        collectionName = 'audio_questions';
+      } else if (category == 'Memorize Images' || category == 'MemorizeImage') {
+        collectionName = 'memorize_images_questions';
+      } else {
+        collectionName = 'questions';
+      }
+      print('DEBUG: Using collection: $collectionName for category: $category');
+
       final questionsQuery = await _firestore
-          .collection('questions')
+          .collection(collectionName)
           .where('category', isEqualTo: category)
           .get();
 
@@ -373,9 +403,23 @@ Good luck and have fun! 🎮''',
     int count,
   ) async {
     try {
-      // Get all questions for the category first
+      // Get all questions for the category first - use appropriate collection based on category
+      String collectionName;
+      if (category == 'Flags' || category == 'PlacesImages') {
+        collectionName = 'image_questions';
+      } else if (category == 'Sounds') {
+        collectionName = 'audio_questions';
+      } else if (category == 'Memorize Images' || category == 'MemorizeImage') {
+        collectionName = 'memorize_images_questions';
+      } else {
+        collectionName = 'questions';
+      }
+      print(
+        'DEBUG: _getRandomQuestionsImproved using collection: $collectionName for category: $category',
+      );
+
       final questionsQuery = await _firestore
-          .collection('questions')
+          .collection(collectionName)
           .where('category', isEqualTo: category)
           .get();
 
@@ -392,6 +436,9 @@ Good luck and have fun! 🎮''',
           'options': List<String>.from(data['options'] ?? []),
           'correctIndex': data['correctIndex'] ?? 0,
           'randomSeed': data['randomSeed'] ?? Random().nextDouble(),
+          'image':
+              data['image'], // Include image field for image-based questions
+          'category': data['category'], // Include category for reference
         };
       }).toList();
 
@@ -471,8 +518,23 @@ Good luck and have fun! 🎮''',
     int count,
   ) async {
     try {
+      // Use appropriate collection based on category
+      String collectionName;
+      if (category == 'Flags' || category == 'PlacesImages') {
+        collectionName = 'image_questions';
+      } else if (category == 'Sounds') {
+        collectionName = 'audio_questions';
+      } else if (category == 'Memorize Images' || category == 'MemorizeImage') {
+        collectionName = 'memorize_images_questions';
+      } else {
+        collectionName = 'questions';
+      }
+      print(
+        'DEBUG: _getRandomQuestionsFallback using collection: $collectionName for category: $category',
+      );
+
       final questionsQuery = await _firestore
-          .collection('questions')
+          .collection(collectionName)
           .where('category', isEqualTo: category)
           .get();
 
@@ -487,6 +549,9 @@ Good luck and have fun! 🎮''',
           'text': data['text'],
           'options': List<String>.from(data['options'] ?? []),
           'correctIndex': data['correctIndex'] ?? 0,
+          'image':
+              data['image'], // Include image field for image-based questions
+          'category': data['category'], // Include category for reference
         };
       }).toList();
 
@@ -584,9 +649,27 @@ Good luck and have fun! 🎮''',
             _updatePlayersFromGame(data);
 
             if (status == 'active') {
-              // Navigate to game screen
+              // Stop background music before navigating to game
+              try {
+                final homeController = Get.find<HomeController>();
+                homeController.stopBackgroundMusic();
+                print('Background music stopped before game start');
+              } catch (e) {
+                print('Could not stop background music: $e');
+              }
+
+              // Navigate to appropriate game screen based on category
+              String routeName;
+              if (category == 'Memorize Images' ||
+                  category == 'MemorizeImages' ||
+                  category == 'MemorizeImage') {
+                routeName = '/memorize-image-game-screen';
+              } else {
+                routeName = '/game-screen';
+              }
+
               Get.offNamed(
-                '/game-screen',
+                routeName,
                 arguments: {'gameId': gameId.value, 'category': category},
               );
             }

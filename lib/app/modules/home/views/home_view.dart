@@ -3,6 +3,8 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
+import 'package:quickalert/models/quickalert_type.dart';
+import 'package:quickalert/widgets/quickalert_dialog.dart';
 
 import '../controllers/home_controller.dart';
 
@@ -11,107 +13,127 @@ class HomeView extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [
-          // Full screen Lottie background
-          Positioned.fill(
-            child: Lottie.asset(
-              'assets/gameBackground.json',
-              fit: BoxFit.cover,
-              repeat: true,
-              errorBuilder: (context, error, stackTrace) {
-                return Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        Colors.blue.shade50,
-                        Colors.purple.shade50,
-                        Colors.purple.shade50,
-                      ],
+    return WillPopScope(
+      onWillPop: () async {
+        QuickAlert.show(
+          context: context,
+          type: QuickAlertType.confirm,
+          title: 'Confirm Exit',
+          text: 'Are you sure you want to exit the game?',
+          confirmBtnText: 'Yes',
+          cancelBtnText: 'No',
+          onConfirmBtnTap: () {
+            Get.back(); // Close the dialog and handle exit logic if needed
+            Get.back(); // Exit the app
+          },
+          onCancelBtnTap: () {
+            Get.back(); // Just close the dialog
+          },
+        );
+        return false;
+      },
+      child: Scaffold(
+        body: Stack(
+          children: [
+            // Full screen Lottie background
+            Positioned.fill(
+              child: Lottie.asset(
+                'assets/gameBackground.json',
+                fit: BoxFit.cover,
+                repeat: true,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Colors.blue.shade50,
+                          Colors.purple.shade50,
+                          Colors.purple.shade50,
+                        ],
+                      ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
-          ),
 
-          // Semi-transparent overlay for better content readability
-          Positioned.fill(
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.black.withOpacity(0.1),
-                    Colors.black.withOpacity(0.2),
-                    Colors.black.withOpacity(0.1),
-                  ],
+            // Semi-transparent overlay for better content readability
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.black.withOpacity(0.1),
+                      Colors.black.withOpacity(0.2),
+                      Colors.black.withOpacity(0.1),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
 
-          // Main content over the background
-          SafeArea(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Column(
-                  children: [
-                    const SizedBox(height: 20),
-
-                    // Welcome header with animated text
-                    Container(
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.9),
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 20,
-                            offset: const Offset(0, 10),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        children: [
-                          // Header with notification icon
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                child: AnimatedTextKit(
-                                  animatedTexts: [
-                                    ColorizeAnimatedText(
-                                      'Choose Your Game',
-                                      textStyle: const TextStyle(
-                                        fontSize: 28,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                      colors: [
-                                        Colors.purple,
-                                        Colors.purple,
-                                        Colors.blue,
-                                        Colors.teal,
+            // Main content over the background
+            SafeArea(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: Column(
+                    children: [
+                      // Welcome header with animated text
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.9),
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 20,
+                              offset: const Offset(0, 10),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          children: [
+                            // Header with notification icon
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Center(
+                                    child: AnimatedTextKit(
+                                      animatedTexts: [
+                                        ColorizeAnimatedText(
+                                          'Choose Your Game',
+                                          textStyle: const TextStyle(
+                                            fontSize: 28,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                          colors: [
+                                            Colors.purple,
+                                            Colors.purple,
+                                            Colors.blue,
+                                            Colors.teal,
+                                          ],
+                                          speed: const Duration(
+                                            milliseconds: 400,
+                                          ),
+                                        ),
                                       ],
-                                      speed: const Duration(milliseconds: 400),
+                                      isRepeatingAnimation: true,
+                                      repeatForever: true,
                                     ),
-                                  ],
-                                  isRepeatingAnimation: true,
-                                  repeatForever: true,
+                                  ),
                                 ),
-                              ),
-                              // Invitation notification badge
-                              Obx(
-                                () =>
-                                    controller.hasPendingInvitations
-                                        ? Container(
-                                          decoration: BoxDecoration(
+                                // Invitation notification badge
+                                Obx(
+                                  () => controller.hasPendingInvitations
+                                      ? Container(
+                                          decoration: const BoxDecoration(
                                             color: Colors.red,
                                             shape: BoxShape.circle,
                                           ),
@@ -130,16 +152,20 @@ class HomeView extends GetView<HomeController> {
                                                     right: 0,
                                                     top: 0,
                                                     child: Container(
-                                                      padding: EdgeInsets.all(
-                                                        2,
-                                                      ),
-                                                      decoration: BoxDecoration(
-                                                        color: Colors.yellow,
-                                                        shape: BoxShape.circle,
-                                                      ),
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                            2,
+                                                          ),
+                                                      decoration:
+                                                          const BoxDecoration(
+                                                            color:
+                                                                Colors.yellow,
+                                                            shape:
+                                                                BoxShape.circle,
+                                                          ),
                                                       child: Text(
                                                         '${controller.pendingInvitationsCount}',
-                                                        style: TextStyle(
+                                                        style: const TextStyle(
                                                           color: Colors.black,
                                                           fontSize: 10,
                                                           fontWeight:
@@ -156,135 +182,141 @@ class HomeView extends GetView<HomeController> {
                                             },
                                           ),
                                         )
-                                        : SizedBox.shrink(),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            'Test your mind with these exciting challenges!',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.grey.shade600,
+                                      : const SizedBox.shrink(),
+                                ),
+                              ],
                             ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 40),
-
-                    // Game mode buttons
-                    _buildGameButton(
-                      emoji: '🎧',
-                      title: 'SoundIt',
-                      subtitle: 'Audio Challenge',
-                      description:
-                          'Test your audio memory and recognition skills',
-                      color: Colors.orange,
-                      onTap: () {
-                        // Navigate to SoundIt category selection
-                        Get.toNamed('/s-category-selection');
-                      },
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    _buildGameButton(
-                      emoji: '🧠',
-                      title: 'Memory War',
-                      subtitle: 'Visual Recall',
-                      description:
-                          'Challenge your visual memory and pattern recognition',
-                      color: Colors.purple,
-                      onTap: () {
-                        // Navigate to Memory War category selection
-                        Get.toNamed('/m-category-selection');
-                      },
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    _buildGameButton(
-                      emoji: '⚡',
-                      title: 'FlashFight',
-                      subtitle: 'Quiz Battle',
-                      description:
-                          'Fast-paced quiz battles against other players',
-                      color: Colors.red,
-                      onTap: () {
-                        // Navigate to FlashFight category selection
-                        Get.toNamed('/f-category-selection');
-                      },
-                    ),
-
-                    const SizedBox(height: 40),
-
-                    // Profile/Settings section
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.8),
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          _buildActionButton(
-                            icon: Icons.person_pin_rounded,
-                            label: 'Profile',
-                            onTap: () {
-                              Get.toNamed('/profile');
-                            },
-                          ),
-                          _buildActionButton(
-                            icon: Icons.shopping_cart,
-                            label: 'Shop',
-                            onTap: () {
-                              Get.snackbar(
-                                'Coming Soon',
-                                'Shop will be available soon!',
-                              );
-                            },
-                          ),
-                          _buildActionButton(
-                            icon: Icons.group,
-                            label: 'Friends',
-                            onTap: () {
-                              Get.toNamed('/friends');
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    TextButton(
-                      onPressed: () {
-                        Get.toNamed('/settings');
-                      },
-                      child: AutoSizeText(
-                        'Manage Preferences and Get Help -> Settings',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          decoration: TextDecoration.underline,
-                          decorationColor: Colors.white,
+                          ],
                         ),
-
-                        maxLines: 1,
-                        minFontSize: 12,
-                        overflow: TextOverflow.ellipsis,
                       ),
-                    ),
 
-                    const SizedBox(height: 16),
-                  ],
+                      const SizedBox(height: 24),
+
+                      // Game mode buttons
+                      _buildGameButton(
+                        emoji: 'assets/headphones.gif',
+                        title: 'SoundIt',
+                        subtitle: 'Audio Challenge',
+                        description:
+                            'Test your audio memory and recognition skills',
+                        color: Colors.orange,
+                        onTap: () {
+                          // Navigate to SoundIt category selection
+                          Get.toNamed('/s-category-selection');
+                        },
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      _buildGameButton(
+                        emoji: 'assets/memory.gif',
+                        title: 'Memory War',
+                        subtitle: 'Visual Recall',
+                        description:
+                            'Challenge your visual memory and pattern recognition',
+                        color: Colors.purple,
+                        onTap: () {
+                          // Navigate to Memory War category selection
+                          Get.toNamed('/m-category-selection');
+                        },
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      _buildGameButton(
+                        emoji: 'assets/thunder.gif',
+                        title: 'FlashFight',
+                        subtitle: 'Quiz Battle',
+                        description:
+                            'Fast-paced quiz battles against other players',
+                        color: Colors.red,
+                        onTap: () {
+                          // Navigate to FlashFight category selection
+                          Get.toNamed('/f-category-selection');
+                        },
+                      ),
+
+                      const SizedBox(height: 20),
+                      _buildGameButton(
+                        emoji: 'assets/photograph.gif',
+                        title: 'GuessPic',
+                        subtitle: 'Image Guessing',
+                        description:
+                            'Guess the image based on the clues provided',
+                        color: Colors.deepPurpleAccent,
+                        onTap: () {
+                          // Navigate to Guess category selection
+                          Get.toNamed('/g-category-selection');
+                        },
+                      ),
+
+                      const SizedBox(height: 24),
+
+                      // Profile/Settings section
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.8),
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            _buildActionButton(
+                              icon: 'assets/profile.gif',
+                              label: 'Profile',
+                              onTap: () {
+                                Get.toNamed('/profile');
+                              },
+                            ),
+                            _buildActionButton(
+                              icon: 'assets/stalls.gif',
+                              label: 'Shop',
+                              onTap: () {
+                                Get.snackbar(
+                                  'Coming Soon',
+                                  'Shop will be available soon!',
+                                );
+                              },
+                            ),
+                            _buildActionButton(
+                              icon: 'assets/three_friends.gif',
+                              label: 'Friends',
+                              onTap: () {
+                                Get.toNamed('/friends');
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      TextButton(
+                        onPressed: () {
+                          Get.toNamed('/settings');
+                        },
+                        child: AutoSizeText(
+                          'Manage Preferences and Get Help -> Settings',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            decoration: TextDecoration.underline,
+                            decorationColor: Colors.white,
+                          ),
+
+                          maxLines: 1,
+                          minFontSize: 12,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+
+                      const SizedBox(height: 12),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -316,7 +348,7 @@ class HomeView extends GetView<HomeController> {
           onTap: onTap,
           borderRadius: BorderRadius.circular(20),
           child: Padding(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(16),
             child: Row(
               children: [
                 // Emoji container
@@ -329,7 +361,23 @@ class HomeView extends GetView<HomeController> {
                     border: Border.all(color: color.withOpacity(0.3), width: 2),
                   ),
                   child: Center(
-                    child: Text(emoji, style: const TextStyle(fontSize: 28)),
+                    child: Image.asset(
+                      emoji,
+                      width: 40,
+                      height: 40,
+                      errorBuilder: (context, error, stackTrace) {
+                        // Fallback icon based on the game type
+                        IconData fallbackIcon = Icons.games;
+                        if (emoji.contains('headphones')) {
+                          fallbackIcon = Icons.headphones;
+                        } else if (emoji.contains('brain')) {
+                          fallbackIcon = Icons.psychology;
+                        } else if (emoji.contains('thunder')) {
+                          fallbackIcon = Icons.flash_on;
+                        }
+                        return Icon(fallbackIcon, color: color, size: 30);
+                      },
+                    ),
                   ),
                 ),
 
@@ -379,7 +427,7 @@ class HomeView extends GetView<HomeController> {
   }
 
   Widget _buildActionButton({
-    required IconData icon,
+    required String icon,
     required String label,
     required VoidCallback onTap,
   }) {
@@ -391,7 +439,27 @@ class HomeView extends GetView<HomeController> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 24, color: Colors.grey.shade700),
+            Image.asset(
+              icon,
+              width: 24,
+              height: 24,
+              errorBuilder: (context, error, stackTrace) {
+                // Fallback icons based on the label
+                IconData fallbackIcon = Icons.help;
+                if (label == 'Profile') {
+                  fallbackIcon = Icons.person;
+                } else if (label == 'Shop') {
+                  fallbackIcon = Icons.shopping_cart;
+                } else if (label == 'Friends') {
+                  fallbackIcon = Icons.people;
+                }
+                return Icon(
+                  fallbackIcon,
+                  size: 24,
+                  color: Colors.grey.shade600,
+                );
+              },
+            ),
             const SizedBox(height: 4),
             Text(
               label,
@@ -424,8 +492,8 @@ class HomeView extends GetView<HomeController> {
         title: Row(
           children: [
             Icon(Icons.mail, color: Colors.purple),
-            SizedBox(width: 8),
-            Text('Game Invitations'),
+            const SizedBox(width: 8),
+            const Text('Game Invitations'),
           ],
         ),
         content: SizedBox(
@@ -440,14 +508,14 @@ class HomeView extends GetView<HomeController> {
                   leading: CircleAvatar(
                     backgroundImage:
                         invitation['inviterAvatarUrl'] != null &&
-                                invitation['inviterAvatarUrl'].isNotEmpty
-                            ? NetworkImage(invitation['inviterAvatarUrl'])
-                            : null,
+                            invitation['inviterAvatarUrl'].isNotEmpty
+                        ? NetworkImage(invitation['inviterAvatarUrl'])
+                        : null,
                     child:
                         invitation['inviterAvatarUrl'] == null ||
-                                invitation['inviterAvatarUrl'].isEmpty
-                            ? Icon(Icons.person)
-                            : null,
+                            invitation['inviterAvatarUrl'].isEmpty
+                        ? const Icon(Icons.person)
+                        : null,
                   ),
                   title: Text('${invitation['inviterUsername']}'),
                   subtitle: Text('Category: ${invitation['category']}'),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:lottie/lottie.dart';
 import 'package:mindrena/app/data/FeedBackModel.dart';
 import 'package:mindrena/app/data/consts_config.dart';
 
@@ -66,8 +65,6 @@ class UserFeedbackView extends GetView<UserFeedbackController> {
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            Lottie.asset('images/feedback_ani.json', width: 200, height: 150),
-            const SizedBox(height: 10),
             Text(
               "We Value Your Feedback!",
               style: TextStyle(

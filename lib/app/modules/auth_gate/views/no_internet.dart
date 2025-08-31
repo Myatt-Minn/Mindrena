@@ -14,25 +14,31 @@ class NoInternetScreen extends GetView<AuthGateController> {
         children: [
           // Full screen Lottie background
           Positioned.fill(
-            child: Lottie.asset(
-              'assets/gameBackground.json',
-              fit: BoxFit.cover,
-              repeat: true,
-              errorBuilder: (context, error, stackTrace) {
-                return Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        Colors.blue.shade50,
-                        Colors.purple.shade50,
-                        Colors.purple.shade50,
-                      ],
+            child: SizedBox(
+              width: double.infinity,
+              height: double.infinity,
+              child: Lottie.asset(
+                'assets/gameBackground.json',
+                fit: BoxFit.fill,
+                repeat: true,
+                width: double.infinity,
+                height: double.infinity,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Colors.blue.shade50,
+                          Colors.purple.shade50,
+                          Colors.purple.shade50,
+                        ],
+                      ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
           ),
 
@@ -83,7 +89,7 @@ class NoInternetScreen extends GetView<AuthGateController> {
                           AnimatedTextKit(
                             animatedTexts: [
                               ColorizeAnimatedText(
-                                'No Internet Connection',
+                                'no_internet_connection'.tr,
                                 textStyle: const TextStyle(
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold,
@@ -102,7 +108,7 @@ class NoInternetScreen extends GetView<AuthGateController> {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            'Please check your connection and try again',
+                            'check_connection_and_try_again'.tr,
                             style: TextStyle(
                               fontSize: 16,
                               color: Colors.grey.shade600,
@@ -188,7 +194,7 @@ class NoInternetScreen extends GetView<AuthGateController> {
                                     const SizedBox(width: 12),
                                     Expanded(
                                       child: Text(
-                                        'Connection Required',
+                                        'connection_required'.tr,
                                         style: TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.bold,
@@ -200,7 +206,7 @@ class NoInternetScreen extends GetView<AuthGateController> {
                                 ),
                                 const SizedBox(height: 12),
                                 Text(
-                                  'You need an active internet connection to use Mindrena. Please check your WiFi or mobile data connection.',
+                                  'connection_required_message'.tr,
                                   style: TextStyle(
                                     fontSize: 16,
                                     color: Colors.grey.shade700,
@@ -253,8 +259,8 @@ class NoInternetScreen extends GetView<AuthGateController> {
                                             ),
                                           ),
                                           const SizedBox(width: 12),
-                                          const Text(
-                                            'Checking...',
+                                          Text(
+                                            'checking'.tr,
                                             style: TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.bold,
@@ -268,8 +274,8 @@ class NoInternetScreen extends GetView<AuthGateController> {
                                         children: [
                                           const Icon(Icons.refresh, size: 20),
                                           const SizedBox(width: 8),
-                                          const Text(
-                                            'Try Again',
+                                          Text(
+                                            'try_again'.tr,
                                             style: TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.bold,
@@ -313,7 +319,7 @@ class NoInternetScreen extends GetView<AuthGateController> {
                               ),
                               const SizedBox(width: 8),
                               Text(
-                                'Quick Tips:',
+                                'quick_tips'.tr,
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
@@ -323,10 +329,10 @@ class NoInternetScreen extends GetView<AuthGateController> {
                             ],
                           ),
                           const SizedBox(height: 12),
-                          _buildTipItem('Check your WiFi connection'),
-                          _buildTipItem('Try switching to mobile data'),
-                          _buildTipItem('Move closer to your router'),
-                          _buildTipItem('Restart your device if needed'),
+                          _buildTipItem('tip_check_wifi'.tr),
+                          _buildTipItem('tip_switch_data'.tr),
+                          _buildTipItem('tip_move_closer'.tr),
+                          _buildTipItem('tip_restart_device'.tr),
                         ],
                       ),
                     ),

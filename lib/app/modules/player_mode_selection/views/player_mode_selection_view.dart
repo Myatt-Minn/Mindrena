@@ -2,6 +2,7 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../controllers/player_mode_selection_controller.dart';
 
@@ -11,32 +12,35 @@ class PlayerModeSelectionView extends GetView<PlayerModeSelectionController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBody: true,
-      resizeToAvoidBottomInset: false,
       body: Stack(
-        fit: StackFit.expand,
         children: [
           // Full screen Lottie background
           Positioned.fill(
-            child: Lottie.asset(
-              'assets/gameBackground.json',
-              fit: BoxFit.cover,
-              repeat: true,
-              errorBuilder: (context, error, stackTrace) {
-                return Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        Colors.blue.shade50,
-                        Colors.purple.shade50,
-                        Colors.purple.shade50,
-                      ],
+            child: SizedBox(
+              width: double.infinity,
+              height: double.infinity,
+              child: Lottie.asset(
+                'assets/gameBackground.json',
+                fit: BoxFit.fill,
+                repeat: true,
+                width: double.infinity,
+                height: double.infinity,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Colors.blue.shade50,
+                          Colors.purple.shade50,
+                          Colors.purple.shade50,
+                        ],
+                      ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
           ),
 
@@ -71,8 +75,8 @@ class PlayerModeSelectionView extends GetView<PlayerModeSelectionController> {
                       Expanded(
                         child: Container(
                           padding: const EdgeInsets.symmetric(
-                            vertical: 16,
-                            horizontal: 20,
+                            vertical: 12,
+                            horizontal: 16,
                           ),
                           decoration: BoxDecoration(
                             color: Colors.white.withOpacity(0.9),
@@ -109,50 +113,39 @@ class PlayerModeSelectionView extends GetView<PlayerModeSelectionController> {
                           ),
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      const SizedBox(width: 8),
                       // Language selector button
-                      Obx(
-                        () => Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.9),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.9),
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 10,
+                              offset: const Offset(0, 5),
+                            ),
+                          ],
+                        ),
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
                             borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                blurRadius: 10,
-                                offset: const Offset(0, 5),
+                            onTap: () => _showLanguageSelector(context),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 6,
                               ),
-                            ],
-                          ),
-                          child: Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              borderRadius: BorderRadius.circular(12),
-                              onTap: () => _showLanguageSelector(context),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 12,
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(
-                                      Icons.language,
-                                      color: Colors.purple,
-                                      size: 20,
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Text(
-                                      controller.selectedLanguage.value,
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.purple,
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Image.asset(
+                                    'assets/language.gif',
+                                    width: 38,
+                                    height: 38,
+                                  ),
+                                ],
                               ),
                             ),
                           ),
@@ -161,224 +154,69 @@ class PlayerModeSelectionView extends GetView<PlayerModeSelectionController> {
                     ],
                   ),
 
-                  const SizedBox(height: 40),
-
-                  // // Animated subtitle
-                  // Container(
-                  //   padding: const EdgeInsets.symmetric(
-                  //     vertical: 20,
-                  //     horizontal: 24,
-                  //   ),
-                  //   decoration: BoxDecoration(
-                  //     color: Colors.white.withOpacity(0.9),
-                  //     borderRadius: BorderRadius.circular(20),
-                  //     boxShadow: [
-                  //       BoxShadow(
-                  //         color: Colors.black.withOpacity(0.1),
-                  //         blurRadius: 15,
-                  //         offset: const Offset(0, 8),
-                  //       ),
-                  //     ],
-                  //   ),
-                  //   child: AnimatedTextKit(
-                  //     animatedTexts: [
-                  //       TypewriterAnimatedText(
-                  //         'How do you want to play?',
-                  //         textStyle: TextStyle(
-                  //           fontSize: 18,
-                  //           fontWeight: FontWeight.w600,
-                  //           color: Colors.grey.shade700,
-                  //         ),
-                  //         speed: const Duration(milliseconds: 100),
-                  //       ),
-                  //     ],
-                  //     isRepeatingAnimation: true,
-                  //     repeatForever: true,
-                  //     pause: const Duration(seconds: 3),
-                  //   ),
-                  // ),
                   const SizedBox(height: 60),
 
-                  // Multi Player Button
-                  Container(
-                    width: double.infinity,
-                    margin: const EdgeInsets.only(bottom: 20),
-                    child: Material(
-                      elevation: 12,
-                      borderRadius: BorderRadius.circular(25),
-                      color: Colors.transparent,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [
-                              Colors.purple.shade400,
-                              Colors.deepPurple.shade500,
-                            ],
-                          ),
-                          borderRadius: BorderRadius.circular(25),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.purple.withOpacity(0.3),
-                              blurRadius: 15,
-                              offset: const Offset(0, 8),
+                  Obx(
+                    () => controller.isLoaded.value
+                        ? GestureDetector(
+                            onTap: () {
+                              Get.offAllNamed('/auth-gate');
+                            },
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: Image.asset(
+                                'assets/Two_Player.gif',
+                                width: 290,
+                              ),
                             ),
-                          ],
-                        ),
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(25),
-                          onTap: () {
-                            Get.offAllNamed('/auth-gate');
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 24,
-                              horizontal: 20,
-                            ),
-                            child: Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(16),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.2),
-                                    borderRadius: BorderRadius.circular(15),
-                                  ),
-                                  child: const Icon(
-                                    Icons.group,
-                                    color: Colors.white,
-                                    size: 32,
-                                  ),
-                                ),
-                                const SizedBox(width: 20),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const Text(
-                                        'Two Players',
-                                        style: TextStyle(
-                                          fontSize: 24,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        'Play with your friend/partner or random online opponent',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          color: Colors.white.withOpacity(0.9),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const Icon(
-                                  Icons.arrow_forward_ios,
-                                  color: Colors.white,
-                                  size: 20,
-                                ),
+                          )
+                        : Shimmer(
+                            gradient: LinearGradient(
+                              colors: [
+                                Colors.grey.shade300,
+                                Colors.grey.shade100,
+                                Colors.grey.shade300,
                               ],
+                              stops: const [0.1, 0.5, 0.9],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
                             ),
+                            child: SizedBox(width: 290, height: 180),
                           ),
-                        ),
-                      ),
-                    ),
                   ),
+
+                  const SizedBox(height: 40),
 
                   // Single Player Button
-                  Container(
-                    width: double.infinity,
-                    margin: const EdgeInsets.only(bottom: 40),
-                    child: Material(
-                      elevation: 12,
-                      borderRadius: BorderRadius.circular(25),
-                      color: Colors.transparent,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [
-                              Colors.blue.shade400,
-                              Colors.purple.shade500,
-                            ],
-                          ),
-                          borderRadius: BorderRadius.circular(25),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.blue.withOpacity(0.3),
-                              blurRadius: 15,
-                              offset: const Offset(0, 8),
+                  Obx(
+                    () => controller.isLoaded.value
+                        ? GestureDetector(
+                            onTap: () {
+                              Get.offAllNamed('/single-player');
+                            },
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: Image.asset(
+                                'assets/Single_Player.gif',
+                                width: 290,
+                              ),
                             ),
-                          ],
-                        ),
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(25),
-                          onTap: () {
-                            Get.offAllNamed('/sg-home');
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 24,
-                              horizontal: 20,
-                            ),
-                            child: Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(16),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.2),
-                                    borderRadius: BorderRadius.circular(15),
-                                  ),
-                                  child: const Icon(
-                                    Icons.person,
-                                    color: Colors.white,
-                                    size: 32,
-                                  ),
-                                ),
-                                const SizedBox(width: 20),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const Text(
-                                        'Single Player',
-                                        style: TextStyle(
-                                          fontSize: 24,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        'Play alone and challenge yourself',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          color: Colors.white.withOpacity(0.9),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const Icon(
-                                  Icons.arrow_forward_ios,
-                                  color: Colors.white,
-                                  size: 20,
-                                ),
+                          )
+                        : Shimmer(
+                            gradient: LinearGradient(
+                              colors: [
+                                Colors.grey.shade300,
+                                Colors.grey.shade100,
+                                Colors.grey.shade300,
                               ],
+                              stops: const [0.1, 0.5, 0.9],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
                             ),
+                            child: SizedBox(width: 290, height: 180),
                           ),
-                        ),
-                      ),
-                    ),
                   ),
-
-                  SizedBox(height: MediaQuery.of(context).size.height * 0.1),
-
+                  const SizedBox(height: 40),
                   // Additional info card
                   Container(
                     width: double.infinity,
@@ -582,16 +420,14 @@ class PlayerModeSelectionView extends GetView<PlayerModeSelectionController> {
           width: double.infinity,
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color:
-                isSelected
-                    ? Colors.purple.withOpacity(0.1)
-                    : Colors.grey.withOpacity(0.05),
+            color: isSelected
+                ? Colors.purple.withOpacity(0.1)
+                : Colors.grey.withOpacity(0.05),
             borderRadius: BorderRadius.circular(15),
             border: Border.all(
-              color:
-                  isSelected
-                      ? Colors.purple.withOpacity(0.3)
-                      : Colors.grey.withOpacity(0.2),
+              color: isSelected
+                  ? Colors.purple.withOpacity(0.3)
+                  : Colors.grey.withOpacity(0.2),
               width: isSelected ? 2 : 1,
             ),
           ),
@@ -608,18 +444,18 @@ class PlayerModeSelectionView extends GetView<PlayerModeSelectionController> {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color:
-                            isSelected ? Colors.purple : Colors.grey.shade800,
+                        color: isSelected
+                            ? Colors.purple
+                            : Colors.grey.shade800,
                       ),
                     ),
                     Text(
                       code,
                       style: TextStyle(
                         fontSize: 12,
-                        color:
-                            isSelected
-                                ? Colors.purple.shade600
-                                : Colors.grey.shade600,
+                        color: isSelected
+                            ? Colors.purple.shade600
+                            : Colors.grey.shade600,
                       ),
                     ),
                   ],

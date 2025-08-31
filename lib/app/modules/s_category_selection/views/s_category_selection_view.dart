@@ -145,7 +145,7 @@ class SCategorySelectionView extends GetView<SCategorySelectionController> {
                     const SizedBox(height: 20),
 
                     _buildCategoryButton(
-                      emoji: '🐶',
+                      emoji: 'assets/panda.gif',
                       title: 'Animal Sounds',
                       subtitle: 'Real Animal Sounds',
                       description:
@@ -153,14 +153,17 @@ class SCategorySelectionView extends GetView<SCategorySelectionController> {
                       color: Colors.amber,
                       onTap: () {
                         // Navigate to Animal Sounds category
-                        Get.toNamed('/lobby');
+                        Get.toNamed(
+                          '/opponent-type-selection',
+                          arguments: "Sounds",
+                        );
                       },
                     ),
 
                     const SizedBox(height: 20),
 
                     _buildCategoryButton(
-                      emoji: '🎵',
+                      emoji: 'assets/music.gif',
                       title: 'Songs',
                       subtitle: 'Music Quiz',
                       description:
@@ -172,17 +175,19 @@ class SCategorySelectionView extends GetView<SCategorySelectionController> {
                     ),
 
                     const SizedBox(height: 20),
-                    // Category selection buttons
+
                     _buildCategoryButton(
-                      emoji: '🎮',
-                      title: 'Mobile Legend',
-                      subtitle: 'MOBA Game',
+                      emoji: 'assets/radio.gif',
+                      title: 'General',
+                      subtitle: 'General Sounds',
                       description:
-                          'Test your knowledge about Mobile Legends heroes sounds',
-                      color: Colors.blue,
+                          'Test your general knowledge and identify various sounds',
+                      color: Colors.pink,
                       onTap: () {
-                        // Navigate to Mobile Legend category
-                        Get.toNamed('/lobby');
+                        Get.toNamed(
+                          '/opponent-type-selection',
+                          arguments: "Sounds",
+                        );
                       },
                     ),
 
@@ -268,7 +273,23 @@ class SCategorySelectionView extends GetView<SCategorySelectionController> {
                     border: Border.all(color: color.withOpacity(0.3), width: 2),
                   ),
                   child: Center(
-                    child: Text(emoji, style: const TextStyle(fontSize: 28)),
+                    child: Image.asset(
+                      emoji,
+                      width: 40,
+                      height: 40,
+                      errorBuilder: (context, error, stackTrace) {
+                        // Fallback icon based on the game type
+                        IconData fallbackIcon = Icons.games;
+                        if (emoji.contains('panda')) {
+                          fallbackIcon = Icons.pets;
+                        } else if (emoji.contains('music')) {
+                          fallbackIcon = Icons.music_note;
+                        } else if (emoji.contains('radio')) {
+                          fallbackIcon = Icons.radio;
+                        }
+                        return Icon(fallbackIcon, color: color, size: 30);
+                      },
+                    ),
                   ),
                 ),
 

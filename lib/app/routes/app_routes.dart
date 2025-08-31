@@ -22,6 +22,8 @@ abstract class Routes {
   static const USER_GUIDES = _Paths.USER_GUIDES;
   static const USER_FEEDBACK = _Paths.USER_FEEDBACK;
   static const OPPONENT_TYPE_SELECTION = _Paths.OPPONENT_TYPE_SELECTION;
+  static const G_CATEGORY_SELECTION = _Paths.G_CATEGORY_SELECTION;
+  static const MEMORIZE_IMAGE_GAME_SCREEN = _Paths.MEMORIZE_IMAGE_GAME_SCREEN;
   static const SINGLE_PLAYER = _Paths.SINGLE_PLAYER;
   static const SG_HOME = _Paths.SG_HOME;
   static const SG_F_CATEGORY_SELECTION = _Paths.SG_F_CATEGORY_SELECTION;
@@ -50,6 +52,8 @@ abstract class _Paths {
   static const USER_GUIDES = '/user-guides';
   static const USER_FEEDBACK = '/user-feedback';
   static const OPPONENT_TYPE_SELECTION = '/opponent-type-selection';
+  static const G_CATEGORY_SELECTION = '/g-category-selection';
+  static const MEMORIZE_IMAGE_GAME_SCREEN = '/memorize-image-game-screen';
   static const SINGLE_PLAYER = '/single-player';
   static const SG_HOME = '/sg-home';
   static const SG_F_CATEGORY_SELECTION = '/sg-f-category-selection';

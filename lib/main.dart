@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:mindrena/app/data/MyTranslations.dart';
+import 'package:mindrena/app/data/My_Translations.dart';
 import 'package:mindrena/app/data/consts_config.dart';
 import 'package:mindrena/app/data/sendNotificationHandler.dart';
 import 'package:mindrena/app/modules/splash/bindings/splash_binding.dart';
@@ -22,7 +22,6 @@ void main() async {
   SendNotificationHandler.initialized();
   await SendNotificationHandler().initNotification();
   FirebaseMessaging.onBackgroundMessage(handleBackgroundMessage);
-
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
@@ -33,11 +32,10 @@ void main() async {
     runApp(
       GetMaterialApp(
         translations: MyTranslations(),
-        // Set the locale dynamically based on the saved language
-        locale:
-            savedLanguage == 'ENG'
-                ? const Locale('en', 'US')
-                : const Locale('my', 'MM'),
+        // Set the locale dynamically based on the saved languagek
+        locale: savedLanguage == 'ENG'
+            ? const Locale('en', 'US')
+            : const Locale('my', 'MM'),
         fallbackLocale: const Locale(
           'en',
           'US',
