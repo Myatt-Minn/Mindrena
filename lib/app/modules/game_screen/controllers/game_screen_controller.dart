@@ -807,6 +807,11 @@ class GameScreenController extends GetxController {
     return currentQuestion.value!['image'] as String?;
   }
 
+  String? get currentQuestionImageText {
+    if (currentQuestion.value == null || !isImageQuestion) return null;
+    return currentQuestion.value!['text'] as String?;
+  }
+
   // Get the audio URL for the current question
   String? get currentQuestionAudioUrl {
     if (currentQuestion.value == null || !isAudioQuestion) return null;

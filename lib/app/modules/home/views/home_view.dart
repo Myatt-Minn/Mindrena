@@ -273,10 +273,7 @@ class HomeView extends GetView<HomeController> {
                               icon: 'assets/stalls.gif',
                               label: 'Shop',
                               onTap: () {
-                                Get.snackbar(
-                                  'Coming Soon',
-                                  'Shop will be available soon!',
-                                );
+                                Get.toNamed('/shop');
                               },
                             ),
                             _buildActionButton(

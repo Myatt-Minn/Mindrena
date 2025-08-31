@@ -1308,6 +1308,7 @@ Future<void> populateImageQuestions() async {
   // 15 Flag Questions
   final List<Map<String, dynamic>> questions = [
     {
+      'text': 'Guess the country of this flag',
       'category': 'Flags',
       'image':
           'https://firebasestorage.googleapis.com/v0/b/xstore-faa86.appspot.com/o/flags%2Fgermany.png?alt=media&token=15e81c3b-3da4-4322-a622-f29d5a6f9931',
@@ -1315,6 +1316,7 @@ Future<void> populateImageQuestions() async {
       'correctIndex': 0,
     },
     {
+      'text': 'Guess the country of this flag',
       'category': 'Flags',
       'image':
           'https://firebasestorage.googleapis.com/v0/b/xstore-faa86.appspot.com/o/flags%2Ftaiwan.png?alt=media&token=2f55a67b-8352-4e64-9130-a1b26746682e',
@@ -1322,6 +1324,7 @@ Future<void> populateImageQuestions() async {
       'correctIndex': 3,
     },
     {
+      'text': 'Guess the country of this flag',
       'category': 'Flags',
       'image':
           'https://firebasestorage.googleapis.com/v0/b/xstore-faa86.appspot.com/o/flags%2Ffrance.png?alt=media&token=059adda0-df9f-477c-a742-cc6a0696261f',
@@ -1329,6 +1332,7 @@ Future<void> populateImageQuestions() async {
       'correctIndex': 1,
     },
     {
+      'text': 'Guess the country of this flag',
       'category': 'Flags',
       'image':
           'https://firebasestorage.googleapis.com/v0/b/xstore-faa86.appspot.com/o/flags%2Findia.png?alt=media&token=6a02b26e-eea9-4ed5-9d90-b188d77e5329',
@@ -1336,6 +1340,7 @@ Future<void> populateImageQuestions() async {
       'correctIndex': 1,
     },
     {
+      'text': 'Guess the country of this flag',
       'category': 'Flags',
       'image':
           'https://firebasestorage.googleapis.com/v0/b/xstore-faa86.appspot.com/o/flags%2Frussia.png?alt=media&token=b0458ee9-197f-4376-9ba1-c0d16fd5b631',
@@ -1343,6 +1348,7 @@ Future<void> populateImageQuestions() async {
       'correctIndex': 0,
     },
     {
+      'text': 'Guess the country of this flag',
       'category': 'Flags',
       'image':
           'https://firebasestorage.googleapis.com/v0/b/xstore-faa86.appspot.com/o/flags%2Fthailand.png?alt=media&token=5340e9d8-6549-4115-a39a-75b589d77513',
@@ -1350,6 +1356,7 @@ Future<void> populateImageQuestions() async {
       'correctIndex': 2,
     },
     {
+      'text': 'Guess the country of this flag',
       'category': 'Flags',
       'image':
           'https://firebasestorage.googleapis.com/v0/b/xstore-faa86.appspot.com/o/flags%2Fvietnam.png?alt=media&token=0f869660-395f-4d26-91d1-1190a278a79c',
@@ -1357,6 +1364,7 @@ Future<void> populateImageQuestions() async {
       'correctIndex': 1,
     },
     {
+      'text': 'Guess the country of this flag',
       'category': 'Flags',
       'image':
           'https://firebasestorage.googleapis.com/v0/b/xstore-faa86.appspot.com/o/flags%2Fbrazil.png?alt=media&token=e657af77-b121-4df8-a0be-859cf393dad2',
@@ -1364,6 +1372,7 @@ Future<void> populateImageQuestions() async {
       'correctIndex': 0,
     },
     {
+      'text': 'Guess the country of this flag',
       'category': 'Flags',
       'image':
           'https://firebasestorage.googleapis.com/v0/b/xstore-faa86.appspot.com/o/flags%2Fmexico.png?alt=media&token=1a5a605e-d296-47d9-84b6-9250a69f976f',
@@ -1371,6 +1380,7 @@ Future<void> populateImageQuestions() async {
       'correctIndex': 2,
     },
     {
+      'text': 'Guess the country of this flag',
       'category': 'Flags',
       'image':
           'https://firebasestorage.googleapis.com/v0/b/xstore-faa86.appspot.com/o/flags%2Fcanada.png?alt=media&token=870bd652-d33f-47ac-8247-1326c1c2fdef',
@@ -1378,6 +1388,7 @@ Future<void> populateImageQuestions() async {
       'correctIndex': 0,
     },
     {
+      'text': 'Guess the country of this flag',
       'category': 'Flags',
       'image':
           'https://firebasestorage.googleapis.com/v0/b/xstore-faa86.appspot.com/o/flags%2Fturkey.png?alt=media&token=ee846f11-6310-48df-b98c-983b92b02c54',
@@ -1385,6 +1396,7 @@ Future<void> populateImageQuestions() async {
       'correctIndex': 1,
     },
     {
+      'text': 'Guess the country of this flag',
       'category': 'Flags',
       'image':
           'https://firebasestorage.googleapis.com/v0/b/xstore-faa86.appspot.com/o/flags%2Fisrael-flag-png-large.png?alt=media&token=8db0dd7f-4784-4cf2-84ef-e83469c86703',
@@ -1392,6 +1404,7 @@ Future<void> populateImageQuestions() async {
       'correctIndex': 0,
     },
     {
+      'text': 'Guess the country of this flag',
       'category': 'Flags',
       'image':
           'https://firebasestorage.googleapis.com/v0/b/xstore-faa86.appspot.com/o/flags%2Fnorth-korea-flag-png-large.png?alt=media&token=073d0737-dfbb-4830-a8cc-c371b4716f54',
@@ -1399,6 +1412,7 @@ Future<void> populateImageQuestions() async {
       'correctIndex': 1,
     },
     {
+      'text': 'Guess the country of this flag',
       'category': 'Flags',
       'image':
           'https://firebasestorage.googleapis.com/v0/b/xstore-faa86.appspot.com/o/flags%2Fsweden-flag-png-large.png?alt=media&token=3b83e536-5a6d-4d7f-9ec5-e433a38c053d',
@@ -1406,6 +1420,7 @@ Future<void> populateImageQuestions() async {
       'correctIndex': 2,
     },
     {
+      'text': 'Guess the country of this flag',
       'category': 'Flags',
       'image':
           'https://firebasestorage.googleapis.com/v0/b/xstore-faa86.appspot.com/o/flags%2Flaos-flag-png-large.png?alt=media&token=5a8c8acb-eb90-4ef6-b34a-5f386ee7a2e7',
@@ -1413,6 +1428,7 @@ Future<void> populateImageQuestions() async {
       'correctIndex': 2,
     },
     {
+      'text': 'Guess the country of this flag',
       'category': 'Flags',
       'image':
           'https://firebasestorage.googleapis.com/v0/b/xstore-faa86.appspot.com/o/flags%2Fnepal-flag-png-large.png?alt=media&token=96539167-94f3-44f6-ac98-efeef2eced8c',
@@ -1420,6 +1436,7 @@ Future<void> populateImageQuestions() async {
       'correctIndex': 2,
     },
     {
+      'text': 'Guess the country of this flag',
       'category': 'Flags',
       'image':
           'https://firebasestorage.googleapis.com/v0/b/xstore-faa86.appspot.com/o/flags%2Fcambodia-flag-png-large.png?alt=media&token=d48aab29-ceb4-4bb2-850d-b68413471715',
@@ -1427,6 +1444,7 @@ Future<void> populateImageQuestions() async {
       'correctIndex': 0,
     },
     {
+      'text': 'Guess the country of this flag',
       'category': 'Flags',
       'image':
           'https://firebasestorage.googleapis.com/v0/b/xstore-faa86.appspot.com/o/flags%2Findonesia-flag-png-large.png?alt=media&token=113b806f-645a-49f1-ae95-0b12654cc2b1',
@@ -1434,6 +1452,7 @@ Future<void> populateImageQuestions() async {
       'correctIndex': 1,
     },
     {
+      'text': 'Guess the country of this flag',
       'category': 'Flags',
       'image':
           'https://firebasestorage.googleapis.com/v0/b/xstore-faa86.appspot.com/o/flags%2Fphilippines-flag-png-large.png?alt=media&token=f3cf2fe8-2822-4c41-bbeb-c3a3e4a71fe3',
@@ -1441,235 +1460,12 @@ Future<void> populateImageQuestions() async {
       'correctIndex': 0,
     },
     {
+      'text': 'Guess the country of this flag',
       'category': 'Flags',
       'image':
           'https://firebasestorage.googleapis.com/v0/b/xstore-faa86.appspot.com/o/flags%2Fswitzerland-flag-png-large.png?alt=media&token=6cbaf5db-f71f-40a2-8f8e-9f1c5dd6b9de',
       'options': ['Austria', 'Switzerland', 'Denmark', 'Georgia'],
       'correctIndex': 1,
-    },
-    {
-      'category': 'PlacesImages',
-      'image':
-          'https://www.theviennablog.com/wp-content/uploads/2022/09/MilanoOneDayTrip_MilanDuomo-1024x767.jpg',
-      'options': ['Spain', 'Egypt', 'Italy', 'Turkey'],
-      'correctIndex': 2,
-    },
-    {
-      'category': 'PlacesImages',
-      'image':
-          'https://www.thesun.co.uk/wp-content/uploads/2025/08/colosseum-rome-night-lights-italy-1014053136.jpg?strip=all&quality=100&w=1920&h=1080&crop=1',
-      'options': ['Italy', 'Spain', 'Egypt', 'Portugal'],
-      'correctIndex': 0,
-    },
-    {
-      'category': 'PlacesImages',
-      'image':
-          'https://i.natgeofe.com/k/109a4e08-5ebc-48a5-99ab-3fbfc1bbd611/Giza_Egypt_KIDS_0123_16x9.jpg',
-      'options': ['Egypt', 'Italy', 'Spain', 'Jordan'],
-      'correctIndex': 0,
-    },
-    {
-      'category': 'PlacesImages',
-      'image':
-          'https://cdn.britannica.com/18/179518-138-40BEBE00/investigation-Great-Sphinx-Egypt-Giza.jpg?w=800&h=450&c=crop',
-      'options': ['Spain', 'Italy', 'Egypt', 'Turkey'],
-      'correctIndex': 2,
-    },
-    {
-      'category': 'PlacesImages',
-      'image':
-          'https://www.paris-tours-guides.com/image/eiffel_tower/eiffel_tower-full-vertical-day37.jpg',
-      'options': ['Paris', 'London', 'Madrid', 'Rome'],
-      'correctIndex': 0,
-    },
-    {
-      'category': 'PlacesImages',
-      'image':
-          'https://a.travel-assets.com/findyours-php/viewfinder/images/res70/20000/20648-Big-Ben.jpg',
-      'options': ['Paris', 'London', 'Berlin', 'Madrid'],
-      'correctIndex': 1,
-    },
-    {
-      'category': 'PlacesImages',
-      'image':
-          'https://media1.thrillophilia.com/filestore/lpee8u2snwu9iszkq4ner5cvah6h_la_sagrada_familia_269b9a32a4.jpg?w=400&dpr=2',
-      'options': ['Barcelona', 'Madrid', 'Rome', 'Lisbon'],
-      'correctIndex': 0,
-    },
-    {
-      'category': 'PlacesImages',
-      'image':
-          'https://media.istockphoto.com/id/1404400875/photo/rome-italy-at-the-ancient-colosseum-amphitheater.jpg?s=612x612&w=0&k=20&c=n9qM0K2y7S6P3-Aqjc8pD4xljSXHhnkuCxo_qTRZPH0=',
-      'options': ['Athens', 'Rome', 'Milan', 'Paris'],
-      'correctIndex': 1,
-    },
-    {
-      'category': 'PlacesImages',
-      'image':
-          'https://res.klook.com/image/upload/fl_lossy.progressive,w_432,h_288,c_fill,q_85/activities/iawlxdydqqokp34sctmv.jpg',
-      'options': ['Rome', 'Florence', 'Venice', 'Madrid'],
-      'correctIndex': 0,
-    },
-    {
-      'category': 'PlacesImages',
-      'image':
-          'https://upload.wikimedia.org/wikipedia/commons/3/32/Leaning_Tower-Pisa.jpg',
-      'options': ['Venice', 'Pisa', 'Florence', 'Rome'],
-      'correctIndex': 1,
-    },
-    {
-      'category': 'PlacesImages',
-      'image':
-          'https://upload.wikimedia.org/wikipedia/commons/5/59/Brandenburg_Gate.jpg',
-      'options': ['Vienna', 'Berlin', 'Prague', 'London'],
-      'correctIndex': 1,
-    },
-    {
-      'category': 'PlacesImages',
-      'image':
-          'https://media.istockphoto.com/id/844403354/photo/parthenon-on-the-acropolis-in-athens-greece.jpg?s=612x612&w=0&k=20&c=6c_Edmm4fbLaS5J-0Vmi5MVUvf7LwOYiK0V6WB5Kzcg=',
-      'options': ['Athens', 'Rome', 'Istanbul', 'Cairo'],
-      'correctIndex': 0,
-    },
-    {
-      'category': 'PlacesImages',
-      'image':
-          'https://images.unsplash.com/photo-1588384153148-ebd739ac430c?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8c3RhdHVlJTIwb2YlMjBsaWJlcnR5fGVufDB8fDB8fHww',
-      'options': ['New York', 'Paris', 'Washington D.C.', 'Los Angeles'],
-      'correctIndex': 0,
-    },
-    {
-      'category': 'PlacesImages',
-      'image':
-          'https://upload.wikimedia.org/wikipedia/commons/b/b0/Empire_State_Building_%28HDR%29.jpg',
-      'options': ['Chicago', 'New York', 'Boston', 'Toronto'],
-      'correctIndex': 1,
-    },
-    {
-      'category': 'PlacesImages',
-      'image':
-          'https://media.istockphoto.com/id/1032655858/photo/golden-gate-bridge.jpg?s=612x612&w=0&k=20&c=ar2jXjlGbtXVYJYWrySU6he6Pu8T2eC_u7IozUwGcCQ=',
-      'options': ['San Francisco', 'Los Angeles', 'Seattle', 'New York'],
-      'correctIndex': 0,
-    },
-    {
-      'category': 'PlacesImages',
-      'image':
-          'https://images.unsplash.com/photo-1523059623039-a9ed027e7fad?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8c3lkbmV5JTIwb3BlcmElMjBob3VzZXxlbnwwfHwwfHx8MA%3D%3D',
-      'options': ['Sydney', 'Melbourne', 'Brisbane', 'Auckland'],
-      'correctIndex': 0,
-    },
-    {
-      'category': 'PlacesImages',
-      'image':
-          'https://images.pexels.com/photos/1534411/pexels-photo-1534411.jpeg?cs=srgb&dl=pexels-shukran-1534411.jpg&fm=jpg',
-      'options': ['Doha', 'Dubai', 'Abu Dhabi', 'Riyadh'],
-      'correctIndex': 1,
-    },
-    {
-      'category': 'PlacesImages',
-      'image':
-          'https://media.istockphoto.com/id/503263429/photo/petra-the-treasury-jordan.jpg?s=612x612&w=0&k=20&c=d0CfLjnPwHa9fWMvTCh7sf4ySmR2_vHXFuM0u-_GVHA=',
-      'options': ['Jordan', 'Egypt', 'Turkey', 'Greece'],
-      'correctIndex': 0,
-    },
-    {
-      'category': 'PlacesImages',
-      'image':
-          'https://t4.ftcdn.net/jpg/05/84/83/13/360_F_584831320_GU2J9DN00tnBluqsXpac2Vi7jQ6szDw9.jpg',
-      'options': ['Rio de Janeiro', 'Lisbon', 'Buenos Aires', 'Sao Paulo'],
-      'correctIndex': 0,
-    },
-    {
-      'category': 'PlacesImages',
-      'image':
-          'https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Machu_Picchu%2C_Peru.jpg/960px-Machu_Picchu%2C_Peru.jpg',
-      'options': ['Peru', 'Bolivia', 'Chile', 'Ecuador'],
-      'correctIndex': 0,
-    },
-    {
-      'category': 'PlacesImages',
-      'image':
-          'https://upload.wikimedia.org/wikipedia/commons/d/da/Taj-Mahal.jpg',
-      'options': ['India', 'Pakistan', 'Bangladesh', 'Nepal'],
-      'correctIndex': 0,
-    },
-    {
-      'category': 'PlacesImages',
-      'image':
-          'https://images.unsplash.com/photo-1599283787923-51b965a58b05?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YW5na29yJTIwd2F0fGVufDB8fDB8fHww',
-      'options': ['Cambodia', 'Thailand', 'Vietnam', 'Laos'],
-      'correctIndex': 0,
-    },
-    {
-      'category': 'PlacesImages',
-      'image':
-          'https://thegreatwallofchina1.wordpress.com/wp-content/uploads/2012/11/cropped-great-wall-china-953399.jpg',
-      'options': ['China', 'Japan', 'Mongolia', 'South Korea'],
-      'correctIndex': 0,
-    },
-    {
-      'category': 'PlacesImages',
-      'image':
-          'https://media.istockphoto.com/id/163749022/photo/tokyo-tower.jpg?s=612x612&w=0&k=20&c=Pd6LGvDdzkA6EXetNZZWpMAS0DMtrVKCA5txifeUb-4=',
-      'options': ['Tokyo', 'Osaka', 'Seoul', 'Beijing'],
-      'correctIndex': 0,
-    },
-    {
-      'category': 'PlacesImages',
-      'image':
-          'https://static.wikia.nocookie.net/wikizilla-role-play/images/1/10/Mount_Fuji.jpg/revision/latest?cb=20180409000432',
-      'options': ['Japan', 'China', 'South Korea', 'Nepal'],
-      'correctIndex': 0,
-    },
-    {
-      'category': 'PlacesImages',
-      'image':
-          'https://media.istockphoto.com/id/483465910/photo/cn-tower.jpg?s=612x612&w=0&k=20&c=i5pdLj9876e0zZG-ebjGM7vLvzGYy-8gQbkpkABbv40=',
-      'options': ['Toronto', 'Vancouver', 'Montreal', 'New York'],
-      'correctIndex': 0,
-    },
-    {
-      'category': 'PlacesImages',
-      'image':
-          'https://upload.wikimedia.org/wikipedia/commons/e/ec/St_Basils_Cathedral-500px.jpg',
-      'options': ['Moscow', 'St. Petersburg', 'Warsaw', 'Kiev'],
-      'correctIndex': 0,
-    },
-    {
-      'category': 'PlacesImages',
-      'image':
-          'https://vastphotos.com/files/uploads/photos/10985/red-square-moscow-photo-l.jpg?v=20220712043521',
-      'options': ['Moscow', 'Beijing', 'Istanbul', 'Berlin'],
-      'correctIndex': 0,
-    },
-    {
-      'category': 'PlacesImages',
-      'image':
-          'https://media.istockphoto.com/id/492963464/photo/famous-neuschwanstein-castle-with-scenic-mountain-landscape-near.jpg?s=612x612&w=0&k=20&c=V9ab9SoUp0r-wxOTBDfv3IvPsr-3I4Ei1kEC3GYud-0=',
-      'options': ['Germany', 'Austria', 'Switzerland', 'France'],
-      'correctIndex': 0,
-    },
-    {
-      'category': 'PlacesImages',
-      'image':
-          'https://upload.wikimedia.org/wikipedia/commons/4/4d/Westminster_Palace.jpg',
-      'options': ['London', 'Paris', 'Berlin', 'Vienna'],
-      'correctIndex': 0,
-    },
-    {
-      'category': 'PlacesImages',
-      'image':
-          'https://upload.wikimedia.org/wikipedia/commons/2/21/Arc_de_Triomphe_de_l%27Etoile_-_14_Juillet_2011_-_Paris%2C_FRANCE.JPG',
-      'options': ['Paris', 'Rome', 'Madrid', 'Brussels'],
-      'correctIndex': 0,
-    },
-    {
-      'category': 'PlacesImages',
-      'image':
-          'https://www.spain.info/export/sites/segtur/.content/images/galerias/mezquita-cordoba/mezquita-catedral-puente-cordoba-s241626148.jpg',
-      'options': ['Córdoba', 'Seville', 'Granada', 'Madrid'],
-      'correctIndex': 0,
     },
   ];
 
@@ -1678,6 +1474,7 @@ Future<void> populateImageQuestions() async {
   for (final q in questions) {
     final doc = firestore.collection('image_questions').doc();
     batch.set(doc, {
+      'text': q['text'],
       'category': q['category'],
       'image': q['image'],
       'options': q['options'],
