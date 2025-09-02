@@ -3,6 +3,7 @@ import 'dart:developer' as developer;
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:get/get.dart';
 
 class AuthService {
   static final AuthService _instance = AuthService._internal();
@@ -149,7 +150,7 @@ class AuthService {
         googleUser = await _googleSignIn.authenticate();
         developer.log('Google authentication successful', name: 'AuthService');
       } else {
-        _setError('Authentication not supported on this platform');
+        _setError('auth_error_google_ui_unavailable');
         return null;
       }
 
@@ -157,7 +158,7 @@ class AuthService {
       final GoogleSignInAuthentication googleAuth = googleUser.authentication;
 
       if (googleAuth.idToken == null) {
-        _setError('Failed to get Google ID token');
+        _setError('auth_error_google_no_token');
         return null;
       }
 
@@ -190,7 +191,9 @@ class AuthService {
       developer.log('Firebase Auth error: $errorMessage', name: 'AuthService');
       return null;
     } catch (e) {
-      final errorMessage = 'Unexpected error during Google Sign In: $e';
+      final errorMessage = 'auth_error_unexpected_signin'.trParams({
+        'error': e.toString(),
+      });
       _setError(errorMessage);
       developer.log('Unexpected sign in error: $e', name: 'AuthService');
       return null;
@@ -212,7 +215,9 @@ class AuthService {
 
       developer.log('Sign out successful', name: 'AuthService');
     } catch (e) {
-      final errorMessage = 'Error during sign out: $e';
+      final errorMessage = 'auth_error_signout'.trParams({
+        'error': e.toString(),
+      });
       _setError(errorMessage);
       developer.log('Sign out error: $e', name: 'AuthService');
       rethrow;
@@ -234,7 +239,9 @@ class AuthService {
 
       developer.log('Disconnect successful', name: 'AuthService');
     } catch (e) {
-      final errorMessage = 'Error during disconnect: $e';
+      final errorMessage = 'auth_error_disconnect'.trParams({
+        'error': e.toString(),
+      });
       _setError(errorMessage);
       developer.log('Disconnect error: $e', name: 'AuthService');
       rethrow;
@@ -251,7 +258,7 @@ class AuthService {
     _ensureInitialized();
 
     if (_currentGoogleUser == null) {
-      _setError('No Google user signed in');
+      _setError('auth_error_no_google_user');
       return null;
     }
 
@@ -275,7 +282,9 @@ class AuthService {
       );
       return null;
     } catch (e) {
-      final errorMessage = 'Error requesting scopes: $e';
+      final errorMessage = 'auth_error_scope_request'.trParams({
+        'error': e.toString(),
+      });
       _setError(errorMessage);
       developer.log('Scope request error: $e', name: 'AuthService');
       return null;
@@ -290,7 +299,7 @@ class AuthService {
     _ensureInitialized();
 
     if (_currentGoogleUser == null) {
-      _setError('No Google user signed in');
+      _setError('auth_error_no_google_user');
       return null;
     }
 
@@ -301,7 +310,7 @@ class AuthService {
           .authorizeServer(scopes);
 
       if (serverAuth == null) {
-        _setError('Failed to get server auth code');
+        _setError('auth_error_server_auth_code');
         return null;
       }
 
@@ -316,7 +325,9 @@ class AuthService {
       );
       return null;
     } catch (e) {
-      final errorMessage = 'Error getting server auth code: $e';
+      final errorMessage = 'auth_error_server_auth_code'.trParams({
+        'error': e.toString(),
+      });
       _setError(errorMessage);
       developer.log('Server auth code error: $e', name: 'AuthService');
       return null;
@@ -335,7 +346,7 @@ class AuthService {
     _ensureInitialized();
 
     if (_currentGoogleUser == null) {
-      _setError('No Google user signed in');
+      _setError('auth_error_no_google_user');
       return null;
     }
 
@@ -355,7 +366,7 @@ class AuthService {
           .authorizationHeaders(scopes);
 
       if (headers == null) {
-        _setError('Failed to get authorization headers');
+        _setError('auth_error_auth_headers');
         return null;
       }
 
@@ -373,7 +384,9 @@ class AuthService {
       );
       return null;
     } catch (e) {
-      final errorMessage = 'Error getting authorization headers: $e';
+      final errorMessage = 'auth_error_auth_headers'.trParams({
+        'error': e.toString(),
+      });
       _setError(errorMessage);
       developer.log('Authorization headers error: $e', name: 'AuthService');
       return null;
@@ -437,31 +450,38 @@ class AuthService {
   /// Get user-friendly error message for GoogleSignInException
   String _getGoogleSignInErrorMessage(GoogleSignInException e) {
     return switch (e.code) {
-      GoogleSignInExceptionCode.canceled => 'Sign in was canceled',
-      GoogleSignInExceptionCode.interrupted => 'Sign in was interrupted',
+      // These will be translation keys
+      GoogleSignInExceptionCode.canceled => 'auth_error_google_canceled',
+      GoogleSignInExceptionCode.interrupted => 'auth_error_google_interrupted',
       GoogleSignInExceptionCode.clientConfigurationError =>
-        'Google Sign In configuration error',
+        'auth_error_google_client_config',
       GoogleSignInExceptionCode.providerConfigurationError =>
-        'Provider configuration error',
-      GoogleSignInExceptionCode.uiUnavailable => 'UI unavailable for sign in',
-      GoogleSignInExceptionCode.userMismatch => 'User mismatch error',
-      GoogleSignInExceptionCode.unknownError => 'Unknown Google Sign In error',
+        'auth_error_google_provider_config',
+      GoogleSignInExceptionCode.uiUnavailable =>
+        'auth_error_google_ui_unavailable',
+      GoogleSignInExceptionCode.userMismatch =>
+        'auth_error_google_user_mismatch',
+      GoogleSignInExceptionCode.unknownError => 'auth_error_google_unknown',
     };
   }
 
   /// Get user-friendly error message for FirebaseAuthException
   String _getFirebaseAuthErrorMessage(FirebaseAuthException e) {
     return switch (e.code) {
+      // These will be translation keys
       'account-exists-with-different-credential' =>
-        'An account already exists with a different sign-in method.',
-      'invalid-credential' => 'The credential is invalid or has expired.',
-      'operation-not-allowed' => 'Google sign-in is not enabled.',
-      'user-disabled' => 'This user account has been disabled.',
-      'user-not-found' => 'No user found with this credential.',
-      'wrong-password' => 'Invalid password.',
-      'invalid-verification-code' => 'Invalid verification code.',
-      'invalid-verification-id' => 'Invalid verification ID.',
-      _ => 'Authentication error (${e.code}): ${e.message}',
+        'auth_error_firebase_diff_credential',
+      'invalid-credential' => 'auth_error_firebase_invalid_credential',
+      'operation-not-allowed' => 'auth_error_firebase_op_not_allowed',
+      'user-disabled' => 'auth_error_firebase_user_disabled',
+      'user-not-found' => 'auth_error_firebase_user_not_found',
+      'wrong-password' => 'auth_error_firebase_wrong_password',
+      'invalid-verification-code' => 'auth_error_firebase_invalid_code',
+      'invalid-verification-id' => 'auth_error_firebase_invalid_id',
+      _ => 'auth_error_firebase_generic'.trParams({
+        'code': e.code,
+        'message': e.message ?? '',
+      }),
     };
   }
 

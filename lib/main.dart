@@ -4,9 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:mindrena/app/data/MyTranslations.dart';
+import 'package:mindrena/app/data/My_Translations.dart';
 import 'package:mindrena/app/data/consts_config.dart';
-import 'package:mindrena/app/data/populate_data_functions.dart';
 import 'package:mindrena/app/data/sendNotificationHandler.dart';
 import 'package:mindrena/app/modules/splash/bindings/splash_binding.dart';
 import 'package:mindrena/firebase_options.dart';
@@ -17,14 +16,24 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init();
 
-  // Initialize Firebase for all platforms
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  // Initialize Firebase with try-catch to handle duplicate app error
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  } catch (e) {
+    if (e.toString().contains('duplicate-app')) {
+      // Firebase is already initialized, continue
+      print('Firebase already initialized');
+    } else {
+      // Re-throw other errors
+      rethrow;
+    }
+  }
 
   SendNotificationHandler.initialized();
   await SendNotificationHandler().initNotification();
   FirebaseMessaging.onBackgroundMessage(handleBackgroundMessage);
-
-  await populateImageQuestions();
 
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,

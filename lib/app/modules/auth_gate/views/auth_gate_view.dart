@@ -18,8 +18,8 @@ class AuthGateView extends GetView<AuthGateController> {
               const SizedBox(height: 20),
               Text(
                 controller.hasInternet.value
-                    ? 'Checking authentication...'
-                    : 'Checking connection...',
+                    ? 'checking_authentication'.tr
+                    : 'checking_connection'.tr,
                 style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
               ),
             ],

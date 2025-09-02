@@ -117,16 +117,14 @@ class SgQuizView extends GetView<SgQuizController> {
                   vertical: 8,
                 ),
                 decoration: BoxDecoration(
-                  color:
-                      controller.changeColor.value
-                          ? Colors.red.shade50
-                          : Colors.blue.shade50,
+                  color: controller.changeColor.value
+                      ? Colors.red.shade50
+                      : Colors.blue.shade50,
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color:
-                        controller.changeColor.value
-                            ? Colors.red.shade200
-                            : Colors.blue.shade200,
+                    color: controller.changeColor.value
+                        ? Colors.red.shade200
+                        : Colors.blue.shade200,
                   ),
                 ),
                 child: Obx(
@@ -138,14 +136,13 @@ class SgQuizView extends GetView<SgQuizController> {
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
-                      onTick:
-                          (remainingTime) => {
-                            if (remainingTime.inSeconds <= 3)
-                              {
-                                controller.changeColor.value = true,
-                                HapticFeedback.mediumImpact(),
-                              },
+                      onTick: (remainingTime) => {
+                        if (remainingTime.inSeconds <= 3)
+                          {
+                            controller.changeColor.value = true,
+                            HapticFeedback.mediumImpact(),
                           },
+                      },
                       enableDescriptions: false,
                       format: CountDownTimerFormat.secondsOnly,
                       endTime: controller.timerEndTime.value,
@@ -171,7 +168,9 @@ class SgQuizView extends GetView<SgQuizController> {
                 ),
                 child: Obx(
                   () => Text(
-                    'Score: ${controller.score.value * 10}',
+                    'score'.trParams({
+                      'score': '${controller.score.value * 10}',
+                    }),
                     style: TextStyle(
                       color: Colors.green,
                       fontSize: 16,
@@ -198,7 +197,10 @@ class SgQuizView extends GetView<SgQuizController> {
             children: [
               Obx(
                 () => Text(
-                  'Question ${controller.currentQuestionIndex.value + 1} of ${controller.questions.length}',
+                  'question_of'.trParams({
+                    'current': '${controller.currentQuestionIndex.value + 1}',
+                    'total': '${controller.questions.length}',
+                  }),
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
@@ -289,11 +291,9 @@ class SgQuizView extends GetView<SgQuizController> {
 
   Widget _buildAnswerOption(int index, String option) {
     return Obx(() {
-      // The user's chosen answer for the current question. Null if not answered yet.
       final String? chosenAnswer = controller.selectedAnswer.value;
       final isAnswerSubmitted = chosenAnswer != null;
 
-      // Determine the state for THIS specific option widget.
       final bool isSelected = chosenAnswer == option;
       final bool isCorrect =
           option ==
@@ -314,11 +314,9 @@ class SgQuizView extends GetView<SgQuizController> {
           borderRadius: BorderRadius.circular(16),
           child: InkWell(
             borderRadius: BorderRadius.circular(16),
-            // Disable tap if an answer has already been submitted for this question.
-            onTap:
-                isAnswerSubmitted
-                    ? null
-                    : () => controller.chooseAnswer(option),
+            onTap: isAnswerSubmitted
+                ? null
+                : () => controller.chooseAnswer(option),
             child: Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -360,23 +358,19 @@ class SgQuizView extends GetView<SgQuizController> {
     required bool isAnswerSubmitted,
   }) {
     if (isAnswerSubmitted) {
-      // This option is the correct one, show it in green.
       if (isCorrect) {
         return (
           background: Colors.green.shade50,
           border: Colors.green.shade300,
           text: Colors.green.shade700,
         );
-      }
-      // This option was selected by the user, but it's incorrect. Show it in red.
-      else if (isSelected) {
+      } else if (isSelected) {
         return (
           background: Colors.red.shade50,
           border: Colors.red.shade300,
           text: Colors.red.shade700,
         );
       } else {
-        // This is an unselected, incorrect option. Show it in grey.
         return (
           background: Colors.grey.shade50,
           border: Colors.grey.shade300,
@@ -384,7 +378,6 @@ class SgQuizView extends GetView<SgQuizController> {
         );
       }
     } else {
-      // Before an answer is submitted, all options have a default style.
       return (
         background: Colors.white.withOpacity(0.95),
         border: Colors.grey.shade300,
@@ -407,8 +400,8 @@ class SgQuizView extends GetView<SgQuizController> {
             },
           ),
           const SizedBox(height: 20),
-          const Text(
-            'Loading question...',
+          Text(
+            'loading_question'.tr,
             style: TextStyle(
               color: Colors.white,
               fontSize: 18,
@@ -429,7 +422,10 @@ class SgQuizView extends GetView<SgQuizController> {
           const SizedBox(height: 30),
 
           Text(
-            'You answered ${controller.score.value} out of ${controller.questions.length} questions correctly!',
+            'quiz_results_summary'.trParams({
+              'score': '${controller.score.value}',
+              'total': '${controller.questions.length}',
+            }),
             style: TextStyle(
               color: const Color.fromARGB(200, 255, 255, 255),
               fontWeight: FontWeight.bold,
@@ -475,8 +471,8 @@ class SgQuizView extends GetView<SgQuizController> {
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
-            child: const Text(
-              'Play Again',
+            child: Text(
+              'play_again'.tr,
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
@@ -493,8 +489,8 @@ class SgQuizView extends GetView<SgQuizController> {
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
-            child: const Text(
-              'Exit Game',
+            child: Text(
+              'exit_game'.tr,
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
@@ -566,21 +562,24 @@ class _SummaryItem extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Your answer: $userAnswer',
+                  'your_answer'.trParams({'answer': userAnswer}),
                   style: TextStyle(
-                    color:
-                        isCorrect ? Colors.green.shade700 : Colors.red.shade700,
+                    color: isCorrect
+                        ? Colors.green.shade700
+                        : Colors.red.shade700,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                if (!isCorrect)
+                if (!isCorrect) ...[
+                  const SizedBox(height: 4),
                   Text(
-                    'Correct answer: $correctAnswer',
+                    'correct_answer'.trParams({'answer': correctAnswer}),
                     style: TextStyle(
                       color: Colors.green.shade700,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
+                ],
               ],
             ),
           ),
@@ -630,17 +629,16 @@ class _AnswerStateIndicator extends StatelessWidget {
         border: Border.all(color: borderColor),
       ),
       child: Center(
-        child:
-            hasIcon
-                ? Icon(iconData, color: Colors.white, size: 16)
-                : Text(
-                  String.fromCharCode('A'.codeUnitAt(0) + index),
-                  style: TextStyle(
-                    color: borderColor,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12,
-                  ),
+        child: hasIcon
+            ? Icon(iconData, color: Colors.white, size: 16)
+            : Text(
+                String.fromCharCode('A'.codeUnitAt(0) + index),
+                style: TextStyle(
+                  color: borderColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
                 ),
+              ),
       ),
     );
   }

@@ -345,27 +345,29 @@ class GameScreenView extends GetView<GameScreenController> {
     });
   }
 
+  // ...existing code...
   Widget _buildImageQuestion() {
     return Obx(() {
       final imageUrl = controller.currentQuestionImageUrl;
+      final imageText = controller.currentQuestionImageText;
       if (imageUrl == null) return const SizedBox();
 
-      return Container(
-        constraints: const BoxConstraints(maxHeight: 150, maxWidth: 250),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.grey.shade300, width: 2),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
+      return Column(
+        children: [
+          Container(
+            constraints: const BoxConstraints(maxHeight: 150, maxWidth: 250),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.grey.shade300, width: 2),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
-          ],
-        ),
-        child: Column(
-          children: [
-            ClipRRect(
+            child: ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: Image.network(
                 imageUrl,
@@ -406,19 +408,24 @@ class GameScreenView extends GetView<GameScreenController> {
                 },
               ),
             ),
+          ),
+          if (imageText != null && imageText.isNotEmpty) ...[
+            const SizedBox(height: 12),
             Text(
-              controller.currentQuestionImageText ?? '',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey.shade600,
-                fontStyle: FontStyle.italic,
+              imageText,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                height: 1.4,
               ),
+              textAlign: TextAlign.center,
             ),
           ],
-        ),
+        ],
       );
     });
   }
+  // ...existing
 
   Widget _buildAnswerOptions() {
     return Obx(() {

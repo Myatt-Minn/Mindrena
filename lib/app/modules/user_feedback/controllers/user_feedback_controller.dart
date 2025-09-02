@@ -15,15 +15,15 @@ class UserFeedbackController extends GetxController {
   var isLoading = false.obs;
   var userFeedbacks = <FeedBackModel>[].obs;
 
-  final List<String> feedbackCategories = [
-    "Performance",
-    "Bug Report",
-    "Feature Request",
-    "UI/UX",
-    "Product Quality",
-    "Delivery Service",
-    "Customer Support",
-    "Other",
+  List<String> get feedbackCategories => [
+    'feedback_performance'.tr,
+    'feedback_bug_report'.tr,
+    'feedback_feature_request'.tr,
+    'feedback_ui_ux'.tr,
+    'feedback_product_quality'.tr,
+    'feedback_delivery_service'.tr,
+    'feedback_customer_support'.tr,
+    'feedback_other'.tr,
   ];
 
   @override
@@ -50,8 +50,8 @@ class UserFeedbackController extends GetxController {
 
       if (user == null) {
         Get.snackbar(
-          "Error",
-          "Please login to submit feedback",
+          'feedback_error_title'.tr,
+          'please_login_to_submit'.tr,
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.red,
           colorText: Colors.white,
@@ -65,7 +65,7 @@ class UserFeedbackController extends GetxController {
       // Prepare feedback data
       final feedbackData = {
         'userid': user.uid,
-        'username': userProfile['name'] ?? 'Anonymous User',
+        'username': userProfile['name'] ?? 'anonymous_user'.tr,
         'userprofileurl': userProfile['profilepic'] ?? '',
         'email': userProfile['email'] ?? user.email ?? '',
         'phone': userProfile['phoneNumber'] ?? '',
@@ -95,15 +95,15 @@ class UserFeedbackController extends GetxController {
       QuickAlert.show(
         context: Get.context!,
         type: QuickAlertType.success,
-        title: 'Success',
-        text: 'Feedback submitted successfully!',
+        title: 'feedback_success_title'.tr,
+        text: 'feedback_success_message'.tr,
       );
     } catch (e) {
       QuickAlert.show(
         context: Get.context!,
         type: QuickAlertType.error,
-        title: 'Error',
-        text: 'Failed to submit feedback: $e',
+        title: 'feedback_error_title'.tr,
+        text: 'feedback_error_message'.trParams({'error': e.toString()}),
       );
     } finally {
       isSubmitting.value = false;
@@ -156,8 +156,8 @@ class UserFeedbackController extends GetxController {
   bool _validateInput() {
     if (titleController.text.trim().isEmpty) {
       Get.snackbar(
-        "Error",
-        "Please enter a title for your feedback",
+        'feedback_error_title'.tr,
+        'enter_feedback_title'.tr,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.orange,
         colorText: Colors.white,
@@ -167,8 +167,8 @@ class UserFeedbackController extends GetxController {
 
     if (feedbackController.text.trim().isEmpty) {
       Get.snackbar(
-        "Error",
-        "Please enter your feedback message",
+        'feedback_error_title'.tr,
+        'enter_feedback_message'.tr,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.orange,
         colorText: Colors.white,
@@ -178,8 +178,8 @@ class UserFeedbackController extends GetxController {
 
     if (titleController.text.trim().length < 3) {
       Get.snackbar(
-        "Error",
-        "Title must be at least 3 characters long",
+        'feedback_error_title'.tr,
+        'title_min_length'.tr,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.orange,
         colorText: Colors.white,
@@ -189,8 +189,8 @@ class UserFeedbackController extends GetxController {
 
     if (feedbackController.text.trim().length < 6) {
       Get.snackbar(
-        "Error",
-        "Feedback message must be at least 6 characters long",
+        'feedback_error_title'.tr,
+        'message_min_length'.tr,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.orange,
         colorText: Colors.white,
@@ -259,16 +259,16 @@ class UserFeedbackController extends GetxController {
       );
 
       Get.snackbar(
-        "Success",
-        "Feedback deleted successfully",
+        'feedback_success_title'.tr,
+        'feedback_deleted_success'.tr,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.green,
         colorText: Colors.white,
       );
     } catch (e) {
       Get.snackbar(
-        "Error",
-        "Failed to delete feedback: $e",
+        'feedback_error_title'.tr,
+        'feedback_deleted_error'.trParams({'error': e.toString()}),
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red,
         colorText: Colors.white,

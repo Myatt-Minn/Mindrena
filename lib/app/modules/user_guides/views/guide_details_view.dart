@@ -101,7 +101,7 @@ class GuideDetailView extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        '${guide.items.length} helpful guides available',
+                        '${guide.items.length} ${'helpful_guides_available'.tr}',
                         style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                       ),
                     ],
@@ -238,8 +238,8 @@ class GuideDetailView extends StatelessWidget {
                           color: ConstsConfig.secondarycolor,
                         ),
                         const SizedBox(width: 8),
-                        const Text(
-                          'Images:',
+                        Text(
+                          'images'.tr,
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
@@ -289,7 +289,7 @@ class GuideDetailView extends StatelessWidget {
                                           ),
                                           const SizedBox(height: 8),
                                           Text(
-                                            'Image not\navailable',
+                                            'image_not_available'.tr,
                                             style: TextStyle(
                                               color: Colors.grey[500],
                                               fontSize: 12,
@@ -318,8 +318,8 @@ class GuideDetailView extends StatelessWidget {
                           color: ConstsConfig.secondarycolor,
                         ),
                         const SizedBox(width: 8),
-                        const Text(
-                          'Video Tutorial:',
+                        Text(
+                          'video_tutorial'.tr,
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
@@ -376,7 +376,7 @@ class GuideDetailView extends StatelessWidget {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        'Watch Video Tutorial',
+                                        'watch_video_tutorial'.tr,
                                         style: TextStyle(
                                           color: ConstsConfig.secondarycolor,
                                           fontWeight: FontWeight.bold,
@@ -385,7 +385,7 @@ class GuideDetailView extends StatelessWidget {
                                       ),
                                       const SizedBox(height: 2),
                                       Text(
-                                        'Tap to open in browser',
+                                        'tap_to_open_in_browser'.tr,
                                         style: TextStyle(
                                           color: Colors.grey[600],
                                           fontSize: 12,
@@ -429,7 +429,9 @@ class GuideDetailView extends StatelessWidget {
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            'Last updated: ${item.lastUpdated}',
+                            'last_updated'.trParams({
+                              'lastUpdated': item.lastUpdated,
+                            }),
                             style: TextStyle(
                               fontSize: 12,
                               color: Colors.grey[600],
@@ -449,32 +451,21 @@ class GuideDetailView extends StatelessWidget {
   }
 
   String _getCategoryDisplayName(String category) {
-    switch (category) {
-      case 'getting-started':
-        return 'Getting Started';
-      case 'shopping':
-        return 'Shopping';
-      case 'account':
-        return 'Account';
-      case 'troubleshooting':
-        return 'Troubleshooting';
-      case 'general':
-        return 'General';
-      case 'friends':
-        return 'Friends';
-      case 'quizzes':
-        return 'Quizzes';
-      default:
-        return category;
-    }
+    final categoryMap = {
+      'getting-started': 'category_getting-started'.tr,
+      'account': 'category_account'.tr,
+      'troubleshooting': 'category_troubleshooting'.tr,
+      'friends': 'category_friends'.tr,
+      'quizzes': 'category_quizzes'.tr,
+      'general': 'category_general'.tr,
+    };
+    return categoryMap[category] ?? category;
   }
 
   Color _getCategoryColor(String category) {
     switch (category) {
       case 'getting-started':
         return Colors.green;
-      case 'shopping':
-        return Colors.blue;
       case 'account':
         return Colors.purple;
       case 'friends':
@@ -494,8 +485,6 @@ class GuideDetailView extends StatelessWidget {
     switch (category) {
       case 'getting-started':
         return Icons.rocket_launch_rounded;
-      case 'shopping':
-        return Icons.shopping_bag_rounded;
       case 'account':
         return Icons.account_circle_rounded;
       case 'friends':
@@ -505,7 +494,7 @@ class GuideDetailView extends StatelessWidget {
       case 'quizzes':
         return Icons.quiz_rounded;
       case 'general':
-        return Icons.info_rounded;
+        return Icons.help_rounded;
       default:
         return Icons.help_rounded;
     }

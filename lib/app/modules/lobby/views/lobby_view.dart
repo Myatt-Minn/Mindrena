@@ -114,7 +114,7 @@ class LobbyView extends GetView<LobbyController> {
                               child: AnimatedTextKit(
                                 animatedTexts: [
                                   ColorizeAnimatedText(
-                                    '${controller.category} Lobby',
+                                    '${controller.category} ${'lobby'.tr}',
                                     textStyle: const TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
@@ -261,7 +261,7 @@ class LobbyView extends GetView<LobbyController> {
                                   ),
                                   child: _buildPlayerSlot(
                                     playerNumber: index + 1,
-                                    playerName: 'Waiting...',
+                                    playerName: 'waiting'.tr,
                                     isConnected: false,
                                     isCurrentPlayer: false,
                                     avatarUrl: '',
@@ -294,7 +294,9 @@ class LobbyView extends GetView<LobbyController> {
                                     : Icons.check_circle_outline,
                               ),
                               label: Text(
-                                isReady ? 'Cancel Ready' : 'Ready to Start!',
+                                isReady
+                                    ? 'cancel_ready'.tr
+                                    : 'ready_to_start'.tr,
                                 style: const TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.w600,
@@ -377,16 +379,16 @@ class LobbyView extends GetView<LobbyController> {
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(20),
                                 ),
-                                title: const Text('Leave Lobby?'),
+                                title: Text('leave_lobby_q'.tr),
                                 content: Text(
                                   controller.players.length == 2
-                                      ? 'Another player is waiting. Are you sure you want to leave?'
-                                      : 'Are you sure you want to leave the lobby?',
+                                      ? 'another_player_is_waiting'.tr
+                                      : 'are_you_sure_leave_lobby'.tr,
                                 ),
                                 actions: [
                                   TextButton(
                                     onPressed: () => Get.back(),
-                                    child: const Text('Stay'),
+                                    child: Text('stay'.tr),
                                   ),
                                   ElevatedButton(
                                     onPressed: () {
@@ -397,14 +399,14 @@ class LobbyView extends GetView<LobbyController> {
                                       backgroundColor: Colors.red,
                                       foregroundColor: Colors.white,
                                     ),
-                                    child: const Text('Leave'),
+                                    child: Text('leave'.tr),
                                   ),
                                 ],
                               ),
                             );
                           },
                           icon: const Icon(Icons.exit_to_app),
-                          label: const Text('Leave Lobby'),
+                          label: Text('leave_lobby'.tr),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.red.shade400,
                             foregroundColor: Colors.white,
@@ -432,17 +434,23 @@ class LobbyView extends GetView<LobbyController> {
     if (controller.isSearching.value) {
       switch (controller.gameMode) {
         case 'friend_invitation':
-          return 'Waiting for ${controller.friendName} to accept your invitation...';
+          return 'waiting_for_friend_to_accept'.trParams({
+            'friendName': controller.friendName!,
+          });
         case 'friend_accepted':
-          return 'Joining ${controller.friendName}\'s game...';
+          return 'joining_friends_game'.trParams({
+            'friendName': controller.friendName!,
+          });
         default:
-          return 'Looking for another player in ${controller.category}...';
+          return 'looking_for_another_player'.trParams({
+            'category': controller.category,
+          });
       }
     } else {
       if (controller.players.length == 2) {
-        return 'Both players joined! Get ready to start!';
+        return 'both_players_joined'.tr;
       } else {
-        return 'Waiting for the second player to join...';
+        return 'waiting_for_second_player'.tr;
       }
     }
   }
@@ -456,17 +464,17 @@ class LobbyView extends GetView<LobbyController> {
       case 'friend_invitation':
         indicatorColor = Colors.purple;
         indicatorIcon = Icons.person_add;
-        indicatorText = 'Friend Invitation';
+        indicatorText = 'friend_invitation'.tr;
         break;
       case 'friend_accepted':
         indicatorColor = Colors.green;
         indicatorIcon = Icons.group;
-        indicatorText = 'Playing with Friend';
+        indicatorText = 'playing_with_friend'.tr;
         break;
       default:
         indicatorColor = Colors.blue;
         indicatorIcon = Icons.shuffle;
-        indicatorText = 'Random Match';
+        indicatorText = 'random_match'.tr;
         break;
     }
 
@@ -565,7 +573,7 @@ class LobbyView extends GetView<LobbyController> {
                   children: [
                     Flexible(
                       child: Text(
-                        'Player $playerNumber',
+                        '${'player'.tr} $playerNumber',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -585,8 +593,8 @@ class LobbyView extends GetView<LobbyController> {
                           color: Colors.blue,
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: const Text(
-                          'YOU',
+                        child: Text(
+                          'you'.tr,
                           style: TextStyle(
                             fontSize: 9,
                             fontWeight: FontWeight.bold,
@@ -606,13 +614,13 @@ class LobbyView extends GetView<LobbyController> {
                           color: Colors.green,
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: const Row(
+                        child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Icon(Icons.check, size: 10, color: Colors.white),
                             SizedBox(width: 2),
                             Text(
-                              'READY',
+                              'ready'.tr,
                               style: TextStyle(
                                 fontSize: 9,
                                 fontWeight: FontWeight.bold,

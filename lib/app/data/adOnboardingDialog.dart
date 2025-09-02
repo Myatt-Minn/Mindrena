@@ -45,8 +45,8 @@ class _AdOnboardingDialogState extends State<AdOnboardingDialog> {
       QuickAlert.show(
         context: Get.context!,
         type: QuickAlertType.error,
-        title: 'Cannot open the website',
-        text: 'Something wrong with Internet Connection or the app!',
+        title: 'cannot_open_website'.tr,
+        text: 'cannot_open_website_message'.tr,
       );
     }
   }

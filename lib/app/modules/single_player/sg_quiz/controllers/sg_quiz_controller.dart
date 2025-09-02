@@ -20,6 +20,7 @@ class SgQuizController extends GetxController {
   // Data
   var selectedCategory = Get.arguments['category'];
   var selectedDifficulty = Get.arguments['difficulty'].toLowerCase();
+  var selectedType = Get.arguments['type'];
   var questions = <Question>[];
 
   //functions
@@ -55,6 +56,7 @@ class SgQuizController extends GetxController {
       questions = await questionsService.getQuestions(
         categoryId: selectedCategoryId.value,
         difficulty: selectedDifficulty,
+        type: selectedType,
       );
       if (questions.isEmpty) {
         Get.snackbar(

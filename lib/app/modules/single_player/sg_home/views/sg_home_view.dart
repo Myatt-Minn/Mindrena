@@ -127,14 +127,17 @@ class SgHomeView extends GetView<SgHomeController> {
                     // Game mode buttons
                     _buildGameButton(
                       emoji: '🧠',
-                      title: 'Memory War',
-                      subtitle: 'Visual Recall',
+                      title: 'True or False',
+                      subtitle: 'There is only ture or false! ',
                       description:
-                          'Challenge your visual memory and pattern recognition',
+                          'Challenge yourself with true or false questions',
                       color: Colors.purple,
                       onTap: () {
                         // Navigate to Memory War category selection
-                        Get.toNamed('/m-category-selection');
+                        Get.toNamed(
+                          '/sg-f-category-selection',
+                          arguments: "boolean",
+                        );
                       },
                     ),
 
@@ -149,7 +152,10 @@ class SgHomeView extends GetView<SgHomeController> {
                       color: Colors.red,
                       onTap: () {
                         // Navigate to FlashFight category selection
-                        Get.toNamed('/sg-f-category-selection');
+                        Get.toNamed(
+                          '/sg-f-category-selection',
+                          arguments: "multiple",
+                        );
                       },
                     ),
 

@@ -154,7 +154,10 @@ class SgFCategorySelectionView extends GetView<SgFCategorySelectionController> {
                       onTap: () {
                         Get.toNamed(
                           '/sg-f-difficulty-selection',
-                          arguments: "Places",
+                          arguments: {
+                            'category': 'Places',
+                            'type': controller.selectedType.value,
+                          },
                         );
                       },
                     ),
@@ -171,7 +174,10 @@ class SgFCategorySelectionView extends GetView<SgFCategorySelectionController> {
                       onTap: () {
                         Get.toNamed(
                           '/sg-f-difficulty-selection',
-                          arguments: "Science & Math",
+                          arguments: {
+                            'category': 'Science & Math',
+                            'type': controller.selectedType.value,
+                          },
                         );
                       },
                     ),
@@ -188,7 +194,10 @@ class SgFCategorySelectionView extends GetView<SgFCategorySelectionController> {
                         // Navigate to General Knowledge category
                         Get.toNamed(
                           '/sg-f-difficulty-selection',
-                          arguments: "General Knowledge",
+                          arguments: {
+                            'category': 'General Knowledge',
+                            'type': controller.selectedType.value,
+                          },
                         );
                       },
                     ),

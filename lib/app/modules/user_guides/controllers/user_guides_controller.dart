@@ -73,7 +73,7 @@ class UserGuidesController extends GetxController {
 
       print('Fetched ${userGuides.length} user guides with their items');
     } catch (e) {
-      errorMessage.value = 'Error fetching guides: $e';
+      errorMessage.value = 'error_fetching_guides'.trParams({'error': '$e'});
       print('Error fetching user guides: $e');
     } finally {
       isLoading.value = false;
@@ -112,7 +112,9 @@ class UserGuidesController extends GetxController {
       // Then fetch the populated data
       await fetchUserGuides();
     } catch (e) {
-      errorMessage.value = 'Error loading sample data: $e';
+      errorMessage.value = 'error_fetching_guides'.trParams({
+        'error': 'loading sample data: $e',
+      });
       print('Error loading sample data: $e');
     } finally {
       isLoading.value = false;
@@ -136,8 +138,8 @@ class UserGuidesController extends GetxController {
       QuickAlert.show(
         context: Get.context!,
         type: QuickAlertType.error,
-        title: 'Cannot open the website',
-        text: 'Something wrong with Internet Connection or the app!',
+        title: 'cannot_open_website'.tr,
+        text: 'cannot_open_website_message'.tr,
       );
     }
   }
