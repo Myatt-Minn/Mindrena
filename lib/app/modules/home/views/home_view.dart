@@ -3,8 +3,6 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
-import 'package:quickalert/models/quickalert_type.dart';
-import 'package:quickalert/widgets/quickalert_dialog.dart';
 
 import '../controllers/home_controller.dart';
 
@@ -13,24 +11,81 @@ class HomeView extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
+    bool shouldExit = false;
     return WillPopScope(
       onWillPop: () async {
-        QuickAlert.show(
+        await showDialog(
           context: context,
-          type: QuickAlertType.confirm,
-          title: 'Confirm Exit',
-          text: 'Are you sure you want to exit the game?',
-          confirmBtnText: 'Yes',
-          cancelBtnText: 'No',
-          onConfirmBtnTap: () {
-            Get.back(); // Close the dialog and handle exit logic if needed
-            Get.back(); // Exit the app
-          },
-          onCancelBtnTap: () {
-            Get.back(); // Just close the dialog
+          barrierDismissible: false,
+          builder: (context) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(24),
+              ),
+              backgroundColor: Colors.white,
+              titlePadding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+              contentPadding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
+              actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              title: Row(
+                children: [
+                  Icon(Icons.exit_to_app, color: Colors.redAccent, size: 28),
+                  const SizedBox(width: 12),
+                  const Text(
+                    'Confirm Exit',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                  ),
+                ],
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: const [
+                  SizedBox(height: 8),
+                  Text(
+                    'Are you sure you want to exit the game?',
+                    style: TextStyle(fontSize: 16, color: Colors.black87),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+              actionsAlignment: MainAxisAlignment.spaceBetween,
+              actions: [
+                ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.grey.shade300,
+                    foregroundColor: Colors.black87,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  icon: const Icon(Icons.close, size: 18),
+                  label: const Text('No'),
+                  onPressed: () {
+                    shouldExit = false;
+                    Navigator.of(context).pop();
+                  },
+                ),
+                ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.redAccent,
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  icon: const Icon(Icons.check, size: 18),
+                  label: const Text('Yes'),
+                  onPressed: () {
+                    shouldExit = true;
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
           },
         );
-        return false;
+        return shouldExit;
       },
       child: Scaffold(
         body: Stack(

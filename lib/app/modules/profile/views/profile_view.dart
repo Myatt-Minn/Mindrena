@@ -411,6 +411,13 @@ class ProfileView extends GetView<ProfileController> {
                         ? Image.network(
                             controller.user.value!.avatarUrl,
                             fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Icon(
+                                Icons.person,
+                                size: 50,
+                                color: Colors.purple.shade400,
+                              );
+                            },
                           )
                         : Icon(
                             Icons.person,
@@ -542,6 +549,60 @@ class ProfileView extends GetView<ProfileController> {
                         title: 'Total Points',
                         value: '${controller.user.value?.totalPoints ?? 0}',
                         color: Colors.purple,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Obx(
+                        () => _buildStatCard(
+                          icon: Icons.monetization_on,
+                          title: 'Total Coins',
+                          value: '${controller.userCoins.value}',
+                          color: Colors.amber,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(15),
+                          border: Border.all(
+                            color: Colors.grey.withOpacity(0.3),
+                          ),
+                        ),
+                        child: Column(
+                          children: [
+                            Icon(
+                              Icons.info_outline,
+                              color: Colors.grey,
+                              size: 30,
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              '50 coins',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            Text(
+                              'per 100 points',
+                              style: TextStyle(
+                                fontSize: 10,
+                                color: Colors.grey.shade600,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],

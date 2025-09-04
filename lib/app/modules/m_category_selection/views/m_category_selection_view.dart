@@ -62,160 +62,175 @@ class MCategorySelectionView extends GetView<MCategorySelectionController> {
 
           // Main content over the background
           SafeArea(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Column(
-                  children: [
-                    const SizedBox(height: 20),
-
-                    // Back button
-                    Row(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.9),
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                blurRadius: 10,
-                                offset: const Offset(0, 5),
-                              ),
-                            ],
-                          ),
-                          child: IconButton(
-                            icon: const Icon(
-                              Icons.arrow_back_ios,
-                              color: Colors.purple,
-                            ),
-                            onPressed: () => Get.back(),
-                          ),
-                        ),
-                      ],
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: constraints.maxHeight,
                     ),
+                    child: IntrinsicHeight(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24.0),
+                        child: Column(
+                          children: [
+                            const SizedBox(height: 20),
 
-                    const SizedBox(height: 20),
-
-                    // Header with animated text
-                    Container(
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.9),
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 20,
-                            offset: const Offset(0, 10),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        children: [
-                          AnimatedTextKit(
-                            animatedTexts: [
-                              ColorizeAnimatedText(
-                                'Choose Category',
-                                textStyle: const TextStyle(
-                                  fontSize: 28,
-                                  fontWeight: FontWeight.bold,
+                            // Back button
+                            Row(
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.9),
+                                    borderRadius: BorderRadius.circular(12),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.1),
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 5),
+                                      ),
+                                    ],
+                                  ),
+                                  child: IconButton(
+                                    icon: const Icon(
+                                      Icons.arrow_back_ios,
+                                      color: Colors.purple,
+                                    ),
+                                    onPressed: () => Get.back(),
+                                  ),
                                 ),
-                                colors: [
-                                  Colors.purple,
-                                  Colors.blue,
-                                  Colors.purple,
-                                  Colors.teal,
+                              ],
+                            ),
+
+                            const SizedBox(height: 20),
+
+                            // Header with animated text
+                            Container(
+                              padding: const EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.9),
+                                borderRadius: BorderRadius.circular(20),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.1),
+                                    blurRadius: 20,
+                                    offset: const Offset(0, 10),
+                                  ),
                                 ],
-                                speed: const Duration(milliseconds: 400),
                               ),
-                            ],
-                            isRepeatingAnimation: true,
-                            repeatForever: true,
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            'Select your preferred game category',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.grey.shade600,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 40),
-
-                    const SizedBox(height: 20),
-
-                    _buildCategoryButton(
-                      emoji: 'assets/picture.gif',
-                      title: 'Images',
-                      subtitle: 'Quick Image Quiz',
-                      description: 'Memorize and identify images',
-                      color: Colors.amber,
-                      onTap: () {
-                        // Navigate to Animal Sounds category
-                        Get.toNamed(
-                          '/opponent-type-selection',
-                          arguments: "MemorizeImage",
-                        );
-                      },
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    _buildCategoryButton(
-                      emoji: 'assets/video_player.gif',
-                      title: 'Videos',
-                      subtitle: 'Quick Video Quiz',
-                      description: 'Memorize and identify videos',
-                      color: Colors.pink,
-                      onTap: () {
-                        Get.toNamed(
-                          '/opponent-type-selection',
-                          arguments: "MemorizeVideo",
-                        );
-                      },
-                    ),
-
-                    const SizedBox(height: 40),
-
-                    // Additional info section
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.8),
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.info_outline,
-                            color: Colors.grey.shade600,
-                            size: 20,
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              'Choose a category to start your challenge!',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey.shade600,
-                                fontWeight: FontWeight.w500,
+                              child: Column(
+                                children: [
+                                  AnimatedTextKit(
+                                    animatedTexts: [
+                                      ColorizeAnimatedText(
+                                        'Choose Category',
+                                        textStyle: const TextStyle(
+                                          fontSize: 28,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        colors: [
+                                          Colors.purple,
+                                          Colors.blue,
+                                          Colors.purple,
+                                          Colors.teal,
+                                        ],
+                                        speed: const Duration(
+                                          milliseconds: 400,
+                                        ),
+                                      ),
+                                    ],
+                                    isRepeatingAnimation: true,
+                                    repeatForever: true,
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    'Select your preferred game category',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.grey.shade600,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
                               ),
                             ),
-                          ),
-                        ],
+
+                            const SizedBox(height: 40),
+
+                            const SizedBox(height: 20),
+
+                            _buildCategoryButton(
+                              emoji: 'assets/picture.gif',
+                              title: 'Images',
+                              subtitle: 'Quick Image Quiz',
+                              description: 'Memorize and identify images',
+                              color: Colors.amber,
+                              onTap: () {
+                                // Navigate to Animal Sounds category
+                                Get.toNamed(
+                                  '/opponent-type-selection',
+                                  arguments: "MemorizeImage",
+                                );
+                              },
+                            ),
+
+                            const SizedBox(height: 20),
+
+                            _buildCategoryButton(
+                              emoji: 'assets/video_player.gif',
+                              title: 'Videos',
+                              subtitle: 'Quick Video Quiz',
+                              description: 'Memorize and identify videos',
+                              color: Colors.pink,
+                              onTap: () {
+                                Get.toNamed(
+                                  '/opponent-type-selection',
+                                  arguments: "MemorizeVideo",
+                                );
+                              },
+                            ),
+
+                            const SizedBox(height: 40),
+
+                            // Additional info section
+                            Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.8),
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.info_outline,
+                                    color: Colors.grey.shade600,
+                                    size: 20,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      'Choose a category to start your challenge!',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.grey.shade600,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            // Spacer to push content up and fill remaining space
+                            const Spacer(),
+                            const SizedBox(height: 30),
+                          ],
+                        ),
                       ),
                     ),
-
-                    const SizedBox(height: 30),
-                  ],
-                ),
-              ),
+                  ),
+                );
+              },
             ),
           ),
         ],

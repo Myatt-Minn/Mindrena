@@ -1,4 +1,3 @@
-import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
@@ -16,7 +15,7 @@ class FriendsView extends GetView<FriendsController> {
       resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
-          // Full screen Lottie background
+          // Lottie background
           Positioned.fill(
             child: SizedBox(
               width: double.infinity,
@@ -67,140 +66,150 @@ class FriendsView extends GetView<FriendsController> {
           SafeArea(
             child: Column(
               children: [
-                // Header with back button and title
-                Container(
-                  margin: const EdgeInsets.all(16),
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 16,
-                    horizontal: 20,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.9),
-                    borderRadius: BorderRadius.circular(15),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 10,
-                        offset: const Offset(0, 5),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      IconButton(
-                        icon: Icon(
-                          Icons.arrow_back,
-                          color: ConstsConfig.primarycolor,
-                        ),
-                        onPressed: () => Get.back(),
-                      ),
-                      Expanded(
-                        child: Center(
-                          child: AnimatedTextKit(
-                            animatedTexts: [
-                              ColorizeAnimatedText(
-                                'Friends',
-                                textStyle: const TextStyle(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                colors: [
-                                  ConstsConfig.primarycolor,
-                                  ConstsConfig.primaryColorLight,
-                                  ConstsConfig.secondarycolor,
-                                  Colors.purple,
-                                ],
-                                speed: const Duration(milliseconds: 400),
-                              ),
-                            ],
-                            repeatForever: true,
-                            pause: const Duration(milliseconds: 1000),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 48), // To balance the back button
-                    ],
-                  ),
-                ),
-
-                // Tab bar with theme styling
+                _buildHeader(),
                 Expanded(
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 16),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.9),
-                      borderRadius: BorderRadius.circular(15),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 10,
-                          offset: const Offset(0, 5),
-                        ),
+                  child: DefaultTabController(
+                    length: 3,
+                    child: Column(
+                      children: [
+                        _buildTabBar(),
+                        Expanded(child: _buildTabContent()),
                       ],
                     ),
-                    child: DefaultTabController(
-                      length: 3,
-                      child: Column(
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: Colors.grey.shade100,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: TabBar(
-                              indicator: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12),
-                                color: ConstsConfig.primarycolor,
-                              ),
-                              indicatorSize: TabBarIndicatorSize.tab,
-                              dividerColor: Colors.transparent,
-                              labelColor: Colors.white,
-                              unselectedLabelColor: ConstsConfig.primarycolor,
-                              labelStyle: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 12,
-                              ),
-                              unselectedLabelStyle: const TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 12,
-                              ),
-                              tabs: const [
-                                Tab(
-                                  text: 'Friends',
-                                  icon: Icon(Icons.people, size: 18),
-                                ),
-                                Tab(
-                                  text: 'Requests',
-                                  icon: Icon(Icons.person_add, size: 18),
-                                ),
-                                Tab(
-                                  text: 'Find',
-                                  icon: Icon(Icons.search, size: 18),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Expanded(
-                            child: TabBarView(
-                              children: [
-                                _buildFriendsTab(),
-                                _buildRequestsTab(),
-                                _buildSearchTab(),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
                   ),
                 ),
-                const SizedBox(height: 16), // Add bottom padding
               ],
             ),
           ),
         ],
       ),
+    );
+  }
+
+  /// Build header
+  Widget _buildHeader() {
+    return Container(
+      margin: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFF667eea), Color(0xFF764ba2)],
+        ),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          GestureDetector(
+            onTap: () => Get.back(),
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(
+                Icons.arrow_back_ios_new,
+                color: Colors.white,
+                size: 20,
+              ),
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Friends',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  'Connect and play with friends',
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.8),
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(Icons.people, color: Colors.white, size: 24),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Build tab bar
+  Widget _buildTabBar() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.grey.shade100,
+          borderRadius: BorderRadius.circular(15),
+        ),
+        child: TabBar(
+          indicator: BoxDecoration(
+            borderRadius: BorderRadius.circular(15),
+            gradient: const LinearGradient(
+              colors: [Color(0xFF667eea), Color(0xFF764ba2)],
+            ),
+          ),
+          indicatorSize: TabBarIndicatorSize.tab,
+          dividerColor: Colors.transparent,
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.grey,
+          labelStyle: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 12,
+          ),
+          unselectedLabelStyle: const TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: 12,
+          ),
+          tabs: const [
+            Tab(text: 'Friends', icon: Icon(Icons.people, size: 18)),
+            Tab(text: 'Requests', icon: Icon(Icons.person_add, size: 18)),
+            Tab(text: 'Find', icon: Icon(Icons.search, size: 18)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Build tab content
+  Widget _buildTabContent() {
+    return TabBarView(
+      children: [_buildFriendsTab(), _buildRequestsTab(), _buildSearchTab()],
     );
   }
 
@@ -297,7 +306,7 @@ class FriendsView extends GetView<FriendsController> {
         itemCount: controller.friendRequests.length,
         itemBuilder: (context, index) {
           final request = controller.friendRequests[index];
-          return _buildRequestCard(request);
+          return _buildFriendRequestCard(request);
         },
       );
     });
@@ -446,8 +455,8 @@ class FriendsView extends GetView<FriendsController> {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.9),
-        borderRadius: BorderRadius.circular(15),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
@@ -456,93 +465,159 @@ class FriendsView extends GetView<FriendsController> {
           ),
         ],
       ),
-      child: ListTile(
-        contentPadding: const EdgeInsets.all(16),
-        leading: Container(
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(color: ConstsConfig.primarycolor, width: 2),
-          ),
-          child: CircleAvatar(
-            radius: 25,
-            backgroundColor: ConstsConfig.primarycolor.withOpacity(0.1),
-            backgroundImage: friend.avatarUrl.isNotEmpty
-                ? NetworkImage(friend.avatarUrl)
-                : null,
-            child: friend.avatarUrl.isEmpty
-                ? Text(
-                    friend.username.isNotEmpty
-                        ? friend.username[0].toUpperCase()
-                        : '?',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: ConstsConfig.primarycolor,
-                    ),
-                  )
-                : null,
-          ),
-        ),
-        title: Text(
-          friend.username,
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 16,
-            color: ConstsConfig.primarycolor,
-          ),
-        ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
           children: [
-            const SizedBox(height: 4),
+            // Avatar with gradient border
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              padding: const EdgeInsets.all(3),
               decoration: BoxDecoration(
-                color: ConstsConfig.secondarycolor.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(12),
+                shape: BoxShape.circle,
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF667eea), Color(0xFF764ba2)],
+                ),
               ),
-              child: Text(
-                'Games Won: ${friend.gamesWon}   Points: ${friend.totalPoints}',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: ConstsConfig.primarycolor,
-                  fontWeight: FontWeight.w500,
+              child: Container(
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white,
+                ),
+                padding: const EdgeInsets.all(2),
+                child: CircleAvatar(
+                  radius: 28,
+                  backgroundColor: const Color(0xFF667eea).withOpacity(0.1),
+                  backgroundImage: friend.avatarUrl.isNotEmpty
+                      ? NetworkImage(friend.avatarUrl)
+                      : null,
+                  child: friend.avatarUrl.isEmpty
+                      ? Text(
+                          friend.username.isNotEmpty
+                              ? friend.username[0].toUpperCase()
+                              : '?',
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF667eea),
+                          ),
+                        )
+                      : null,
+                ),
+              ),
+            ),
+            const SizedBox(width: 16),
+            // Friend info
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    friend.username,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                      color: Color(0xFF2E3A47),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFFFFD700), Color(0xFFFFA500)],
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.emoji_events,
+                              color: Colors.white,
+                              size: 14,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              '${friend.gamesWon}',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFF667eea), Color(0xFF764ba2)],
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.stars,
+                              color: Colors.white,
+                              size: 14,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              '${friend.totalPoints}',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            // Remove friend button
+            GestureDetector(
+              onTap: () => _showRemoveFriendDialog(friend),
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.red.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  Icons.person_remove,
+                  color: Colors.red.shade400,
+                  size: 20,
                 ),
               ),
             ),
           ],
         ),
-        trailing: Container(
-          decoration: BoxDecoration(
-            color: ConstsConfig.primarycolor.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: PopupMenuButton(
-            icon: Icon(Icons.more_vert, color: ConstsConfig.primarycolor),
-            itemBuilder: (context) => [
-              PopupMenuItem(
-                child: Row(
-                  children: [
-                    Icon(Icons.person_remove, color: Colors.red.shade400),
-                    const SizedBox(width: 8),
-                    const Text('Remove Friend'),
-                  ],
-                ),
-                onTap: () => _showRemoveFriendDialog(friend),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }
 
-  Widget _buildRequestCard(UserModel request) {
+  Widget _buildFriendRequestCard(UserModel request) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.9),
-        borderRadius: BorderRadius.circular(15),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
@@ -551,80 +626,107 @@ class FriendsView extends GetView<FriendsController> {
           ),
         ],
       ),
-      child: ListTile(
-        contentPadding: const EdgeInsets.all(16),
-        leading: Container(
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(color: ConstsConfig.secondarycolor, width: 2),
-          ),
-          child: CircleAvatar(
-            radius: 25,
-            backgroundColor: ConstsConfig.secondarycolor.withOpacity(0.1),
-            backgroundImage: request.avatarUrl.isNotEmpty
-                ? NetworkImage(request.avatarUrl)
-                : null,
-            child: request.avatarUrl.isEmpty
-                ? Text(
-                    request.username.isNotEmpty
-                        ? request.username[0].toUpperCase()
-                        : '?',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: ConstsConfig.secondarycolor,
-                    ),
-                  )
-                : null,
-          ),
-        ),
-        title: Text(
-          request.username,
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 16,
-            color: ConstsConfig.primarycolor,
-          ),
-        ),
-        subtitle: Container(
-          margin: const EdgeInsets.only(top: 4),
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          decoration: BoxDecoration(
-            color: Colors.orange.withOpacity(0.2),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: const Text(
-            'wants to be your friend',
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-              color: Colors.orange,
-            ),
-          ),
-        ),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
           children: [
+            // Avatar with gradient border
             Container(
+              padding: const EdgeInsets.all(3),
               decoration: BoxDecoration(
-                color: Colors.green.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
+                shape: BoxShape.circle,
+                gradient: const LinearGradient(
+                  colors: [Color(0xFFFF6B6B), Color(0xFFFFE66D)],
+                ),
               ),
-              child: IconButton(
-                icon: const Icon(Icons.check, color: Colors.green),
-                onPressed: () => controller.acceptFriendRequest(request),
+              child: Container(
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white,
+                ),
+                padding: const EdgeInsets.all(2),
+                child: CircleAvatar(
+                  radius: 28,
+                  backgroundColor: const Color(0xFFFF6B6B).withOpacity(0.1),
+                  backgroundImage: request.avatarUrl.isNotEmpty
+                      ? NetworkImage(request.avatarUrl)
+                      : null,
+                  child: request.avatarUrl.isEmpty
+                      ? Text(
+                          request.username.isNotEmpty
+                              ? request.username[0].toUpperCase()
+                              : '?',
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFFFF6B6B),
+                          ),
+                        )
+                      : null,
+                ),
               ),
             ),
-            const SizedBox(width: 8),
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.red.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
+            const SizedBox(width: 16),
+            // Request info
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    request.username,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                      color: Color(0xFF2E3A47),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Wants to be your friend',
+                    style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                  ),
+                ],
               ),
-              child: IconButton(
-                icon: Icon(Icons.close, color: Colors.red.shade400),
-                onPressed: () => controller.declineFriendRequest(request),
-              ),
+            ),
+            // Action buttons
+            Row(
+              children: [
+                GestureDetector(
+                  onTap: () => _acceptFriendRequest(request),
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF4CAF50), Color(0xFF45A049)],
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                      Icons.check,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                GestureDetector(
+                  onTap: () => _declineFriendRequest(request),
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFFFF5722), Color(0xFFE64A19)],
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                      Icons.close,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -638,8 +740,8 @@ class FriendsView extends GetView<FriendsController> {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.9),
-        borderRadius: BorderRadius.circular(15),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
@@ -648,63 +750,135 @@ class FriendsView extends GetView<FriendsController> {
           ),
         ],
       ),
-      child: ListTile(
-        contentPadding: const EdgeInsets.all(16),
-        leading: Container(
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(color: ConstsConfig.primaryColorLight, width: 2),
-          ),
-          child: CircleAvatar(
-            radius: 25,
-            backgroundColor: ConstsConfig.primaryColorLight.withOpacity(0.1),
-            backgroundImage: user.avatarUrl.isNotEmpty
-                ? NetworkImage(user.avatarUrl)
-                : null,
-            child: user.avatarUrl.isEmpty
-                ? Text(
-                    user.username.isNotEmpty
-                        ? user.username[0].toUpperCase()
-                        : '?',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: ConstsConfig.primaryColorLight,
-                    ),
-                  )
-                : null,
-          ),
-        ),
-        title: Text(
-          user.username,
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 16,
-            color: ConstsConfig.primarycolor,
-          ),
-        ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
           children: [
-            const SizedBox(height: 4),
+            // Avatar with gradient border
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              padding: const EdgeInsets.all(3),
               decoration: BoxDecoration(
-                color: ConstsConfig.secondarycolor.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(12),
+                shape: BoxShape.circle,
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF4CAF50), Color(0xFF81C784)],
+                ),
               ),
-              child: Text(
-                'Games Won: ${user.gamesWon}   Points: ${user.totalPoints}',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: ConstsConfig.primarycolor,
-                  fontWeight: FontWeight.w500,
+              child: Container(
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white,
+                ),
+                padding: const EdgeInsets.all(2),
+                child: CircleAvatar(
+                  radius: 28,
+                  backgroundColor: const Color(0xFF4CAF50).withOpacity(0.1),
+                  backgroundImage: user.avatarUrl.isNotEmpty
+                      ? NetworkImage(user.avatarUrl)
+                      : null,
+                  child: user.avatarUrl.isEmpty
+                      ? Text(
+                          user.username.isNotEmpty
+                              ? user.username[0].toUpperCase()
+                              : '?',
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF4CAF50),
+                          ),
+                        )
+                      : null,
                 ),
               ),
             ),
+            const SizedBox(width: 16),
+            // User info
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    user.username,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                      color: Color(0xFF2E3A47),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFFFFD700), Color(0xFFFFA500)],
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.emoji_events,
+                              color: Colors.white,
+                              size: 14,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              '${user.gamesWon}',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFF667eea), Color(0xFF764ba2)],
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.stars,
+                              color: Colors.white,
+                              size: 14,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              '${user.totalPoints}',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            // Action button
+            _buildActionButton(user, status, context),
           ],
         ),
-        trailing: _buildActionButton(user, status, context),
       ),
     );
   }
@@ -848,5 +1022,13 @@ class FriendsView extends GetView<FriendsController> {
         ],
       ),
     );
+  }
+
+  void _acceptFriendRequest(UserModel request) {
+    controller.acceptFriendRequest(request);
+  }
+
+  void _declineFriendRequest(UserModel request) {
+    controller.declineFriendRequest(request);
   }
 }

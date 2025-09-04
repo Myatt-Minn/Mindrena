@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:mindrena/app/data/populateImageQuestions.dart';
 
 class PlayerModeSelectionController extends GetxController {
   // Observable variables
@@ -23,10 +24,11 @@ class PlayerModeSelectionController extends GetxController {
   }
 
   @override
-  void onInit() {
+  void onInit() async {
     super.onInit();
     // Load saved language preference
     _loadSavedLanguage();
+    await populateImageQuestions();
   }
 
   @override

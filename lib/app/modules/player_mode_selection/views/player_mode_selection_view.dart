@@ -63,234 +63,252 @@ class PlayerModeSelectionView extends GetView<PlayerModeSelectionController> {
 
           // Main content over the background
           SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                children: [
-                  const SizedBox(height: 20),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: constraints.maxHeight,
+                    ),
+                    child: IntrinsicHeight(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24.0),
+                        child: Column(
+                          children: [
+                            const SizedBox(height: 20),
 
-                  // Back button and header
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 12,
-                            horizontal: 16,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.9),
-                            borderRadius: BorderRadius.circular(15),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                blurRadius: 10,
-                                offset: const Offset(0, 5),
-                              ),
-                            ],
-                          ),
-                          child: Center(
-                            child: AnimatedTextKit(
-                              animatedTexts: [
-                                ColorizeAnimatedText(
-                                  'Choose Game Mode',
-                                  textStyle: const TextStyle(
-                                    fontSize: 22,
-                                    fontWeight: FontWeight.bold,
+                            // Back button and header
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 12,
+                                      horizontal: 16,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withOpacity(0.9),
+                                      borderRadius: BorderRadius.circular(15),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.1),
+                                          blurRadius: 10,
+                                          offset: const Offset(0, 5),
+                                        ),
+                                      ],
+                                    ),
+                                    child: Center(
+                                      child: AnimatedTextKit(
+                                        animatedTexts: [
+                                          ColorizeAnimatedText(
+                                            'Choose Game Mode',
+                                            textStyle: const TextStyle(
+                                              fontSize: 22,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                            colors: [
+                                              Colors.purple,
+                                              Colors.purple,
+                                              Colors.teal,
+                                              Colors.blue,
+                                            ],
+                                            speed: const Duration(
+                                              milliseconds: 400,
+                                            ),
+                                          ),
+                                        ],
+                                        isRepeatingAnimation: true,
+                                        repeatForever: true,
+                                      ),
+                                    ),
                                   ),
-                                  colors: [
-                                    Colors.purple,
-                                    Colors.purple,
-                                    Colors.teal,
-                                    Colors.blue,
-                                  ],
-                                  speed: const Duration(milliseconds: 400),
+                                ),
+                                const SizedBox(width: 8),
+                                // Language selector button
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.9),
+                                    borderRadius: BorderRadius.circular(12),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.1),
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 5),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Material(
+                                    color: Colors.transparent,
+                                    child: InkWell(
+                                      borderRadius: BorderRadius.circular(12),
+                                      onTap: () =>
+                                          _showLanguageSelector(context),
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 10,
+                                          vertical: 6,
+                                        ),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Image.asset(
+                                              'assets/language.gif',
+                                              width: 38,
+                                              height: 38,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ],
-                              isRepeatingAnimation: true,
-                              repeatForever: true,
                             ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      // Language selector button
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.9),
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              blurRadius: 10,
-                              offset: const Offset(0, 5),
+
+                            const SizedBox(height: 60),
+
+                            Obx(
+                              () => controller.isLoaded.value
+                                  ? GestureDetector(
+                                      onTap: () {
+                                        Get.offAllNamed('/auth-gate');
+                                      },
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(12),
+                                        child: Image.asset(
+                                          'assets/Two_Player.gif',
+                                          width: 290,
+                                        ),
+                                      ),
+                                    )
+                                  : Shimmer(
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          Colors.grey.shade300,
+                                          Colors.grey.shade100,
+                                          Colors.grey.shade300,
+                                        ],
+                                        stops: const [0.1, 0.5, 0.9],
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                      ),
+                                      child: SizedBox(width: 290, height: 180),
+                                    ),
                             ),
-                          ],
-                        ),
-                        child: Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(12),
-                            onTap: () => _showLanguageSelector(context),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 6,
+
+                            const SizedBox(height: 40),
+
+                            // Single Player Button
+                            Obx(
+                              () => controller.isLoaded.value
+                                  ? GestureDetector(
+                                      onTap: () {
+                                        Get.offAllNamed('/single-player');
+                                      },
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(12),
+                                        child: Image.asset(
+                                          'assets/Single_Player.gif',
+                                          width: 290,
+                                        ),
+                                      ),
+                                    )
+                                  : Shimmer(
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          Colors.grey.shade300,
+                                          Colors.grey.shade100,
+                                          Colors.grey.shade300,
+                                        ],
+                                        stops: const [0.1, 0.5, 0.9],
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                      ),
+                                      child: SizedBox(width: 290, height: 180),
+                                    ),
+                            ),
+                            const SizedBox(height: 40),
+                            // Additional info card
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.9),
+                                borderRadius: BorderRadius.circular(20),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.1),
+                                    blurRadius: 15,
+                                    offset: const Offset(0, 8),
+                                  ),
+                                ],
                               ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
+                              child: Column(
                                 children: [
-                                  Image.asset(
-                                    'assets/language.gif',
-                                    width: 38,
-                                    height: 38,
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        Icons.info_outline,
+                                        color: Colors.purple,
+                                        size: 24,
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: Text(
+                                          'Choose your preferred game mode to start playing!',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            color: Colors.grey.shade700,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 12),
+                                  const Divider(),
+                                  const SizedBox(height: 8),
+                                  Obx(
+                                    () => Row(
+                                      children: [
+                                        Icon(
+                                          Icons.language,
+                                          color: Colors.grey.shade600,
+                                          size: 20,
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Text(
+                                          'Current Language: ',
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.grey.shade600,
+                                          ),
+                                        ),
+                                        Text(
+                                          controller.currentLanguageDisplay,
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.purple,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ],
                               ),
                             ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
 
-                  const SizedBox(height: 60),
-
-                  Obx(
-                    () => controller.isLoaded.value
-                        ? GestureDetector(
-                            onTap: () {
-                              Get.offAllNamed('/auth-gate');
-                            },
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: Image.asset(
-                                'assets/Two_Player.gif',
-                                width: 290,
-                              ),
-                            ),
-                          )
-                        : Shimmer(
-                            gradient: LinearGradient(
-                              colors: [
-                                Colors.grey.shade300,
-                                Colors.grey.shade100,
-                                Colors.grey.shade300,
-                              ],
-                              stops: const [0.1, 0.5, 0.9],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                            child: SizedBox(width: 290, height: 180),
-                          ),
-                  ),
-
-                  const SizedBox(height: 40),
-
-                  // Single Player Button
-                  Obx(
-                    () => controller.isLoaded.value
-                        ? GestureDetector(
-                            onTap: () {
-                              Get.offAllNamed('/single-player');
-                            },
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: Image.asset(
-                                'assets/Single_Player.gif',
-                                width: 290,
-                              ),
-                            ),
-                          )
-                        : Shimmer(
-                            gradient: LinearGradient(
-                              colors: [
-                                Colors.grey.shade300,
-                                Colors.grey.shade100,
-                                Colors.grey.shade300,
-                              ],
-                              stops: const [0.1, 0.5, 0.9],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                            child: SizedBox(width: 290, height: 180),
-                          ),
-                  ),
-                  const SizedBox(height: 40),
-                  // Additional info card
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.9),
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 15,
-                          offset: const Offset(0, 8),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      children: [
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.info_outline,
-                              color: Colors.purple,
-                              size: 24,
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Text(
-                                'Choose your preferred game mode to start playing!',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.grey.shade700,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
+                            // Spacer to push content up and fill remaining space
+                            const Spacer(),
+                            const SizedBox(height: 20),
                           ],
                         ),
-                        const SizedBox(height: 12),
-                        const Divider(),
-                        const SizedBox(height: 8),
-                        Obx(
-                          () => Row(
-                            children: [
-                              Icon(
-                                Icons.language,
-                                color: Colors.grey.shade600,
-                                size: 20,
-                              ),
-                              const SizedBox(width: 12),
-                              Text(
-                                'Current Language: ',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.grey.shade600,
-                                ),
-                              ),
-                              Text(
-                                controller.currentLanguageDisplay,
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.purple,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                   ),
-
-                  const SizedBox(height: 20),
-                ],
-              ),
+                );
+              },
             ),
           ),
         ],

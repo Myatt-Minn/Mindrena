@@ -1,12 +1,4 @@
 import 'package:get/get.dart';
-import 'package:mindrena/app/modules/single_player/sg_f_category_selection/bindings/sg_f_category_selection_binding.dart';
-import 'package:mindrena/app/modules/single_player/sg_f_category_selection/views/sg_f_category_selection_view.dart';
-import 'package:mindrena/app/modules/single_player/sg_f_difficulty_selection/bindings/sg_f_difficulty_selection_binding.dart';
-import 'package:mindrena/app/modules/single_player/sg_f_difficulty_selection/views/sg_f_difficulty_selection_view.dart';
-import 'package:mindrena/app/modules/single_player/sg_home/bindings/sg_home_binding.dart';
-import 'package:mindrena/app/modules/single_player/sg_home/views/sg_home_view.dart';
-import 'package:mindrena/app/modules/single_player/sg_quiz/bindings/sg_quiz_binding.dart';
-import 'package:mindrena/app/modules/single_player/sg_quiz/views/sg_quiz_view.dart';
 
 import '../modules/auth_gate/bindings/auth_gate_binding.dart';
 import '../modules/auth_gate/views/auth_gate_view.dart';
@@ -21,6 +13,8 @@ import '../modules/g_category_selection/bindings/g_category_selection_binding.da
 import '../modules/g_category_selection/views/g_category_selection_view.dart';
 import '../modules/game_screen/bindings/game_screen_binding.dart';
 import '../modules/game_screen/views/game_screen_view.dart';
+import '../modules/guess_it_fast/bindings/guess_it_fast_binding.dart';
+import '../modules/guess_it_fast/views/guess_it_fast_view.dart';
 import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
 import '../modules/lobby/bindings/lobby_binding.dart';
@@ -29,6 +23,8 @@ import '../modules/m_category_selection/bindings/m_category_selection_binding.da
 import '../modules/m_category_selection/views/m_category_selection_view.dart';
 import '../modules/memorize_image_game_screen/bindings/memorize_image_game_screen_binding.dart';
 import '../modules/memorize_image_game_screen/views/memorize_image_game_screen_view.dart';
+import '../modules/normal_sign_in/bindings/normal_sign_in_binding.dart';
+import '../modules/normal_sign_in/views/normal_sign_in_view.dart';
 import '../modules/opponent_type_selection/bindings/opponent_type_selection_binding.dart';
 import '../modules/opponent_type_selection/views/opponent_type_selection_view.dart';
 import '../modules/player_mode_selection/bindings/player_mode_selection_binding.dart';
@@ -43,6 +39,14 @@ import '../modules/shop/bindings/shop_binding.dart';
 import '../modules/shop/views/shop_view.dart';
 import '../modules/sign-in/bindings/sign_in_binding.dart';
 import '../modules/sign-in/views/sign_in_view.dart';
+import '../modules/single_player/sg_f_category_selection/bindings/sg_f_category_selection_binding.dart';
+import '../modules/single_player/sg_f_category_selection/views/sg_f_category_selection_view.dart';
+import '../modules/single_player/sg_f_difficulty_selection/bindings/sg_f_difficulty_selection_binding.dart';
+import '../modules/single_player/sg_f_difficulty_selection/views/sg_f_difficulty_selection_view.dart';
+import '../modules/single_player/sg_home/bindings/sg_home_binding.dart';
+import '../modules/single_player/sg_home/views/sg_home_view.dart';
+import '../modules/single_player/sg_quiz/bindings/sg_quiz_binding.dart';
+import '../modules/single_player/sg_quiz/views/sg_quiz_view.dart';
 import '../modules/splash/bindings/splash_binding.dart';
 import '../modules/splash/views/splash_view.dart';
 import '../modules/user_feedback/bindings/user_feedback_binding.dart';
@@ -187,6 +191,16 @@ class AppPages {
       name: _Paths.SG_QUIZ,
       page: () => const SgQuizView(),
       binding: SgQuizBinding(),
+    ),
+    GetPage(
+      name: _Paths.NORMAL_SIGN_IN,
+      page: () => const NormalSignInView(),
+      binding: NormalSignInBinding(),
+    ),
+    GetPage(
+      name: _Paths.GUESS_IT_FAST,
+      page: () => const GuessItFastView(),
+      binding: GuessItFastBinding(),
     ),
   ];
 }

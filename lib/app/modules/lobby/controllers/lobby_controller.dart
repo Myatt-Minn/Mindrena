@@ -75,17 +75,22 @@ class LobbyController extends GetxController {
           context: Get.context!,
           type: QuickAlertType.info,
           title: 'Game Mechanics',
-          text: '''
+          text: '''Welcome to the Quiz Game! 🎉
+
+Here's how it works:
 
 🕐 Timer: You get 10 seconds to answer each question
 
 ⏰ Progression: The next question will only appear after the timer hits zero
 
-🎯 Scoring: You earn 10 points for each correct answer
+🎯 Scoring: You earn points equal to the remaining seconds when you answer correctly! 
+   • Answer with 8 seconds left = 8 points
+   • Answer with 3 seconds left = 3 points
+   • Minimum: 1 point, Maximum: 10 points per question
 
 ⚠️ Timeout: If the timer runs out and you haven't answered, you get no points
 
-💡 Strategy: Answer quickly to secure your points, but don't rush - accuracy matters!
+💡 Strategy: Answer quickly AND accurately to maximize your score!
 
 Good luck and have fun! 🎮''',
           confirmBtnText: 'Got it!',

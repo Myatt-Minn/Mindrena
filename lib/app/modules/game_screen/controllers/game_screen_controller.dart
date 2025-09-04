@@ -434,9 +434,18 @@ class GameScreenController extends GetxController {
       // Calculate score if answer is correct
       final correctIndex = currentQuestion.value?['correctIndex'] ?? -1;
       if (answerIndex == correctIndex) {
-        const pointsEarned = 10; // Fixed 10 points per correct answer
+        // Time-based scoring: points equal to remaining seconds
+        // Ensure we give at least 1 point for correct answers, even if time is 0
+        int pointsEarned = timeLeft.value;
+        if (pointsEarned <= 0) {
+          pointsEarned = 1; // Minimum 1 point for correct answer
+        }
+        // Cap maximum points at 10
+        pointsEarned = pointsEarned.clamp(1, 10);
 
-        print('Correct answer! Adding $pointsEarned points');
+        print(
+          'Correct answer! Adding $pointsEarned points (based on ${timeLeft.value} seconds remaining)',
+        );
 
         await _firestore.collection('games').doc(gameId.value).update({
           'scores.$userId': FieldValue.increment(pointsEarned),

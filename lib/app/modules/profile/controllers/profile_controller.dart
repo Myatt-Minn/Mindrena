@@ -8,6 +8,7 @@ class ProfileController extends GetxController {
 
   final user = Rxn<UserModel>(); // Reactive variable to hold user data
   var isLoading = true.obs; // To show a loading indicator
+  var userCoins = 0.obs; // Reactive variable for coins
 
   @override
   void onInit() async {
@@ -31,6 +32,8 @@ class ProfileController extends GetxController {
               user.value = UserModel.fromMap(
                 document.data() as Map<String, dynamic>,
               );
+              // Calculate coins based on user points
+              userCoins.value = _calculateCoins(user.value?.totalPoints ?? 0);
             } else {
               print("User does not exist");
             }
@@ -50,5 +53,10 @@ class ProfileController extends GetxController {
         'sign_out_error'.trParams({'error': e.toString()}),
       );
     }
+  }
+
+  /// Calculate coins based on points (50 coins per 100 points)
+  int _calculateCoins(int points) {
+    return (points / 100).floor() * 50;
   }
 }

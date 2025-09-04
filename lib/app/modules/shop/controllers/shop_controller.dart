@@ -10,6 +10,7 @@ class ShopController extends GetxController {
 
   // Observable variables
   var userPoints = 0.obs;
+  var userCoins = 0.obs;
   var isLoading = true.obs;
   var selectedTab = 0.obs;
   var purchasedItems = <String>[].obs;
@@ -36,7 +37,8 @@ class ShopController extends GetxController {
       final userDoc = await _firestore.collection('users').doc(user.uid).get();
       if (userDoc.exists) {
         final userData = userDoc.data()!;
-        userPoints.value = userData['points'] ?? 0;
+        userPoints.value = userData['stats']['totalPoints'] ?? 0;
+        userCoins.value = _calculateCoins(userPoints.value);
         currentUserAvatar.value = userData['avatarUrl'] ?? '';
         purchasedItems.value = List<String>.from(
           userData['purchasedItems'] ?? [],
@@ -175,7 +177,7 @@ class ShopController extends GetxController {
       final newPurchasedItems = [...purchasedItems, item.id];
 
       Map<String, dynamic> updateData = {
-        'points': newPoints,
+        'stats.totalPoints': newPoints, // Update the totalPoints in stats
         'purchasedItems': newPurchasedItems,
       };
 
@@ -189,6 +191,7 @@ class ShopController extends GetxController {
 
       // Update local state
       userPoints.value = newPoints;
+      userCoins.value = _calculateCoins(newPoints);
       purchasedItems.add(item.id);
 
       _showSuccessMessage('${item.name} purchased successfully!');
@@ -200,7 +203,7 @@ class ShopController extends GetxController {
 
   /// Show purchase confirmation dialog
   Future<bool> _showPurchaseConfirmation(ShopItem item) async {
-    return await QuickAlert.show(
+    bool? result = await QuickAlert.show(
       context: Get.context!,
       type: QuickAlertType.confirm,
       title: 'Confirm Purchase',
@@ -208,7 +211,11 @@ class ShopController extends GetxController {
       confirmBtnText: 'Purchase',
       cancelBtnText: 'Cancel',
       confirmBtnColor: Colors.purple,
+      onConfirmBtnTap: () {
+        Get.back(result: true);
+      },
     );
+    return result ?? false; // Return false if result is null
   }
 
   /// Show success message
@@ -236,6 +243,11 @@ class ShopController extends GetxController {
   /// Refresh user data
   Future<void> refreshData() async {
     await _loadUserData();
+  }
+
+  /// Calculate coins based on points (50 coins per 100 points)
+  int _calculateCoins(int points) {
+    return (points / 100).floor() * 50;
   }
 }
 

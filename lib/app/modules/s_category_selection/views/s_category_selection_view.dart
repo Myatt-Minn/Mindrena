@@ -142,14 +142,11 @@ class SCategorySelectionView extends GetView<SCategorySelectionController> {
 
                     const SizedBox(height: 40),
 
-                    const SizedBox(height: 20),
-
                     _buildCategoryButton(
                       emoji: 'assets/panda.gif',
-                      title: 'Animal Sounds',
-                      subtitle: 'Real Animal Sounds',
-                      description:
-                          'Challenge yourself with various animal sounds',
+                      title: 'GuessFast',
+                      subtitle: 'Guess the voice fast',
+                      description: 'Who can guess the sound faster?',
                       color: Colors.amber,
                       onTap: () {
                         // Navigate to Animal Sounds category
@@ -164,30 +161,13 @@ class SCategorySelectionView extends GetView<SCategorySelectionController> {
 
                     _buildCategoryButton(
                       emoji: 'assets/music.gif',
-                      title: 'Songs',
-                      subtitle: 'Music Quiz',
+                      title: 'RememberWords',
+                      subtitle: 'Remember the words in order',
                       description:
                           'Test your music knowledge and identify popular myanmar songs',
                       color: Colors.pink,
                       onTap: () {
                         Get.toNamed('/lobby');
-                      },
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    _buildCategoryButton(
-                      emoji: 'assets/radio.gif',
-                      title: 'General',
-                      subtitle: 'General Sounds',
-                      description:
-                          'Test your general knowledge and identify various sounds',
-                      color: Colors.pink,
-                      onTap: () {
-                        Get.toNamed(
-                          '/opponent-type-selection',
-                          arguments: "Sounds",
-                        );
                       },
                     ),
 

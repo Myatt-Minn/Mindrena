@@ -232,7 +232,7 @@ class OpponentTypeSelectionView
                           _buildInfoRow(Icons.timer, '10 seconds per question'),
                           _buildInfoRow(
                             Icons.star,
-                            '10 points for correct answers',
+                            'Points = remaining seconds (1-10)',
                           ),
                           _buildInfoRow(
                             Icons.emoji_events,

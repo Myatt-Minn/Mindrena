@@ -15,8 +15,8 @@ class ConstsConfig {
   static const Color primarycolor = Colors.purple;
   static const Color primaryColorLight = Colors.purpleAccent;
   static const Color secondarycolor = Color(0xFF9D4EDD);
-  static const Color containerColor = Color(0xFF00a86b);
-  static const Color bgColor = Color(0xFFF5F9FF);
+  static const Color gradient1 = Color(0xFF667eea);
+  static const Color gradient2 = Color(0xFF764ba2);
   static const String passExp = '12 - 12 - 2025';
   static const String workperExp = '08 - 06 - 2025';
   static const String visaExp = '06 - 07 - 2028';

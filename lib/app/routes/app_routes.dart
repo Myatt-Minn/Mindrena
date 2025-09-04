@@ -29,6 +29,8 @@ abstract class Routes {
   static const SG_F_CATEGORY_SELECTION = _Paths.SG_F_CATEGORY_SELECTION;
   static const SG_F_DIFFICULTY_SELECTION = _Paths.SG_F_DIFFICULTY_SELECTION;
   static const SG_QUIZ = _Paths.SG_QUIZ;
+  static const NORMAL_SIGN_IN = _Paths.NORMAL_SIGN_IN;
+  static const GUESS_IT_FAST = _Paths.GUESS_IT_FAST;
 }
 
 abstract class _Paths {
@@ -59,4 +61,6 @@ abstract class _Paths {
   static const SG_F_CATEGORY_SELECTION = '/sg-f-category-selection';
   static const SG_F_DIFFICULTY_SELECTION = '/sg-f-difficulty-selection';
   static const SG_QUIZ = '/sg-quiz';
+  static const NORMAL_SIGN_IN = '/normal-sign-in';
+  static const GUESS_IT_FAST = '/guess-it-fast';
 }
