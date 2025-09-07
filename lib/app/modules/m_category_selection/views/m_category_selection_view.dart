@@ -123,7 +123,7 @@ class MCategorySelectionView extends GetView<MCategorySelectionController> {
                                   AnimatedTextKit(
                                     animatedTexts: [
                                       ColorizeAnimatedText(
-                                        'Choose Category',
+                                        'choose_category'.tr,
                                         textStyle: const TextStyle(
                                           fontSize: 28,
                                           fontWeight: FontWeight.bold,

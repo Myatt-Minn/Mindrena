@@ -15,25 +15,29 @@ class SCategorySelectionView extends GetView<SCategorySelectionController> {
         children: [
           // Full screen Lottie background
           Positioned.fill(
-            child: Lottie.asset(
-              'assets/gameBackground.json',
-              fit: BoxFit.cover,
-              repeat: true,
-              errorBuilder: (context, error, stackTrace) {
-                return Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        Colors.blue.shade50,
-                        Colors.purple.shade50,
-                        Colors.purple.shade50,
-                      ],
+            child: SizedBox(
+              width: double.infinity,
+              height: double.infinity,
+              child: Lottie.asset(
+                'assets/gameBackground.json',
+                fit: BoxFit.cover,
+                repeat: true,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Colors.blue.shade50,
+                          Colors.purple.shade50,
+                          Colors.purple.shade50,
+                        ],
+                      ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
           ),
 
@@ -110,7 +114,7 @@ class SCategorySelectionView extends GetView<SCategorySelectionController> {
                           AnimatedTextKit(
                             animatedTexts: [
                               ColorizeAnimatedText(
-                                'Choose Category',
+                                'choose_category'.tr,
                                 textStyle: const TextStyle(
                                   fontSize: 28,
                                   fontWeight: FontWeight.bold,
@@ -144,8 +148,8 @@ class SCategorySelectionView extends GetView<SCategorySelectionController> {
 
                     _buildCategoryButton(
                       emoji: 'assets/panda.gif',
-                      title: 'GuessFast',
-                      subtitle: 'Guess the voice fast',
+                      title: 'General',
+                      subtitle: 'Guess the sound fast',
                       description: 'Who can guess the sound faster?',
                       color: Colors.amber,
                       onTap: () {
@@ -160,11 +164,11 @@ class SCategorySelectionView extends GetView<SCategorySelectionController> {
                     const SizedBox(height: 20),
 
                     _buildCategoryButton(
-                      emoji: 'assets/music.gif',
-                      title: 'RememberWords',
-                      subtitle: 'Remember the words in order',
+                      emoji: 'assets/gate.gif',
+                      title: 'Anime',
+                      subtitle: 'Guess sounds from popular anime',
                       description:
-                          'Test your music knowledge and identify popular myanmar songs',
+                          'Test your anime knowledge and identify popular anime themes!',
                       color: Colors.pink,
                       onTap: () {
                         Get.toNamed('/lobby');

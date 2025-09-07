@@ -9,8 +9,9 @@ import 'package:mindrena/app/modules/splash/controllers/splash_controller.dart';
 
 Future<void> handleBackgroundMessage(RemoteMessage message) async {
   print("Handling background message: ${message.data}");
-  // Show the notification manually
-  SendNotificationHandler.displayNotification(message);
+  // Firebase will automatically show the notification for background messages
+  // when sent from Firebase Console, so we don't need to manually display it here
+  // Only handle data processing if needed
 }
 
 class SendNotificationHandler {
@@ -123,11 +124,20 @@ class SendNotificationHandler {
       final id = DateTime.now().millisecondsSinceEpoch ~/ 1000;
       const notificationDetails = NotificationDetails(
         android: AndroidNotificationDetails(
-          "push_notification_demo",
-          "push_notification_demo_channel",
+          "high_importance_channel",
+          "Mindrena Notifications",
+          channelDescription: "Notifications for Mindrena app",
           importance: Importance.max,
           priority: Priority.high,
           icon: 'notilogo',
+          largeIcon: DrawableResourceAndroidBitmap('notilogo'),
+          playSound: true,
+          enableVibration: true,
+        ),
+        iOS: DarwinNotificationDetails(
+          presentAlert: true,
+          presentBadge: true,
+          presentSound: true,
         ),
       );
 
@@ -147,8 +157,21 @@ class SendNotificationHandler {
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('notilogo'); // use your custom icon
 
+    const DarwinInitializationSettings initializationSettingsIOS =
+        DarwinInitializationSettings(
+          requestAlertPermission: true,
+          requestBadgePermission: true,
+          requestSoundPermission: true,
+        );
+
+    const InitializationSettings initializationSettings =
+        InitializationSettings(
+          android: initializationSettingsAndroid,
+          iOS: initializationSettingsIOS,
+        );
+
     flutterLocalNotificationsPlugin.initialize(
-      const InitializationSettings(android: initializationSettingsAndroid),
+      initializationSettings,
       onDidReceiveNotificationResponse: (details) {
         print(details.toString());
         print("localBackgroundHandler :");
@@ -168,6 +191,26 @@ class SendNotificationHandler {
       },
       onDidReceiveBackgroundNotificationResponse: localBackgroundHandler,
     );
+
+    // Create notification channel for Android
+    _createNotificationChannel();
+  }
+
+  static Future<void> _createNotificationChannel() async {
+    const AndroidNotificationChannel channel = AndroidNotificationChannel(
+      'high_importance_channel', // id
+      'Mindrena Notifications', // title
+      description: 'Notifications for Mindrena app',
+      importance: Importance.max,
+      playSound: true,
+      enableVibration: true,
+    );
+
+    await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >()
+        ?.createNotificationChannel(channel);
   }
 
   static Future<void> localBackgroundHandler(NotificationResponse data) async {
@@ -206,10 +249,31 @@ class SendNotificationHandler {
     final Map<String, dynamic> payload = {
       'message': {
         'token': token,
-        'notification': {'title': title, 'body': body},
+        'notification': {
+          'title': title,
+          'body': body,
+          'image': null, // You can add image URL here if needed
+        },
         'data': {
           'click_action': 'FLUTTER_NOTIFICATION_CLICK',
           'message': 'This is additional data payload',
+        },
+        'android': {
+          'notification': {
+            'icon': 'notilogo',
+            'color': '#7B1FA2', // Purple color
+            'channel_id': 'high_importance_channel',
+            'sound': 'default',
+          },
+        },
+        'apns': {
+          'payload': {
+            'aps': {
+              'alert': {'title': title, 'body': body},
+              'badge': 1,
+              'sound': 'default',
+            },
+          },
         },
       },
     };
@@ -228,6 +292,39 @@ class SendNotificationHandler {
       }
     } catch (e) {
       print('Error occurred while sending push notification: $e');
+    }
+  }
+
+  // Test method to show local notification with the new icon
+  static Future<void> showTestNotification() async {
+    try {
+      const notificationDetails = NotificationDetails(
+        android: AndroidNotificationDetails(
+          "high_importance_channel",
+          "Mindrena Notifications",
+          channelDescription: "Notifications for Mindrena app",
+          importance: Importance.max,
+          priority: Priority.high,
+          icon: 'notilogo',
+          largeIcon: DrawableResourceAndroidBitmap('notilogo'),
+          playSound: true,
+          enableVibration: true,
+        ),
+        iOS: DarwinNotificationDetails(
+          presentAlert: true,
+          presentBadge: true,
+          presentSound: true,
+        ),
+      );
+
+      await flutterLocalNotificationsPlugin.show(
+        999, // Test notification ID
+        'Mindrena Test',
+        'Your notification icon is working correctly! 🎮',
+        notificationDetails,
+      );
+    } catch (e) {
+      print('Error showing test notification: $e');
     }
   }
 }

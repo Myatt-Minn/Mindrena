@@ -401,7 +401,10 @@ class SignInView extends GetView<SignInController> {
                         ),
                         child: ElevatedButton.icon(
                           onPressed: () {
-                            Get.toNamed('/normal-sign-in');
+                            Get.toNamed(
+                              '/normal-sign-in',
+                              arguments: controller.mode,
+                            );
                           },
                           icon: Container(
                             padding: const EdgeInsets.all(4),

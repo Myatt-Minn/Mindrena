@@ -8,7 +8,7 @@ class AuthGateController extends GetxController {
   final Connectivity _connectivity = Connectivity();
   RxBool hasInternet = true.obs; // Observable for internet connection status
   var isLoading = false.obs;
-
+  String mode = Get.arguments ?? 'single'; // Default to 'single' if no argument
   Stream<User?> get authStateChanges => _auth.authStateChanges();
 
   @override
@@ -48,7 +48,7 @@ class AuthGateController extends GetxController {
     isLoading.value = true; // Show loading while checking authentication
     authStateChanges.listen((User? user) {
       if (user == null) {
-        Get.offAllNamed('/sign-in');
+        Get.offAllNamed('/sign-in', arguments: mode);
         isLoading.value = false;
       } else {
         String userId = user.uid;
@@ -63,8 +63,8 @@ class AuthGateController extends GetxController {
                 Map<String, dynamic>? userData =
                     userDoc.data() as Map<String, dynamic>?;
                 if (userData != null) {
-                  if (userData['role'] == 'admin') {
-                    Get.offAllNamed('/admin');
+                  if (mode == 'single') {
+                    Get.offAllNamed('/single-player');
                   } else {
                     Get.offAllNamed('/home');
                   }

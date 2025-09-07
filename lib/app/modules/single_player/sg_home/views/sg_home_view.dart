@@ -1,7 +1,6 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
-
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 
@@ -89,7 +88,7 @@ class SgHomeView extends GetView<SgHomeController> {
                                 child: AnimatedTextKit(
                                   animatedTexts: [
                                     ColorizeAnimatedText(
-                                      'Choose Your Game',
+                                      'choose_your_game'.tr,
                                       textStyle: const TextStyle(
                                         fontSize: 28,
                                         fontWeight: FontWeight.bold,

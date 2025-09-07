@@ -15,25 +15,29 @@ class GCategorySelectionView extends GetView<GCategorySelectionController> {
         children: [
           // Full screen Lottie background
           Positioned.fill(
-            child: Lottie.asset(
-              'assets/gameBackground.json',
-              fit: BoxFit.cover,
-              repeat: true,
-              errorBuilder: (context, error, stackTrace) {
-                return Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        Colors.blue.shade50,
-                        Colors.purple.shade50,
-                        Colors.purple.shade50,
-                      ],
+            child: SizedBox(
+              width: double.infinity,
+              height: double.infinity,
+              child: Lottie.asset(
+                'assets/gameBackground.json',
+                fit: BoxFit.cover,
+                repeat: true,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Colors.blue.shade50,
+                          Colors.purple.shade50,
+                          Colors.purple.shade50,
+                        ],
+                      ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
           ),
 
@@ -172,23 +176,6 @@ class GCategorySelectionView extends GetView<GCategorySelectionController> {
                         Get.toNamed(
                           '/opponent-type-selection',
                           arguments: "PlacesImages",
-                        );
-                      },
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    _buildCategoryButton(
-                      emoji: 'assets/art.gif',
-                      title: 'Half Arts',
-                      subtitle: 'Art & Creativity',
-                      description: 'Challenge yourself with art and creativity',
-                      color: Colors.orange,
-                      onTap: () {
-                        // Navigate to Half Arts category
-                        Get.toNamed(
-                          '/opponent-type-selection',
-                          arguments: "Half Arts",
                         );
                       },
                     ),

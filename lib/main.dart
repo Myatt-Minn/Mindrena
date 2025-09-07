@@ -1,12 +1,10 @@
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:mindrena/app/data/My_Translations.dart';
 import 'package:mindrena/app/data/consts_config.dart';
-import 'package:mindrena/app/data/populateAudioQuestions.dart';
 import 'package:mindrena/app/data/sendNotificationHandler.dart';
 import 'package:mindrena/app/modules/splash/bindings/splash_binding.dart';
 import 'package:mindrena/firebase_options.dart';
@@ -34,9 +32,7 @@ void main() async {
 
   SendNotificationHandler.initialized();
   await SendNotificationHandler().initNotification();
-  FirebaseMessaging.onBackgroundMessage(handleBackgroundMessage);
 
-  await populateAudioQuestions();
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
@@ -50,7 +46,10 @@ void main() async {
         // Set the locale dynamically based on the saved languagek
         locale: savedLanguage == 'ENG'
             ? const Locale('en', 'US')
-            : const Locale('my', 'MM'),
+            : savedLanguage == 'MM'
+            ? const Locale('my', 'MM')
+            : const Locale('th', 'TH'),
+
         fallbackLocale: const Locale(
           'en',
           'US',

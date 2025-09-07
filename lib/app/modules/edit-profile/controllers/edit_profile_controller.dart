@@ -33,11 +33,13 @@ class EditProfileController extends GetxController {
   // Profile image
   final selectedImageFile = Rxn<File>();
   final uploadProgress = 0.0.obs;
+  final purchasedAvatars = <Map<String, String>>[].obs;
 
   @override
   void onInit() {
     super.onInit();
     _loadUserProfile();
+    _loadPurchasedAvatars();
   }
 
   @override
@@ -83,6 +85,27 @@ class EditProfileController extends GetxController {
       Get.back();
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  Future<void> _loadPurchasedAvatars() async {
+    try {
+      final currentUser = _auth.currentUser;
+      if (currentUser == null) return;
+
+      final userDoc = await _firestore
+          .collection('users')
+          .doc(currentUser.uid)
+          .get();
+      if (userDoc.exists) {
+        final userData = userDoc.data()!;
+        final purchasedAvatarsData = userData['purchasedAvatars'] ?? [];
+        purchasedAvatars.value = List<Map<String, String>>.from(
+          purchasedAvatarsData.map((item) => Map<String, String>.from(item)),
+        );
+      }
+    } catch (e) {
+      print('Error loading purchased avatars: $e');
     }
   }
 
@@ -163,75 +186,48 @@ class EditProfileController extends GetxController {
                       ),
                     ),
                     const SizedBox(height: 12),
+
+                    // Default character avatars
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        GestureDetector(
-                          onTap: () {
-                            Get.back();
-                            _selectCharacterAvatar('assets/cha1.png');
-                          },
-                          child: Container(
-                            width: 70,
-                            height: 70,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: Colors.purple,
-                                width: 3,
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.purple.withOpacity(0.3),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
-                            ),
-                            child: ClipOval(
-                              child: Image.asset(
-                                'assets/cha1.png',
-                                fit: BoxFit.cover,
-                                width: 70,
-                                height: 70,
-                              ),
-                            ),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            Get.back();
-                            _selectCharacterAvatar('assets/cha2.png');
-                          },
-                          child: Container(
-                            width: 70,
-                            height: 70,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: Colors.purple,
-                                width: 3,
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.purple.withOpacity(0.3),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
-                            ),
-                            child: ClipOval(
-                              child: Image.asset(
-                                'assets/cha2.png',
-                                fit: BoxFit.cover,
-                                width: 70,
-                                height: 70,
-                              ),
-                            ),
-                          ),
-                        ),
+                        _buildAvatarOption('assets/cha1.png', isAsset: true),
+                        _buildAvatarOption('assets/cha2.png', isAsset: true),
                       ],
                     ),
+
+                    // Purchased avatars section
+                    Obx(() {
+                      if (purchasedAvatars.isNotEmpty) {
+                        return Column(
+                          children: [
+                            const SizedBox(height: 16),
+                            Text(
+                              'Purchased Avatars',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.purple.shade600,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Wrap(
+                              spacing: 12,
+                              runSpacing: 12,
+                              children: purchasedAvatars.map((avatar) {
+                                return _buildAvatarOption(
+                                  avatar['url']!,
+                                  isAsset: false,
+                                  name: avatar['name'],
+                                );
+                              }).toList(),
+                            ),
+                          ],
+                        );
+                      } else {
+                        return const SizedBox.shrink();
+                      }
+                    }),
                   ],
                 ),
               ),
@@ -267,6 +263,70 @@ class EditProfileController extends GetxController {
         ],
       ),
     );
+  }
+
+  Widget _buildAvatarOption(
+    String imagePath, {
+    required bool isAsset,
+    String? name,
+  }) {
+    return GestureDetector(
+      onTap: () {
+        Get.back();
+        if (isAsset) {
+          _selectCharacterAvatar(imagePath);
+        } else {
+          _selectPurchasedAvatar(imagePath);
+        }
+      },
+      child: Container(
+        width: 70,
+        height: 70,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(color: Colors.purple, width: 3),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.purple.withOpacity(0.3),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: ClipOval(
+          child: isAsset
+              ? Image.asset(imagePath, fit: BoxFit.cover, width: 70, height: 70)
+              : Image.network(
+                  imagePath,
+                  fit: BoxFit.cover,
+                  width: 70,
+                  height: 70,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      color: Colors.grey.shade300,
+                      child: Icon(Icons.person, color: Colors.grey.shade600),
+                    );
+                  },
+                ),
+        ),
+      ),
+    );
+  }
+
+  void _selectPurchasedAvatar(String downloadUrl) async {
+    try {
+      // Clear any selected file first
+      selectedImageFile.value = null;
+
+      // Set the avatar URL directly since it's already uploaded to Firebase
+      avatarUrlController.text = downloadUrl;
+
+      // Trigger UI update for reactive display
+      user.value = user.value!.copyWith(avatarUrl: downloadUrl);
+    } catch (e) {
+      print('Error selecting purchased avatar: $e');
+      Get.snackbar('Error', 'Failed to select purchased avatar: $e');
+    }
   }
 
   void _selectCharacterAvatar(String assetPath) async {

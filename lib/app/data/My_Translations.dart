@@ -212,8 +212,36 @@ class MyTranslations extends Translations {
 
       // Question Model
       'not_available': 'N/A',
+
+      'logout': 'Logout',
+      'switch_player_mode': 'Switch Player Mode',
+      'profile': 'Profile',
+      'shop': 'Shop',
+      'friends': 'Friends',
+      'account_settings': 'Account Settings',
+      'requests': 'Requests',
+      'find': 'Find',
+      'choose_category': 'Choose Category',
+      'edit_profile': 'Edit Profile',
+      'game_statistics': 'Game Statistics',
+      'choose_your_game': 'Choose Your Game',
     },
     'my_MM': {
+      'choose_your_game': 'သင်၏ဂိမ်းကိုရွေးချယ်ပါ',
+      'choose_category': 'အမျိုးအစားကိုရွေးချယ်ပါ',
+      'game_statistics': 'ဂိမ်းစာရင်းအင်း',
+      'edit_profile': 'ပရိုဖိုင်းကိုတည်းဖြတ်ပါ',
+      'find': 'ရှာဖွေပါ',
+      'requests': 'တောင်းဆိုချက်များ',
+      'account_settings': 'အကောင့်ဆက်တင်များ',
+      'not_available': 'မရနိုင်ပါ',
+
+      'logout': 'ထွက်ရန်',
+      'switch_player_mode': 'ကစားသမားမော်ဒ်ကိုပြောင်းရန်',
+      'profile': 'ပရိုဖိုင်း',
+      'shop': 'ဆိုင်',
+      'settings': 'ဆက်တင်များ',
+      'friends': 'သူငယ်ချင်းများ',
       'checking_authentication': 'အတည်ပြုမှုကိုစစ်ဆေးနေသည်...',
       'checking_connection': 'ချိတ်ဆက်မှုကိုစစ်ဆေးနေသည်...',
       // No Internet Screen
@@ -431,6 +459,9 @@ class MyTranslations extends Translations {
 
       // Question Model
       'not_available': 'မရနိုင်ပါ',
+    },
+    'th_TH': {
+      // Placeholder for future Thai translations
     },
   };
 }

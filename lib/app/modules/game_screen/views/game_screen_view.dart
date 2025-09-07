@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
@@ -999,8 +1000,10 @@ class GameScreenView extends GetView<GameScreenController> {
                         children: [
                           Row(
                             children: [
-                              Text(
+                              AutoSizeText(
                                 player.username,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 18,

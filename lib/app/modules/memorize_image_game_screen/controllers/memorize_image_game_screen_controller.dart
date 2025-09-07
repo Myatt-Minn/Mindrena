@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:mindrena/app/modules/home/controllers/home_controller.dart';
@@ -40,6 +41,10 @@ class MemorizeImageGameScreenController extends GetxController {
   final imageDisplayTimeLeft = 7.obs;
   final isQuestionPhase = false.obs;
   final questionPhaseTimeLeft = 10.obs; // Separate timer for question phase
+  final isPreloadingImages = true.obs;
+  final preloadingProgress = 0.0.obs;
+  final preloadedImages =
+      <String, bool>{}.obs; // Track which images are preloaded
 
   // Track if game has started
   var _gameHasStarted = false;
@@ -94,6 +99,25 @@ class MemorizeImageGameScreenController extends GetxController {
     if (gameId.value.isNotEmpty) {
       _initializeGame();
     }
+  }
+
+  void exitGame() {
+    // Resume background music when returning to home
+    try {
+      final homeController = Get.find<HomeController>();
+      if (homeController.isMusicEnabledInSettings) {
+        homeController.resumeBackgroundMusic();
+        print('Background music resumed after game exit');
+      }
+    } catch (e) {
+      print('Could not resume background music: $e');
+    }
+
+    Get.offAllNamed('/home');
+  }
+
+  void playAgain() {
+    Get.back();
   }
 
   @override
@@ -165,6 +189,13 @@ class MemorizeImageGameScreenController extends GetxController {
     questions.value = List<Map<String, dynamic>>.from(
       gameData['questions'] ?? [],
     );
+
+    // Start preloading images if questions are loaded and we haven't started preloading yet
+    if (questions.isNotEmpty &&
+        isPreloadingImages.value &&
+        preloadedImages.isEmpty) {
+      _preloadAllImages();
+    }
 
     // Handle question start time
     if (gameData['questionStartTime'] != null) {
@@ -278,6 +309,29 @@ class MemorizeImageGameScreenController extends GetxController {
     isImageDisplayPhase.value = true;
     isQuestionPhase.value = false;
     imageDisplayTimeLeft.value = 7;
+
+    // Check if current image is preloaded before starting timer
+    _waitForCurrentImageThenStartTimer();
+  }
+
+  Future<void> _waitForCurrentImageThenStartTimer() async {
+    final currentImg = currentQuestion.value?['image'];
+
+    if (currentImg != null) {
+      // If image isn't preloaded yet, try to preload it quickly
+      if (preloadedImages[currentImg.toString()] != true) {
+        print('Current image not preloaded, attempting quick preload...');
+        try {
+          await _preloadSingleImage(currentImg.toString());
+          print('Successfully preloaded current image');
+        } catch (e) {
+          print('Failed to preload current image: $e');
+          // Continue anyway - the image will load when displayed
+        }
+      } else {
+        print('Current image already preloaded');
+      }
+    }
 
     // Start the 7-second image display timer
     _imageDisplayTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -546,6 +600,119 @@ class MemorizeImageGameScreenController extends GetxController {
       print('Game complete sound played successfully');
     } catch (e) {
       print('Error playing game complete sound: $e');
+    }
+  }
+
+  // Image preloading functionality
+  Future<void> _preloadAllImages() async {
+    if (questions.isEmpty) return;
+
+    print('Starting to preload ${questions.length} images...');
+    isPreloadingImages.value = true;
+    preloadingProgress.value = 0.0;
+
+    final imageUrls = questions
+        .where((q) => q['image'] != null && q['image'].toString().isNotEmpty)
+        .map((q) => q['image'].toString())
+        .toSet()
+        .toList(); // Remove duplicates
+
+    if (imageUrls.isEmpty) {
+      isPreloadingImages.value = false;
+      return;
+    }
+
+    final totalImages = imageUrls.length;
+    var loadedCount = 0;
+
+    // Create a list of futures for parallel loading with timeout
+    final preloadFutures = <Future>[];
+
+    for (final imageUrl in imageUrls) {
+      final future = _preloadSingleImage(imageUrl)
+          .timeout(
+            const Duration(seconds: 10), // 10 second timeout per image
+            onTimeout: () {
+              print('Timeout preloading image: $imageUrl');
+              preloadedImages[imageUrl] = false;
+            },
+          )
+          .then((_) {
+            loadedCount++;
+            preloadingProgress.value = loadedCount / totalImages;
+            print('Preloaded image $loadedCount/$totalImages');
+          })
+          .catchError((error) {
+            loadedCount++;
+            preloadingProgress.value = loadedCount / totalImages;
+            print('Failed to preload image: $imageUrl - Error: $error');
+          });
+
+      preloadFutures.add(future);
+    }
+
+    // Wait for all images to complete (successful or failed) with overall timeout
+    try {
+      await Future.wait(
+        preloadFutures,
+        eagerError: false,
+      ).timeout(const Duration(seconds: 30)); // 30 second overall timeout
+    } catch (e) {
+      print('Preloading timeout or error: $e');
+    }
+
+    isPreloadingImages.value = false;
+    preloadingProgress.value = 1.0;
+
+    final successCount = preloadedImages.values.where((v) => v == true).length;
+    print(
+      'Image preloading completed: $successCount/$totalImages successfully loaded',
+    );
+
+    // If very few images loaded successfully, show a warning but continue
+    if (successCount < totalImages * 0.5) {
+      print(
+        'Warning: Only $successCount/$totalImages images preloaded successfully',
+      );
+    }
+  }
+
+  Future<void> _preloadSingleImage(String imageUrl) async {
+    try {
+      if (preloadedImages[imageUrl] == true) {
+        return; // Already preloaded
+      }
+
+      // Use Flutter's precacheImage to preload
+      await precacheImage(NetworkImage(imageUrl), Get.context!);
+
+      preloadedImages[imageUrl] = true;
+    } catch (e) {
+      preloadedImages[imageUrl] = false;
+      print('Error preloading image $imageUrl: $e');
+      rethrow;
+    }
+  }
+
+  // Check if current question's image is preloaded
+  bool get isCurrentImagePreloaded {
+    final currentImg = currentQuestion.value?['image'];
+    if (currentImg == null) return false;
+    return preloadedImages[currentImg.toString()] == true;
+  }
+
+  // Skip preloading for poor connections
+  void skipPreloading() {
+    print('Skipping image preloading due to poor connection');
+    isPreloadingImages.value = false;
+    preloadingProgress.value = 1.0;
+
+    // Mark all images as "not preloaded" so they load on demand
+    for (final question in questions) {
+      final imageUrl = question['image'];
+      if (imageUrl != null) {
+        preloadedImages[imageUrl.toString()] = false;
+      }
     }
   }
 

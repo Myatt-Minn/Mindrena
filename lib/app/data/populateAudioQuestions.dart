@@ -123,6 +123,41 @@ Future<void> populateAudioQuestions() async {
       ],
       "correctIndex": 1,
     },
+    {
+      "category": "Sounds",
+      "audio": "audio/bell.mp3",
+      "options": ["Alarm Clock", "Church Bell", "Doorbell", "Wind Chime"],
+      "correctIndex": 2,
+    },
+    {
+      "category": "Sounds",
+      "audio": "audio/goat.mp3",
+      "options": ["Sheep Bleat", "Goat Bleat", "Cow Moo", "Camel Sound"],
+      "correctIndex": 1,
+    },
+    {
+      "category": "Sounds",
+      "audio": "audio/crow.mp3",
+      "options": ["Owl", "Crow", "Sparrow", "Eagle"],
+      "correctIndex": 1,
+    },
+    {
+      "category": "Sounds",
+      "audio": "audio/fire.mp3",
+      "options": [
+        "Wind Blowing",
+        "Fire Crackling",
+        "Leaves Rustling",
+        "Cooking Fry",
+      ],
+      "correctIndex": 1,
+    },
+    {
+      "category": "Sounds",
+      "audio": "audio/waterdrop.mp3",
+      "options": ["Typing", "Water Droplet", "Clock Tick", "Raindrop"],
+      "correctIndex": 3,
+    },
   ];
 
   WriteBatch batch = firestore.batch();

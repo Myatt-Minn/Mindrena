@@ -15,25 +15,29 @@ class FCategorySelectionView extends GetView<FCategorySelectionController> {
         children: [
           // Full screen Lottie background
           Positioned.fill(
-            child: Lottie.asset(
-              'assets/gameBackground.json',
-              fit: BoxFit.cover,
-              repeat: true,
-              errorBuilder: (context, error, stackTrace) {
-                return Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        Colors.blue.shade50,
-                        Colors.purple.shade50,
-                        Colors.purple.shade50,
-                      ],
+            child: SizedBox(
+              width: double.infinity,
+              height: double.infinity,
+              child: Lottie.asset(
+                'assets/gameBackground.json',
+                fit: BoxFit.cover,
+                repeat: true,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Colors.blue.shade50,
+                          Colors.purple.shade50,
+                          Colors.purple.shade50,
+                        ],
+                      ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
           ),
 

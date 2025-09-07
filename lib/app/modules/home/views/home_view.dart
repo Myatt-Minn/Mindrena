@@ -163,7 +163,7 @@ class HomeView extends GetView<HomeController> {
                                     child: AnimatedTextKit(
                                       animatedTexts: [
                                         ColorizeAnimatedText(
-                                          'Choose Your Game',
+                                          'choose_your_game'.tr,
                                           textStyle: const TextStyle(
                                             fontSize: 28,
                                             fontWeight: FontWeight.bold,
@@ -319,21 +319,21 @@ class HomeView extends GetView<HomeController> {
                           children: [
                             _buildActionButton(
                               icon: 'assets/profile.gif',
-                              label: 'Profile',
+                              label: 'profile'.tr,
                               onTap: () {
                                 Get.toNamed('/profile');
                               },
                             ),
                             _buildActionButton(
                               icon: 'assets/stalls.gif',
-                              label: 'Shop',
+                              label: 'shop'.tr,
                               onTap: () {
                                 Get.toNamed('/shop');
                               },
                             ),
                             _buildActionButton(
                               icon: 'assets/three_friends.gif',
-                              label: 'Friends',
+                              label: 'friends'.tr,
                               onTap: () {
                                 Get.toNamed('/friends');
                               },

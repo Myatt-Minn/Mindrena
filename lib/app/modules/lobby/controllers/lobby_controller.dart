@@ -27,6 +27,7 @@ class LobbyController extends GetxController {
   var players = <UserModel>[].obs;
   var gameStatus = 'waiting'.obs;
   var playerStates = <String, String>{}.obs; // Track ready states
+  var isGameReady = false.obs; // Track if game is ready for interaction
 
   // Stream subscriptions
   StreamSubscription? _matchmakingSubscription;
@@ -230,6 +231,10 @@ Good luck and have fun! 🎮''',
       });
 
       matchmakingEntryId.value = ourEntry.id;
+
+      // Add a small delay to ensure all Firestore operations are completed
+      await Future.delayed(const Duration(milliseconds: 500));
+
       _startGameSession();
     } catch (e) {
       Get.snackbar('Error', 'Failed to join match: $e');
@@ -680,6 +685,41 @@ Good luck and have fun! 🎮''',
             }
           }
         });
+
+    // Check initial game readiness after a brief delay
+    Future.delayed(const Duration(milliseconds: 300), () {
+      _checkGameReadiness();
+    });
+  }
+
+  Future<void> _checkGameReadiness() async {
+    try {
+      final user = _auth.currentUser;
+      if (user == null || gameId.value.isEmpty) return;
+
+      final gameDoc = await _firestore
+          .collection('games')
+          .doc(gameId.value)
+          .get();
+
+      if (gameDoc.exists) {
+        final data = gameDoc.data()!;
+        final playerIds = List<String>.from(data['playerIds'] ?? []);
+        final gamePlayerStates = Map<String, dynamic>.from(
+          data['playerStates'] ?? {},
+        );
+
+        final isUserInGame = playerIds.contains(user.uid);
+        final hasPlayerState = gamePlayerStates.containsKey(user.uid);
+        isGameReady.value = isUserInGame && hasPlayerState;
+
+        print(
+          'Game readiness check: isUserInGame=$isUserInGame, hasPlayerState=$hasPlayerState, gameReady=${isGameReady.value}',
+        );
+      }
+    } catch (e) {
+      print('Error checking initial game readiness: $e');
+    }
   }
 
   void _updatePlayersFromGame(Map<String, dynamic> gameData) async {
@@ -706,29 +746,49 @@ Good luck and have fun! 🎮''',
       playerStates.value = gamePlayerStates.map(
         (key, value) => MapEntry(key, value.toString()),
       );
+
+      // Check if current user is properly set up in the game
+      final user = _auth.currentUser;
+      if (user != null) {
+        final isUserInGame = playerIds.contains(user.uid);
+        final hasPlayerState = gamePlayerStates.containsKey(user.uid);
+        isGameReady.value = isUserInGame && hasPlayerState;
+      }
     } catch (e) {
       print('Error updating players: $e');
+      isGameReady.value = false;
     }
   }
 
   Future<void> setPlayerReady() async {
     try {
       final user = _auth.currentUser;
-      if (user == null || gameId.value.isEmpty) return;
+      if (user == null || gameId.value.isEmpty) {
+        print('Cannot set ready: user is null or gameId is empty');
+        return;
+      }
 
+      // Check if game is ready for interaction
+      if (!isGameReady.value) {
+        print('Game not ready for interaction yet, please wait...');
+        return;
+      }
+
+      // Now safe to update ready state
       await _firestore.collection('games').doc(gameId.value).update({
         'playerStates.${user.uid}': 'ready',
       });
 
-      // Check if all players are ready
-      final gameDoc = await _firestore
+      // Re-fetch to check if all players are ready
+      final updatedGameDoc = await _firestore
           .collection('games')
           .doc(gameId.value)
           .get();
-      if (gameDoc.exists) {
-        final data = gameDoc.data()!;
+
+      if (updatedGameDoc.exists) {
+        final updatedData = updatedGameDoc.data()!;
         final playerStates = Map<String, dynamic>.from(
-          data['playerStates'] ?? {},
+          updatedData['playerStates'] ?? {},
         );
         final allReady = playerStates.values.every((state) => state == 'ready');
 
@@ -742,20 +802,32 @@ Good luck and have fun! 🎮''',
         }
       }
     } catch (e) {
-      Get.snackbar('Error', 'Failed to set ready state: $e');
+      print('Error setting ready state: $e');
+      // Don't show error snackbar to user for this race condition
+      // The operation will be retried when they press ready again
     }
   }
 
   Future<void> cancelPlayerReady() async {
     try {
       final user = _auth.currentUser;
-      if (user == null || gameId.value.isEmpty) return;
+      if (user == null || gameId.value.isEmpty) {
+        print('Cannot cancel ready: user is null or gameId is empty');
+        return;
+      }
+
+      // Check if game is ready for interaction
+      if (!isGameReady.value) {
+        print('Game not ready for interaction yet');
+        return;
+      }
 
       await _firestore.collection('games').doc(gameId.value).update({
         'playerStates.${user.uid}': 'waiting',
       });
     } catch (e) {
-      Get.snackbar('Error', 'Failed to cancel ready state: $e');
+      print('Error canceling ready state: $e');
+      // Don't show error snackbar to user
     }
   }
 

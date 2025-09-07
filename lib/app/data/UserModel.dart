@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class UserModel {
   String? uid;
   String username;
@@ -9,6 +11,8 @@ class UserModel {
   List<String> friends; // List of friend UIDs
   List<String> friendRequests; // List of pending friend request UIDs
   List<String> sentRequests; // List of sent friend request UIDs
+  String fcmToken; // Firebase Cloud Messaging token
+  DateTime? createdAt; // Account creation timestamp
 
   UserModel({
     this.uid,
@@ -21,6 +25,8 @@ class UserModel {
     this.friends = const [],
     this.friendRequests = const [],
     this.sentRequests = const [],
+    this.fcmToken = '',
+    this.createdAt,
   });
 
   // Convert UserModel to a map for Firestore storage
@@ -36,6 +42,8 @@ class UserModel {
       'friends': friends,
       'friendRequests': friendRequests,
       'sentRequests': sentRequests,
+      'fcmToken': fcmToken,
+      'createdAt': createdAt,
     };
   }
 
@@ -49,10 +57,13 @@ class UserModel {
       currentGameId: map['currentGameId'],
       role: map['role'], // Optional role field
       stats:
-          map['stats'] ?? {'gamesPlayed': 0, 'gamesWon': 0, 'totalPoints': 0},
+          map['stats'] ??
+          {'gamesPlayed': 0, 'gamesWon': 0, 'totalPoints': 0, 'coins': 0},
       friends: List<String>.from(map['friends'] ?? []),
       friendRequests: List<String>.from(map['friendRequests'] ?? []),
       sentRequests: List<String>.from(map['sentRequests'] ?? []),
+      fcmToken: map['fcmToken'] ?? '',
+      createdAt: (map['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
   }
 
@@ -60,15 +71,22 @@ class UserModel {
   int get gamesPlayed => stats['gamesPlayed'] ?? 0;
   int get gamesWon => stats['gamesWon'] ?? 0;
   int get totalPoints => stats['totalPoints'] ?? 0;
+  int get coins => stats['coins'] ?? 0;
 
   // Helper method to calculate win rate
   double get winRate => gamesPlayed > 0 ? (gamesWon / gamesPlayed) * 100 : 0.0;
 
   // Helper methods to update stats
-  void updateStats({int? gamesPlayed, int? gamesWon, int? totalPoints}) {
+  void updateStats({
+    int? gamesPlayed,
+    int? gamesWon,
+    int? totalPoints,
+    int? coins,
+  }) {
     if (gamesPlayed != null) stats['gamesPlayed'] = gamesPlayed;
     if (gamesWon != null) stats['gamesWon'] = gamesWon;
     if (totalPoints != null) stats['totalPoints'] = totalPoints;
+    if (coins != null) stats['coins'] = coins;
   }
 
   void incrementGamesPlayed() {
@@ -81,6 +99,10 @@ class UserModel {
 
   void addPoints(int points) {
     stats['totalPoints'] = (stats['totalPoints'] ?? 0) + points;
+  }
+
+  void addCoins(int amount) {
+    stats['coins'] = (stats['coins'] ?? 0) + amount;
   }
 
   // Friend management helper methods

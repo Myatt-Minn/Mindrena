@@ -284,28 +284,36 @@ class LobbyView extends GetView<LobbyController> {
                           margin: const EdgeInsets.only(bottom: 20),
                           child: Obx(() {
                             final isReady = controller.isCurrentUserReady;
+                            final gameReady = controller.isGameReady.value;
+
                             return ElevatedButton.icon(
-                              onPressed: isReady
-                                  ? () => controller.cancelPlayerReady()
-                                  : () => controller.setPlayerReady(),
+                              onPressed: gameReady
+                                  ? (isReady
+                                        ? () => controller.cancelPlayerReady()
+                                        : () => controller.setPlayerReady())
+                                  : null, // Disable button if game not ready
                               icon: Icon(
-                                isReady
-                                    ? Icons.cancel_outlined
-                                    : Icons.check_circle_outline,
+                                gameReady
+                                    ? (isReady
+                                          ? Icons.cancel_outlined
+                                          : Icons.check_circle_outline)
+                                    : Icons.hourglass_empty,
                               ),
                               label: Text(
-                                isReady
-                                    ? 'cancel_ready'.tr
-                                    : 'ready_to_start'.tr,
+                                gameReady
+                                    ? (isReady
+                                          ? 'cancel_ready'.tr
+                                          : 'ready_to_start'.tr)
+                                    : 'Syncing game...',
                                 style: const TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: isReady
-                                    ? Colors.orange
-                                    : Colors.green,
+                                backgroundColor: gameReady
+                                    ? (isReady ? Colors.orange : Colors.green)
+                                    : Colors.grey,
                                 foregroundColor: Colors.white,
                                 padding: const EdgeInsets.symmetric(
                                   vertical: 16,
@@ -313,7 +321,7 @@ class LobbyView extends GetView<LobbyController> {
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(15),
                                 ),
-                                elevation: 8,
+                                elevation: gameReady ? 8 : 2,
                               ),
                             );
                           }),

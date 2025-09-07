@@ -13,8 +13,6 @@ import '../modules/g_category_selection/bindings/g_category_selection_binding.da
 import '../modules/g_category_selection/views/g_category_selection_view.dart';
 import '../modules/game_screen/bindings/game_screen_binding.dart';
 import '../modules/game_screen/views/game_screen_view.dart';
-import '../modules/guess_it_fast/bindings/guess_it_fast_binding.dart';
-import '../modules/guess_it_fast/views/guess_it_fast_view.dart';
 import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
 import '../modules/lobby/bindings/lobby_binding.dart';
@@ -196,11 +194,6 @@ class AppPages {
       name: _Paths.NORMAL_SIGN_IN,
       page: () => const NormalSignInView(),
       binding: NormalSignInBinding(),
-    ),
-    GetPage(
-      name: _Paths.GUESS_IT_FAST,
-      page: () => const GuessItFastView(),
-      binding: GuessItFastBinding(),
     ),
   ];
 }

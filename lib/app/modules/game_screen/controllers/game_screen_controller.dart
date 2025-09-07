@@ -658,12 +658,20 @@ class GameScreenController extends GetxController {
         // OR if it's a tie, they still get a win (you can change this logic if needed)
         final hasWon = playerScore == maxScore && playerScore > 0;
 
-        print('Player $playerId: score=$playerScore, hasWon=$hasWon');
+        // Calculate coins reward: half of the points earned in this game
+        final coinsEarned = (playerScore / 2).floor();
 
-        // Update basic stats
+        print(
+          'Player $playerId: score=$playerScore, hasWon=$hasWon, coinsEarned=$coinsEarned',
+        );
+
+        // Update basic stats including coins
         batch.update(userRef, {
           'stats.gamesPlayed': FieldValue.increment(1),
           'stats.totalPoints': FieldValue.increment(playerScore),
+          'stats.coins': FieldValue.increment(
+            coinsEarned,
+          ), // Add coins separately
           'currentGameId': FieldValue.delete(),
         });
 

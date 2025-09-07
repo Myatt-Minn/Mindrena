@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mindrena/app/data/UserModel.dart';
@@ -16,6 +17,7 @@ class SignInController extends GetxController {
   var emailError = ''.obs; // Validation error for email
   var passwordError = ''.obs; // Validation error for password
   var generalError = ''.obs; // General error message for login failure
+  var mode = Get.arguments ?? 'single'; // Game mode
 
   // AuthService instance (single instance)
   final AuthService _authService = AuthService();
@@ -41,7 +43,7 @@ class SignInController extends GetxController {
           .collection('users')
           .doc(user.uid)
           .get();
-
+      String fcmToken = await FirebaseMessaging.instance.getToken() ?? '';
       if (!userDoc.exists) {
         final newUser = UserModel(
           uid: user.uid,
@@ -51,12 +53,22 @@ class SignInController extends GetxController {
           avatarUrl: user.photoURL ?? '',
           currentGameId: null,
           stats: {'gamesPlayed': 0, 'gamesWon': 0, 'totalPoints': 0},
+          fcmToken: fcmToken,
+          createdAt: DateTime.now(),
         );
         await FirebaseFirestore.instance
             .collection('users')
             .doc(user.uid)
             .set(newUser.toMap());
       } else {
+        // Update FCM token if changed
+        final existingData = userDoc.data() as Map<String, dynamic>;
+        if (existingData['fcmToken'] != fcmToken) {
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(user.uid)
+              .update({'fcmToken': fcmToken});
+        }
         Get.snackbar(
           'welcome_back'.tr,
           'signed_in_successfully'.tr,
@@ -65,7 +77,11 @@ class SignInController extends GetxController {
           colorText: Colors.white,
         );
       }
-      Get.offAllNamed('/home');
+      if (mode == 'single') {
+        Get.offAllNamed('/single-player');
+      } else {
+        Get.offAllNamed('/home');
+      }
     } catch (e) {
       Get.snackbar(
         'error'.tr,

@@ -226,6 +226,29 @@ class SettingsView extends GetView<SettingsController> {
                         ),
                       ],
                     ),
+                    SizedBox(height: 20),
+                    _buildSectionCard(
+                      title: 'account_settings'.tr,
+                      icon: Icons.account_circle,
+                      children: [
+                        _buildSettingsTile(
+                          icon: Icons.switch_account,
+                          title: 'switch_player_mode'.tr,
+                          subtitle: 'Go back to player mode screen',
+                          showArrow: false,
+                          onTap: () {},
+                        ),
+                        const Divider(height: 1),
+                        _buildSettingsTile(
+                          icon: Icons.logout,
+                          title: 'logout'.tr,
+                          subtitle: 'Log out of your account'.tr,
+                          onTap: () {
+                            Get.offAllNamed('/login');
+                          },
+                        ),
+                      ],
+                    ),
 
                     const SizedBox(height: 40),
 

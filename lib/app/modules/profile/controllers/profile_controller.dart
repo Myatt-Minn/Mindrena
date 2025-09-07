@@ -8,12 +8,19 @@ class ProfileController extends GetxController {
 
   final user = Rxn<UserModel>(); // Reactive variable to hold user data
   var isLoading = true.obs; // To show a loading indicator
-  var userCoins = 0.obs; // Reactive variable for coins
+  var userCoins =
+      0.obs; // Reactive variable for coins (independent from points)
+  var selectedTab = 0.obs; // For tab selection in profile
+  var purchasedItems = <String>[].obs;
+  var purchasedAvatars = <Map<String, String>>[].obs;
+  var purchasedStickers = <Map<String, String>>[].obs;
+  var trophies = <Map<String, String>>[].obs;
 
   @override
   void onInit() async {
     super.onInit();
     await fetchUserProfile(); // Fetch user profile when the controller is initialized
+    await _loadPurchasedItems(); // Load purchased items
     isLoading.value = false; // Stop loading after fetching
   }
 
@@ -32,8 +39,8 @@ class ProfileController extends GetxController {
               user.value = UserModel.fromMap(
                 document.data() as Map<String, dynamic>,
               );
-              // Calculate coins based on user points
-              userCoins.value = _calculateCoins(user.value?.totalPoints ?? 0);
+              // Get coins directly from user stats (no longer calculated from points)
+              userCoins.value = user.value?.coins ?? 0;
             } else {
               print("User does not exist");
             }
@@ -55,8 +62,71 @@ class ProfileController extends GetxController {
     }
   }
 
-  /// Calculate coins based on points (50 coins per 100 points)
-  int _calculateCoins(int points) {
-    return (points / 100).floor() * 50;
+  /// Load purchased items from Firestore
+  Future<void> _loadPurchasedItems() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) return;
+
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+
+      if (userDoc.exists) {
+        final userData = userDoc.data()!;
+
+        // Load purchased items
+        purchasedItems.value = List<String>.from(
+          userData['purchasedItems'] ?? [],
+        );
+
+        // Load purchased avatars
+        purchasedAvatars.value = List<Map<String, String>>.from(
+          (userData['purchasedAvatars'] ?? []).map(
+            (item) => Map<String, String>.from(item),
+          ),
+        );
+
+        // Load purchased stickers
+        purchasedStickers.value = List<Map<String, String>>.from(
+          (userData['purchasedStickers'] ?? []).map(
+            (item) => Map<String, String>.from(item),
+          ),
+        );
+
+        // Load trophies (placeholder for now)
+        trophies.value = [
+          if (this.user.value?.gamesWon != null &&
+              this.user.value!.gamesWon > 0)
+            {
+              'id': 'first_win',
+              'name': 'First Victory',
+              'description': 'Won your first game!',
+            },
+          if (this.user.value?.gamesWon != null &&
+              this.user.value!.gamesWon >= 10)
+            {
+              'id': 'win_streak',
+              'name': 'Game Master',
+              'description': 'Won 10 games!',
+            },
+          if (this.user.value?.totalPoints != null &&
+              this.user.value!.totalPoints >= 1000)
+            {
+              'id': 'point_collector',
+              'name': 'Point Collector',
+              'description': 'Earned 1000+ points!',
+            },
+        ];
+      }
+    } catch (e) {
+      print('Error loading purchased items: $e');
+    }
+  }
+
+  /// Change tab in profile view
+  void changeTab(int index) {
+    selectedTab.value = index;
   }
 }

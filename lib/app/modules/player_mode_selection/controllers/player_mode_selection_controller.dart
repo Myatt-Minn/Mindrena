@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:mindrena/app/data/populateImageQuestions.dart';
 
 class PlayerModeSelectionController extends GetxController {
   // Observable variables
@@ -18,6 +17,8 @@ class PlayerModeSelectionController extends GetxController {
         return 'English';
       case 'MYN':
         return 'Myanmar';
+      case 'TH':
+        return 'Thai';
       default:
         return 'English'; // Default to English
     }
@@ -28,7 +29,6 @@ class PlayerModeSelectionController extends GetxController {
     super.onInit();
     // Load saved language preference
     _loadSavedLanguage();
-    await populateImageQuestions();
   }
 
   @override
@@ -44,7 +44,9 @@ class PlayerModeSelectionController extends GetxController {
   void _loadSavedLanguage() {
     final savedLanguage = storage.read('language');
     if (savedLanguage != null &&
-        (savedLanguage == 'ENG' || savedLanguage == 'MYN')) {
+        (savedLanguage == 'ENG' ||
+            savedLanguage == 'MYN' ||
+            savedLanguage == 'TH')) {
       selectedLanguage.value = savedLanguage;
     }
   }
@@ -73,14 +75,16 @@ class PlayerModeSelectionController extends GetxController {
   void updateLocale() {
     final locale = selectedLanguage.value == 'ENG'
         ? const Locale('en', 'US')
-        : const Locale('my', 'MM');
+        : selectedLanguage.value == 'MYN'
+        ? const Locale('my', 'MM')
+        : const Locale('th', 'TH');
 
     Get.updateLocale(locale);
   }
 
   /// Toggle language and save preference
   void toggleLanguage(String language) {
-    if (language == 'ENG' || language == 'MYN') {
+    if (language == 'ENG' || language == 'MYN' || language == 'TH') {
       selectedLanguage.value = language;
       storage.write('language', language);
       updateLocale();

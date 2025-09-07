@@ -455,7 +455,7 @@ class ProfileView extends GetView<ProfileController> {
                     Get.toNamed('/edit-profile');
                   },
                   icon: const Icon(Icons.edit, size: 20),
-                  label: const Text('Edit Profile'),
+                  label: Text('edit_profile'.tr),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.purple,
                     foregroundColor: Colors.white,
@@ -499,7 +499,7 @@ class ProfileView extends GetView<ProfileController> {
                     Icon(Icons.bar_chart, color: Colors.purple, size: 24),
                     const SizedBox(width: 12),
                     Text(
-                      'Game Statistics',
+                      'game_statistics'.tr,
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -614,6 +614,186 @@ class ProfileView extends GetView<ProfileController> {
 
         const SizedBox(height: 20),
 
+        // Purchased Items Tab Section
+        Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.95),
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 20,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: Column(
+            children: [
+              // Tab Headers
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
+                  ),
+                ),
+                child: Obx(
+                  () => Row(
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () => controller.changeTab(0),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            decoration: BoxDecoration(
+                              color: controller.selectedTab.value == 0
+                                  ? Colors.purple.withOpacity(0.1)
+                                  : Colors.transparent,
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(20),
+                              ),
+                              border: Border(
+                                bottom: BorderSide(
+                                  color: controller.selectedTab.value == 0
+                                      ? Colors.purple
+                                      : Colors.transparent,
+                                  width: 3,
+                                ),
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.face,
+                                  color: controller.selectedTab.value == 0
+                                      ? Colors.purple
+                                      : Colors.grey,
+                                  size: 20,
+                                ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  'Avatars',
+                                  style: TextStyle(
+                                    color: controller.selectedTab.value == 0
+                                        ? Colors.purple
+                                        : Colors.grey,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () => controller.changeTab(1),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            decoration: BoxDecoration(
+                              color: controller.selectedTab.value == 1
+                                  ? Colors.purple.withOpacity(0.1)
+                                  : Colors.transparent,
+                              border: Border(
+                                bottom: BorderSide(
+                                  color: controller.selectedTab.value == 1
+                                      ? Colors.purple
+                                      : Colors.transparent,
+                                  width: 3,
+                                ),
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.auto_awesome,
+                                  color: controller.selectedTab.value == 1
+                                      ? Colors.purple
+                                      : Colors.grey,
+                                  size: 20,
+                                ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  'Stickers',
+                                  style: TextStyle(
+                                    color: controller.selectedTab.value == 1
+                                        ? Colors.purple
+                                        : Colors.grey,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () => controller.changeTab(2),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            decoration: BoxDecoration(
+                              color: controller.selectedTab.value == 2
+                                  ? Colors.purple.withOpacity(0.1)
+                                  : Colors.transparent,
+                              borderRadius: BorderRadius.only(
+                                topRight: Radius.circular(20),
+                              ),
+                              border: Border(
+                                bottom: BorderSide(
+                                  color: controller.selectedTab.value == 2
+                                      ? Colors.purple
+                                      : Colors.transparent,
+                                  width: 3,
+                                ),
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.emoji_events,
+                                  color: controller.selectedTab.value == 2
+                                      ? Colors.purple
+                                      : Colors.grey,
+                                  size: 20,
+                                ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  'Trophies',
+                                  style: TextStyle(
+                                    color: controller.selectedTab.value == 2
+                                        ? Colors.purple
+                                        : Colors.grey,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              // Tab Content
+              Obx(
+                () => Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: _buildTabContent(),
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        const SizedBox(height: 20),
+
         // Account Actions
         Container(
           width: double.infinity,
@@ -631,26 +811,33 @@ class ProfileView extends GetView<ProfileController> {
           child: Column(
             children: [
               _buildActionTile(
+                icon: Icons.shop,
+                title: 'shop'.tr,
+                subtitle: 'Browse and purchase items',
+                onTap: () => Get.toNamed('/shop'),
+              ),
+              const Divider(height: 1),
+              _buildActionTile(
                 icon: Icons.settings,
-                title: 'Settings',
+                title: 'settings'.tr,
                 subtitle: 'Manage your preferences',
                 onTap: () => Get.toNamed('/settings'),
               ),
               const Divider(height: 1),
               _buildActionTile(
-                icon: Icons.settings,
-                title: 'Game Mode Selection',
-                subtitle: 'Go back to Game Mode Selection',
+                icon: Icons.videogame_asset,
+                title: 'switch_player_mode'.tr,
+                subtitle: 'Go back to Player Mode Selection',
                 onTap: () => Get.offAllNamed('/player-mode-selection'),
               ),
               const Divider(height: 1),
               _buildActionTile(
                 icon: Icons.logout,
-                title: 'Sign Out',
+                title: 'logout'.tr,
                 subtitle: 'Sign out of your account',
                 onTap: () {
                   Get.defaultDialog(
-                    title: 'Sign Out',
+                    title: 'logout'.tr,
                     middleText: 'Are you sure you want to sign out?',
                     textConfirm: 'Sign Out',
                     textCancel: 'Cancel',
@@ -668,6 +855,327 @@ class ProfileView extends GetView<ProfileController> {
         ),
 
         const SizedBox(height: 20),
+      ],
+    );
+  }
+
+  Widget _buildTabContent() {
+    switch (controller.selectedTab.value) {
+      case 0:
+        return _buildAvatarsTab();
+      case 1:
+        return _buildStickersTab();
+      case 2:
+        return _buildTrophiesTab();
+      default:
+        return _buildAvatarsTab();
+    }
+  }
+
+  Widget _buildAvatarsTab() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Purchased Avatars',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.grey.shade800,
+          ),
+        ),
+        const SizedBox(height: 16),
+        Obx(() {
+          if (controller.purchasedAvatars.isEmpty) {
+            return Container(
+              padding: const EdgeInsets.all(32),
+              child: Column(
+                children: [
+                  Icon(
+                    Icons.face_retouching_off,
+                    size: 48,
+                    color: Colors.grey.shade400,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'No avatars purchased yet',
+                    style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Visit the shop to buy cool avatars!',
+                    style: TextStyle(fontSize: 14, color: Colors.grey.shade500),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          return GridView.builder(
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+              childAspectRatio: 0.7,
+            ),
+            itemCount: controller.purchasedAvatars.length,
+            itemBuilder: (context, index) {
+              final avatar = controller.purchasedAvatars[index];
+              return Container(
+                decoration: BoxDecoration(
+                  color: Colors.purple.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: Colors.purple.withOpacity(0.3),
+                    width: 2,
+                  ),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 60,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.purple, width: 2),
+                      ),
+                      child: ClipOval(
+                        child: Image.network(
+                          avatar['url']!,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Icon(
+                              Icons.person,
+                              color: Colors.purple,
+                              size: 30,
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      avatar['name']!,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.grey.shade700,
+                      ),
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              );
+            },
+          );
+        }),
+      ],
+    );
+  }
+
+  Widget _buildStickersTab() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Purchased Stickers',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.grey.shade800,
+          ),
+        ),
+        const SizedBox(height: 16),
+        Obx(() {
+          if (controller.purchasedStickers.isEmpty) {
+            return Container(
+              padding: const EdgeInsets.all(32),
+              child: Column(
+                children: [
+                  Icon(
+                    Icons.sentiment_dissatisfied,
+                    size: 48,
+                    color: Colors.grey.shade400,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'No stickers purchased yet',
+                    style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Visit the shop to buy expressive stickers!',
+                    style: TextStyle(fontSize: 14, color: Colors.grey.shade500),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          return GridView.builder(
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              crossAxisSpacing: 8,
+              mainAxisSpacing: 8,
+              childAspectRatio: 0.7,
+            ),
+            itemCount: controller.purchasedStickers.length,
+            itemBuilder: (context, index) {
+              final sticker = controller.purchasedStickers[index];
+              return Container(
+                decoration: BoxDecoration(
+                  color: Colors.orange.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: Colors.orange.withOpacity(0.3),
+                    width: 2,
+                  ),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      sticker['url']!,
+                      width: 60,
+                      height: 60,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Icon(
+                          Icons.emoji_emotions,
+                          color: Colors.orange,
+                          size: 40,
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      sticker['name']!,
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.grey.shade700,
+                      ),
+                      textAlign: TextAlign.center,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              );
+            },
+          );
+        }),
+      ],
+    );
+  }
+
+  Widget _buildTrophiesTab() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Earned Trophies',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.grey.shade800,
+          ),
+        ),
+        const SizedBox(height: 16),
+        Obx(() {
+          if (controller.trophies.isEmpty) {
+            return Container(
+              padding: const EdgeInsets.all(32),
+              child: Column(
+                children: [
+                  Icon(
+                    Icons.emoji_events_outlined,
+                    size: 48,
+                    color: Colors.grey.shade400,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'No trophies earned yet',
+                    style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Keep playing to unlock achievements!',
+                    style: TextStyle(fontSize: 14, color: Colors.grey.shade500),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          return ListView.builder(
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            itemCount: controller.trophies.length,
+            itemBuilder: (context, index) {
+              final trophy = controller.trophies[index];
+              return Container(
+                margin: const EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.amber.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: Colors.amber.withOpacity(0.3),
+                    width: 2,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 50,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        color: Colors.amber.withOpacity(0.2),
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.amber, width: 2),
+                      ),
+                      child: Icon(
+                        Icons.emoji_events,
+                        color: Colors.amber.shade700,
+                        size: 24,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            trophy['name']!,
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.grey.shade800,
+                            ),
+                          ),
+                          Text(
+                            trophy['description']!,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey.shade600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          );
+        }),
       ],
     );
   }

@@ -171,7 +171,10 @@ class PlayerModeSelectionView extends GetView<PlayerModeSelectionController> {
                               () => controller.isLoaded.value
                                   ? GestureDetector(
                                       onTap: () {
-                                        Get.offAllNamed('/auth-gate');
+                                        Get.offAllNamed(
+                                          '/auth-gate',
+                                          arguments: 'two',
+                                        );
                                       },
                                       child: ClipRRect(
                                         borderRadius: BorderRadius.circular(12),
@@ -203,7 +206,10 @@ class PlayerModeSelectionView extends GetView<PlayerModeSelectionController> {
                               () => controller.isLoaded.value
                                   ? GestureDetector(
                                       onTap: () {
-                                        Get.offAllNamed('/single-player');
+                                        Get.offAllNamed(
+                                          '/auth-gate',
+                                          arguments: 'single',
+                                        );
                                       },
                                       child: ClipRRect(
                                         borderRadius: BorderRadius.circular(12),
@@ -382,6 +388,13 @@ class PlayerModeSelectionView extends GetView<PlayerModeSelectionController> {
                       name: 'Myanmar',
                       flag: '🇲🇲',
                       isSelected: controller.selectedLanguage.value == 'MYN',
+                    ),
+                    const SizedBox(height: 12),
+                    _buildLanguageOption(
+                      code: 'TH',
+                      name: 'Thai',
+                      flag: '🇹🇭',
+                      isSelected: controller.selectedLanguage.value == 'TH',
                     ),
                   ],
                 ),

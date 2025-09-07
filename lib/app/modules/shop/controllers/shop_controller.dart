@@ -1,12 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:quickalert/quickalert.dart';
 
 class ShopController extends GetxController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseStorage _storage = FirebaseStorage.instance;
 
   // Observable variables
   var userPoints = 0.obs;
@@ -14,6 +17,10 @@ class ShopController extends GetxController {
   var isLoading = true.obs;
   var selectedTab = 0.obs;
   var purchasedItems = <String>[].obs;
+  var purchasedAvatars =
+      <Map<String, String>>[].obs; // Store avatar info: {id, name, url}
+  var purchasedStickers =
+      <Map<String, String>>[].obs; // Store sticker info: {id, name, url}
   var currentUserAvatar = ''.obs;
 
   // Shop items
@@ -38,10 +45,21 @@ class ShopController extends GetxController {
       if (userDoc.exists) {
         final userData = userDoc.data()!;
         userPoints.value = userData['stats']['totalPoints'] ?? 0;
-        userCoins.value = _calculateCoins(userPoints.value);
+        userCoins.value =
+            userData['stats']['coins'] ?? 0; // Get coins directly from stats
         currentUserAvatar.value = userData['avatarUrl'] ?? '';
         purchasedItems.value = List<String>.from(
           userData['purchasedItems'] ?? [],
+        );
+        purchasedAvatars.value = List<Map<String, String>>.from(
+          (userData['purchasedAvatars'] ?? []).map(
+            (item) => Map<String, String>.from(item),
+          ),
+        );
+        purchasedStickers.value = List<Map<String, String>>.from(
+          (userData['purchasedStickers'] ?? []).map(
+            (item) => Map<String, String>.from(item),
+          ),
         );
       }
     } catch (e) {
@@ -57,42 +75,50 @@ class ShopController extends GetxController {
     avatarItems.value = [
       ShopItem(
         id: 'avatar_1',
-        name: 'Warrior Avatar',
-        description: 'Brave warrior character',
+        name: 'Ethan Cross',
+        description: 'Scared Green Guy',
         price: 500,
         imageUrl: 'assets/cha3.jpg',
         type: ShopItemType.avatar,
       ),
       ShopItem(
         id: 'avatar_2',
-        name: 'Wizard Avatar',
-        description: 'Magical wizard character',
+        name: 'Chloe Hart',
+        description: 'Wondering Purple Girl',
         price: 750,
         imageUrl: 'assets/cha4.jpg',
         type: ShopItemType.avatar,
       ),
       ShopItem(
         id: 'avatar_3',
-        name: 'Ninja Avatar',
-        description: 'Stealthy ninja character',
+        name: 'Sophia Brooks',
+        description: 'Shy Pink Girl',
         price: 600,
-        imageUrl: 'assets/cha5.jpg',
+        imageUrl: 'assets/cha5.jpeg',
         type: ShopItemType.avatar,
       ),
       ShopItem(
         id: 'avatar_4',
-        name: 'Princess Avatar',
-        description: 'Royal princess character',
+        name: 'Lucas Reed',
+        description: 'Nice Red Guy',
         price: 800,
         imageUrl: 'assets/cha6.jpg',
         type: ShopItemType.avatar,
       ),
       ShopItem(
-        id: 'avatar_4',
-        name: 'Princess Avatar',
-        description: 'Royal princess character',
-        price: 800,
+        id: 'avatar_5',
+        name: 'Emily Rivers',
+        description: 'Cute Girl',
+        price: 900,
         imageUrl: 'assets/cha7.jpg',
+        type: ShopItemType.avatar,
+      ),
+      ShopItem(
+        id: 'avatar_5',
+        name: 'Isabella Lane',
+        description: 'Ambitious Gray Girl',
+        price: 900,
+        imageUrl: 'assets/cha8.jpeg',
         type: ShopItemType.avatar,
       ),
     ];
@@ -144,9 +170,9 @@ class ShopController extends GetxController {
     return purchasedItems.contains(itemId);
   }
 
-  /// Check if user can afford item
+  /// Check if user can afford item (checking against coins, not raw points)
   bool canAffordItem(int price) {
-    return userPoints.value >= price;
+    return userCoins.value >= price;
   }
 
   /// Purchase an item
@@ -164,7 +190,7 @@ class ShopController extends GetxController {
       }
 
       if (!canAffordItem(item.price)) {
-        _showErrorMessage('Not enough points to purchase this item');
+        _showErrorMessage('Not enough coins to purchase this item');
         return;
       }
 
@@ -172,26 +198,56 @@ class ShopController extends GetxController {
       final confirmed = await _showPurchaseConfirmation(item);
       if (!confirmed) return;
 
-      // Update user data in Firestore
-      final newPoints = userPoints.value - item.price;
+      // Deduct coins directly (no more point conversion)
+      final newCoins = userCoins.value - item.price;
       final newPurchasedItems = [...purchasedItems, item.id];
 
       Map<String, dynamic> updateData = {
-        'stats.totalPoints': newPoints, // Update the totalPoints in stats
+        'stats.coins': newCoins, // Update coins directly
         'purchasedItems': newPurchasedItems,
       };
 
-      // If purchasing an avatar, set it as current avatar
+      // If purchasing an avatar, upload it to Firebase Storage first
       if (item.type == ShopItemType.avatar) {
-        updateData['avatarUrl'] = item.imageUrl;
-        currentUserAvatar.value = item.imageUrl;
+        final uploadedUrl = await _uploadAvatarToFirebase(
+          item.imageUrl,
+          user.uid,
+        );
+        if (uploadedUrl != null) {
+          updateData['avatarUrl'] = uploadedUrl;
+          currentUserAvatar.value = uploadedUrl;
+
+          // Add to purchased avatars list
+          final avatarInfo = {
+            'id': item.id,
+            'name': item.name,
+            'url': uploadedUrl,
+          };
+          final newPurchasedAvatars = [...purchasedAvatars, avatarInfo];
+          updateData['purchasedAvatars'] = newPurchasedAvatars;
+          purchasedAvatars.add(avatarInfo);
+        } else {
+          _showErrorMessage('Failed to upload avatar. Please try again.');
+          return;
+        }
+      }
+
+      // If purchasing a sticker, add it to purchased stickers list
+      if (item.type == ShopItemType.sticker) {
+        final stickerInfo = {
+          'id': item.id,
+          'name': item.name,
+          'url': item.imageUrl,
+        };
+        final newPurchasedStickers = [...purchasedStickers, stickerInfo];
+        updateData['purchasedStickers'] = newPurchasedStickers;
+        purchasedStickers.add(stickerInfo);
       }
 
       await _firestore.collection('users').doc(user.uid).update(updateData);
 
       // Update local state
-      userPoints.value = newPoints;
-      userCoins.value = _calculateCoins(newPoints);
+      userCoins.value = newCoins; // Update coins directly
       purchasedItems.add(item.id);
 
       _showSuccessMessage('${item.name} purchased successfully!');
@@ -207,7 +263,7 @@ class ShopController extends GetxController {
       context: Get.context!,
       type: QuickAlertType.confirm,
       title: 'Confirm Purchase',
-      text: 'Purchase ${item.name} for ${item.price} points?',
+      text: 'Purchase ${item.name} for ${item.price} coins?',
       confirmBtnText: 'Purchase',
       cancelBtnText: 'Cancel',
       confirmBtnColor: Colors.purple,
@@ -245,9 +301,44 @@ class ShopController extends GetxController {
     await _loadUserData();
   }
 
-  /// Calculate coins based on points (50 coins per 100 points)
-  int _calculateCoins(int points) {
-    return (points / 100).floor() * 50;
+  /// Get purchased avatars for use in other controllers
+  List<Map<String, String>> getPurchasedAvatars() {
+    return purchasedAvatars.toList();
+  }
+
+  /// Get purchased stickers for use in other controllers
+  List<Map<String, String>> getPurchasedStickers() {
+    return purchasedStickers.toList();
+  }
+
+  /// Upload avatar asset to Firebase Storage
+  Future<String?> _uploadAvatarToFirebase(
+    String assetPath,
+    String userId,
+  ) async {
+    try {
+      // Load the asset image as bytes
+      final ByteData byteData = await rootBundle.load(assetPath);
+      final Uint8List imageBytes = byteData.buffer.asUint8List();
+
+      // Create unique filename with user ID and timestamp
+      final fileName =
+          'avatar_${userId}_${DateTime.now().millisecondsSinceEpoch}.jpg';
+
+      // Create reference to Firebase Storage
+      final storageRef = _storage.ref().child('profile_images').child(fileName);
+
+      // Upload bytes
+      final uploadTask = storageRef.putData(imageBytes);
+      final snapshot = await uploadTask;
+
+      // Get download URL
+      final downloadUrl = await snapshot.ref.getDownloadURL();
+      return downloadUrl;
+    } catch (e) {
+      print('Error uploading avatar to Firebase: $e');
+      return null;
+    }
   }
 }
 
