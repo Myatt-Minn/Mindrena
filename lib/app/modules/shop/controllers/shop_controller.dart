@@ -4,6 +4,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:mindrena/app/data/coinPackageModel.dart';
 import 'package:quickalert/quickalert.dart';
 
 class ShopController extends GetxController {
@@ -27,11 +28,15 @@ class ShopController extends GetxController {
   var avatarItems = <ShopItem>[].obs;
   var stickerItems = <ShopItem>[].obs;
 
+  // Coin purchase packages
+  var coinPackages = <CoinPackage>[].obs;
+
   @override
   void onInit() {
     super.onInit();
     _loadUserData();
     _initializeShopItems();
+    _initializeCoinPackages();
   }
 
   /// Load user data from Firestore
@@ -158,6 +163,45 @@ class ShopController extends GetxController {
         type: ShopItemType.sticker,
       ),
     ];
+  }
+
+  /// Initialize coin packages
+  void _initializeCoinPackages() {
+    coinPackages.value = [
+      CoinPackage(
+        id: 'coins_100',
+        coins: 100,
+        price: 30.0, // 30 THB
+        originalPrice: 35.0,
+        isPopular: false,
+      ),
+      CoinPackage(
+        id: 'coins_500',
+        coins: 500,
+        price: 120.0, // 120 THB
+        originalPrice: 150.0,
+        isPopular: true,
+      ),
+      CoinPackage(
+        id: 'coins_1000',
+        coins: 1000,
+        price: 200.0, // 200 THB
+        originalPrice: 250.0,
+        isPopular: false,
+      ),
+      CoinPackage(
+        id: 'coins_2500',
+        coins: 2500,
+        price: 450.0, // 450 THB
+        originalPrice: 600.0,
+        isPopular: false,
+      ),
+    ];
+  }
+
+  /// Navigate to coin purchase flow
+  void buyCoinPackage(CoinPackage package) {
+    Get.toNamed('/payment-selection', arguments: {'package': package});
   }
 
   /// Switch between tabs

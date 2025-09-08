@@ -314,6 +314,14 @@ class ShopView extends GetView<ShopController> {
                 isSelected: controller.selectedTab.value == 1,
               ),
             ),
+            Expanded(
+              child: _buildTabButton(
+                title: 'Buy Coins',
+                icon: Icons.monetization_on,
+                index: 2,
+                isSelected: controller.selectedTab.value == 2,
+              ),
+            ),
           ],
         ),
       ),
@@ -364,6 +372,11 @@ class ShopView extends GetView<ShopController> {
   /// Build tab content
   Widget _buildTabContent() {
     return Obx(() {
+      if (controller.selectedTab.value == 2) {
+        // Coin purchase tab
+        return _buildCoinPackagesGrid();
+      }
+
       final items = controller.selectedTab.value == 0
           ? controller.avatarItems
           : controller.stickerItems;
@@ -596,6 +609,171 @@ class ShopView extends GetView<ShopController> {
         ),
       );
     });
+  }
+
+  /// Build coin packages grid
+  Widget _buildCoinPackagesGrid() {
+    return Obx(() {
+      final packages = controller.coinPackages;
+
+      if (packages.isEmpty) {
+        return _buildEmptyState();
+      }
+
+      return GridView.builder(
+        padding: const EdgeInsets.all(16),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          childAspectRatio: 0.6,
+          crossAxisSpacing: 10,
+          mainAxisSpacing: 10,
+        ),
+        itemCount: packages.length,
+        itemBuilder: (context, index) {
+          return _buildCoinPackageCard(packages[index]);
+        },
+      );
+    });
+  }
+
+  /// Build coin package card
+  Widget _buildCoinPackageCard(dynamic package) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 5),
+          ),
+        ],
+        border: package.isPopular
+            ? Border.all(color: const Color(0xFF667eea), width: 3)
+            : null,
+      ),
+      child: Stack(
+        children: [
+          // Popular badge
+          if (package.isPopular)
+            Positioned(
+              top: 0,
+              right: 0,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: const BoxDecoration(
+                  color: Color(0xFF667eea),
+                  borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(20),
+                    bottomLeft: Radius.circular(15),
+                  ),
+                ),
+                child: const Text(
+                  'POPULAR',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+
+          // Content
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Coin icon
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.amber.shade100,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.monetization_on,
+                    color: Colors.amber.shade700,
+                    size: 30,
+                  ),
+                ),
+                const SizedBox(height: 12),
+
+                // Coin amount
+                Text(
+                  '${package.coins} Coins',
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+
+                const SizedBox(height: 8),
+
+                // Price
+                Column(
+                  children: [
+                    if (package.originalPrice != null) ...[
+                      Text(
+                        '฿${package.originalPrice!.toStringAsFixed(0)}',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey.shade500,
+                          decoration: TextDecoration.lineThrough,
+                        ),
+                      ),
+                      Text(
+                        '${package.discountPercentage}% OFF',
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: Colors.red.shade600,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                    Text(
+                      '฿${package.price.toStringAsFixed(0)}',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF667eea),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+
+                // Buy button
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () => controller.buyCoinPackage(package),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF667eea),
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                    ),
+                    child: const Text(
+                      'Buy Now',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   /// Build empty state

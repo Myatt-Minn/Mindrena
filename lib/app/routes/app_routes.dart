@@ -31,6 +31,8 @@ abstract class Routes {
   static const SG_QUIZ = _Paths.SG_QUIZ;
   static const NORMAL_SIGN_IN = _Paths.NORMAL_SIGN_IN;
   static const GUESS_IT_FAST = _Paths.GUESS_IT_FAST;
+  static const PAYMENT_SELECTION = _Paths.PAYMENT_SELECTION;
+  static const CHECKOUT = _Paths.CHECKOUT;
 }
 
 abstract class _Paths {
@@ -63,4 +65,6 @@ abstract class _Paths {
   static const SG_QUIZ = '/sg-quiz';
   static const NORMAL_SIGN_IN = '/normal-sign-in';
   static const GUESS_IT_FAST = '/guess-it-fast';
+  static const PAYMENT_SELECTION = '/payment-selection';
+  static const CHECKOUT = '/checkout';
 }

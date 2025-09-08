@@ -1,4 +1,3 @@
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
@@ -998,21 +997,19 @@ class GameScreenView extends GetView<GameScreenController> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Row(
-                            children: [
-                              AutoSizeText(
-                                player.username,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
-                                  color: Colors.black87,
-                                ),
-                              ),
-                            ],
+                          // Player name - use Flexible to prevent overflow
+                          Text(
+                            player.username,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                              color: Colors.black87,
+                            ),
                           ),
                           const SizedBox(height: 4),
+                          // Points
                           Text(
                             '$score pts',
                             style: TextStyle(

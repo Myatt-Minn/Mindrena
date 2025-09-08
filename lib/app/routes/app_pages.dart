@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import '../modules/auth_gate/bindings/auth_gate_binding.dart';
 import '../modules/auth_gate/views/auth_gate_view.dart';
 import '../modules/auth_gate/views/no_internet.dart';
+import '../modules/checkout/bindings/checkout_binding.dart';
+import '../modules/checkout/views/checkout_view.dart';
 import '../modules/edit-profile/bindings/edit_profile_binding.dart';
 import '../modules/edit-profile/views/edit_profile_view.dart';
 import '../modules/f_category_selection/bindings/f_category_selection_binding.dart';
@@ -25,6 +27,8 @@ import '../modules/normal_sign_in/bindings/normal_sign_in_binding.dart';
 import '../modules/normal_sign_in/views/normal_sign_in_view.dart';
 import '../modules/opponent_type_selection/bindings/opponent_type_selection_binding.dart';
 import '../modules/opponent_type_selection/views/opponent_type_selection_view.dart';
+import '../modules/payment_selection/bindings/payment_selection_binding.dart';
+import '../modules/payment_selection/views/payment_selection_view.dart';
 import '../modules/player_mode_selection/bindings/player_mode_selection_binding.dart';
 import '../modules/player_mode_selection/views/player_mode_selection_view.dart';
 import '../modules/profile/bindings/profile_binding.dart';
@@ -194,6 +198,16 @@ class AppPages {
       name: _Paths.NORMAL_SIGN_IN,
       page: () => const NormalSignInView(),
       binding: NormalSignInBinding(),
+    ),
+    GetPage(
+      name: _Paths.PAYMENT_SELECTION,
+      page: () => const PaymentSelectionView(),
+      binding: PaymentSelectionBinding(),
+    ),
+    GetPage(
+      name: _Paths.CHECKOUT,
+      page: () => const CheckoutView(),
+      binding: CheckoutBinding(),
     ),
   ];
 }

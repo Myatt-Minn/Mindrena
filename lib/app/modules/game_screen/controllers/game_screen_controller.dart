@@ -62,7 +62,13 @@ class GameScreenController extends GetxController {
 
     // Initialize game complete audio player
     _gameCompletePlayer = AudioPlayer();
-
+    try {
+      final homeController = Get.find<HomeController>();
+      homeController.stopBackgroundMusic();
+      print('Background music stopped for game screen');
+    } catch (e) {
+      print('Could not stop background music: $e');
+    }
     // Clear sent invitations since game is starting
     try {
       final homeController = Get.find<HomeController>();

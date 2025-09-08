@@ -2,6 +2,7 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
+import 'package:mindrena/app/modules/auth_gate/controllers/auth_gate_controller.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../controllers/profile_controller.dart';
@@ -828,7 +829,10 @@ class ProfileView extends GetView<ProfileController> {
                 icon: Icons.videogame_asset,
                 title: 'switch_player_mode'.tr,
                 subtitle: 'Go back to Player Mode Selection',
-                onTap: () => Get.offAllNamed('/player-mode-selection'),
+                onTap: () {
+                  Get.delete<AuthGateController>(force: true);
+                  Get.offAllNamed('/player-mode-selection');
+                },
               ),
               const Divider(height: 1),
               _buildActionTile(
