@@ -291,7 +291,7 @@ class SignInView extends GetView<SignInController> {
                           ),
                           child: ElevatedButton.icon(
                             onPressed: () async {
-                              controller.goGoogleSignIn();
+                              await controller.signInWithGoogle();
                             },
                             icon: Container(
                               padding: const EdgeInsets.all(4),

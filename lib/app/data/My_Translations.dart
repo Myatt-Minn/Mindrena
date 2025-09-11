@@ -98,6 +98,19 @@ class MyTranslations extends Translations {
       'failed_to_sign_in_google': 'Failed to sign in with Google',
       'google_sign_in_failed': 'Google Sign-In Failed',
       'google_sign_in_error': 'Google Sign-In Error: @error',
+      'account_exists_different_credential':
+          'An account already exists with a different sign-in method',
+      'invalid_credential': 'The credential is invalid or has expired',
+      'google_sign_in_not_enabled': 'Google sign-in is not enabled',
+      'user_account_disabled': 'This user account has been disabled',
+      'no_user_found': 'No user found with this credential',
+      'wrong_password': 'Invalid password',
+      'authentication_error': 'Authentication error',
+      'auth_cache_cleared':
+          'Authentication cache cleared. Please try signing in again.',
+      'auth_cache_cleared_retry':
+          'Authentication cache has been cleared. Please try signing in again.',
+      'info': 'Info',
       'please_enter_email': 'Please enter your email',
       'please_enter_valid_email': 'Please enter a valid email address',
       'please_enter_password': 'Please enter your password',
@@ -339,6 +352,21 @@ class MyTranslations extends Translations {
       'failed_to_sign_in_google': 'Google ဖြင့်ဝင်ရောက်ရန်မအောင်မြင်ပါ',
       'google_sign_in_failed': 'Google ဖြင့်ဝင်ရောက်ရန်မအောင်မြင်ပါ',
       'google_sign_in_error': 'Google ဖြင့်ဝင်ရောက်မှုအမှား: @error',
+      'account_exists_different_credential':
+          'မတူညီသော ဝင်ရောက်နည်းလမ်းဖြင့် အကောင့်တစ်ခုရှိနေပြီးပါသည်',
+      'invalid_credential':
+          'အထောက်အထားမှားယွင်းနေပါသည် သို့မဟုတ် သက်တမ်းကုန်ဆုံးပါပြီ',
+      'google_sign_in_not_enabled':
+          'Google ဖြင့်ဝင်ရောက်ခြင်းကို ဖွင့်ထားခြင်းမရှိပါ',
+      'user_account_disabled': 'ဤအသုံးပြုသူအကောင့်ကို ပိတ်ထားပါသည်',
+      'no_user_found': 'ဤအထောက်အထားဖြင့် အသုံးပြုသူမတွေ့ပါ',
+      'wrong_password': 'စကားဝှက်မှားပါသည်',
+      'authentication_error': 'အထောက်အထားပြမှုအမှား',
+      'auth_cache_cleared':
+          'အထောက်အထားပြမှုကက်ရှ်ကို ရှင်းလင်းပြီးပါပြီ။ ထပ်မံ၍ ဝင်ရောက်ကြိုးစားပါ။',
+      'auth_cache_cleared_retry':
+          'အထောက်အထားပြမှုကက်ရှ်ကို ရှင်းလင်းပြီးပါပြီ။ ထပ်မံ၍ ဝင်ရောက်ကြိုးစားပါ။',
+      'info': 'သတင်းအချက်အလက်',
       'please_enter_email': 'သင်၏အီးမေးလ်ကိုထည့်ပါ',
       'please_enter_valid_email': 'မှန်ကန်သောအီးမေးလ်လိပ်စာထည့်ပါ',
       'please_enter_password': 'သင်၏စကားဝှက်ကိုထည့်ပါ',

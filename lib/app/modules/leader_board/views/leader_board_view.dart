@@ -23,7 +23,7 @@ class LeaderBoardView extends GetView<LeaderBoardController> {
           ),
         ),
         centerTitle: true,
-        backgroundColor: ConstsConfig.primarycolor,
+        backgroundColor: Color(0xFF667eea),
         foregroundColor: Colors.white,
         elevation: 0,
         actions: [
@@ -73,10 +73,7 @@ class LeaderBoardView extends GetView<LeaderBoardController> {
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [
-            ConstsConfig.primarycolor,
-            ConstsConfig.primarycolor.withOpacity(0.8),
-          ],
+          colors: [Color(0xFF667eea), Color(0xFF764ba2)],
         ),
       ),
       child: Obx(() {
@@ -236,7 +233,7 @@ class LeaderBoardView extends GetView<LeaderBoardController> {
                     selected: isSelected,
                     onSelected: (_) => controller.changeFilter(filter),
                     backgroundColor: Colors.white,
-                    selectedColor: ConstsConfig.primarycolor,
+                    selectedColor: Color(0xFF667eea),
                     checkmarkColor: Colors.white,
                     side: BorderSide(color: ConstsConfig.primarycolor),
                   ),
@@ -266,175 +263,184 @@ class LeaderBoardView extends GetView<LeaderBoardController> {
   }
 
   Widget _buildLeaderboardItem(UserModel user, int rank, bool isCurrentUser) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: isCurrentUser
-            ? ConstsConfig.primarycolor.withOpacity(0.1)
-            : Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: isCurrentUser
-            ? Border.all(color: ConstsConfig.primarycolor, width: 2)
-            : null,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            // Rank indicator
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: rank <= 3
-                    ? controller.getRankColor(rank)
-                    : Colors.grey.shade200,
-                shape: BoxShape.circle,
-              ),
-              child: Center(
-                child: rank <= 3
-                    ? Icon(
-                        controller.getRankIcon(rank),
-                        color: Colors.white,
-                        size: 20,
-                      )
-                    : Text(
-                        '$rank',
-                        style: GoogleFonts.poppins(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey.shade600,
-                        ),
-                      ),
-              ),
+    return GestureDetector(
+      onTap: () {
+        Get.toNamed('friend-profile', arguments: user);
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        decoration: BoxDecoration(
+          color: isCurrentUser
+              ? ConstsConfig.primarycolor.withOpacity(0.1)
+              : Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: isCurrentUser
+              ? Border.all(color: ConstsConfig.primarycolor, width: 2)
+              : null,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
             ),
-            const SizedBox(width: 12),
-
-            // User avatar
-            CircleAvatar(
-              radius: 25,
-              backgroundImage: user.avatarUrl.isNotEmpty
-                  ? NetworkImage(user.avatarUrl)
-                  : null,
-              backgroundColor: ConstsConfig.primarycolor.withOpacity(0.7),
-              child: user.avatarUrl.isEmpty
-                  ? const Icon(Icons.person, color: Colors.white)
-                  : null,
-            ),
-            const SizedBox(width: 12),
-
-            // User info
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          user.username,
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              // Rank indicator
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: rank <= 3
+                      ? controller.getRankColor(rank)
+                      : Colors.grey.shade200,
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: rank <= 3
+                      ? Icon(
+                          controller.getRankIcon(rank),
+                          color: Colors.white,
+                          size: 20,
+                        )
+                      : Text(
+                          '$rank',
                           style: GoogleFonts.poppins(
-                            fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: isCurrentUser
-                                ? ConstsConfig.primarycolor
-                                : Colors.black87,
+                            color: Colors.grey.shade600,
                           ),
-                          overflow: TextOverflow.ellipsis,
                         ),
-                      ),
-                      if (isCurrentUser)
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: ConstsConfig.primarycolor,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
+                ),
+              ),
+              const SizedBox(width: 12),
+
+              // User avatar
+              CircleAvatar(
+                radius: 25,
+                backgroundImage: user.avatarUrl.isNotEmpty
+                    ? NetworkImage(user.avatarUrl)
+                    : null,
+                backgroundColor: ConstsConfig.primarycolor.withOpacity(0.7),
+                child: user.avatarUrl.isEmpty
+                    ? const Icon(Icons.person, color: Colors.white)
+                    : null,
+              ),
+              const SizedBox(width: 12),
+
+              // User info
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
                           child: Text(
-                            'You',
+                            user.username,
                             style: GoogleFonts.poppins(
-                              fontSize: 10,
-                              color: Colors.white,
+                              fontSize: 16,
                               fontWeight: FontWeight.bold,
+                              color: isCurrentUser
+                                  ? ConstsConfig.primarycolor
+                                  : Colors.black87,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        if (isCurrentUser)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: ConstsConfig.primarycolor,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              'You',
+                              style: GoogleFonts.poppins(
+                                fontSize: 10,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
-                        ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Icon(Icons.games, size: 14, color: Colors.grey.shade600),
-                      const SizedBox(width: 4),
-                      Text(
-                        ' ${user.gamesWon.formatCompact()} wins',
-                        style: GoogleFonts.poppins(
-                          fontSize: 12,
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.games,
+                          size: 14,
                           color: Colors.grey.shade600,
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 2),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.trending_up,
-                        size: 14,
-                        color: Colors.grey.shade600,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        'Win Rate: ${user.winRate.formatPercentage()}',
-                        style: GoogleFonts.poppins(
-                          fontSize: 12,
+                        const SizedBox(width: 4),
+                        Text(
+                          ' ${user.gamesWon.formatCompact()} wins',
+                          style: GoogleFonts.poppins(
+                            fontSize: 12,
+                            color: Colors.grey.shade600,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 2),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.trending_up,
+                          size: 14,
                           color: Colors.grey.shade600,
                         ),
+                        const SizedBox(width: 4),
+                        Text(
+                          'Win Rate: ${user.winRate.formatPercentage()}',
+                          style: GoogleFonts.poppins(
+                            fontSize: 12,
+                            color: Colors.grey.shade600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+
+              // Score value
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    controller.getFilterValue(
+                      user,
+                      controller.selectedFilter.value,
+                    ),
+                    style: GoogleFonts.poppins(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: controller.getScoreColor(
+                        controller.selectedFilter.value,
+                        user,
                       ),
-                    ],
+                    ),
+                  ),
+                  Text(
+                    controller.filterLabels[controller.selectedFilter.value] ??
+                        '',
+                    style: GoogleFonts.poppins(
+                      fontSize: 10,
+                      color: Colors.grey.shade600,
+                    ),
                   ),
                 ],
               ),
-            ),
-
-            // Score value
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  controller.getFilterValue(
-                    user,
-                    controller.selectedFilter.value,
-                  ),
-                  style: GoogleFonts.poppins(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: controller.getScoreColor(
-                      controller.selectedFilter.value,
-                      user,
-                    ),
-                  ),
-                ),
-                Text(
-                  controller.filterLabels[controller.selectedFilter.value] ??
-                      '',
-                  style: GoogleFonts.poppins(
-                    fontSize: 10,
-                    color: Colors.grey.shade600,
-                  ),
-                ),
-              ],
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

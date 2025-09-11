@@ -279,9 +279,11 @@ class FriendsController extends GetxController {
       showTopSnackBar(
         Overlay.of(context),
         animationDuration: Duration(milliseconds: 100),
+        snackBarPosition: SnackBarPosition.bottom,
         CustomSnackBar.success(
           message: 'Friend request sent to ${targetUser.username}',
           backgroundColor: Colors.green,
+
           textStyle: TextStyle(color: Colors.white),
         ),
       );

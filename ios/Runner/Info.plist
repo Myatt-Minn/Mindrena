@@ -67,6 +67,19 @@
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	
+	<!-- Google Sign-In URL Scheme -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.mindrena.mindrena</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.401918120039-kff7a97lbja1ddljuod3u31i0nif78e2</string>
+			</array>
+		</dict>
+	</array>
+	
 	<!-- Minimum iOS version -->
 	<key>MinimumOSVersion</key>
 	<string>13.0</string>

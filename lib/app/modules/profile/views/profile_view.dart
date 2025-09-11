@@ -306,7 +306,11 @@ class ProfileView extends GetView<ProfileController> {
           children: [
             Container(
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.9),
+                gradient: LinearGradient(
+                  colors: [Color(0xFF667eea), Color(0xFF764ba2)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
@@ -317,7 +321,7 @@ class ProfileView extends GetView<ProfileController> {
                 ],
               ),
               child: IconButton(
-                icon: const Icon(Icons.arrow_back_ios, color: Colors.purple),
+                icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
                 onPressed: () => Get.back(),
               ),
             ),
@@ -329,7 +333,11 @@ class ProfileView extends GetView<ProfileController> {
                   horizontal: 20,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.9),
+                  gradient: LinearGradient(
+                    colors: [Color(0xFF667eea), Color(0xFF764ba2)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
                   borderRadius: BorderRadius.circular(15),
                   boxShadow: [
                     BoxShadow(
@@ -349,10 +357,10 @@ class ProfileView extends GetView<ProfileController> {
                           fontWeight: FontWeight.bold,
                         ),
                         colors: [
-                          Colors.purple,
-                          Colors.blue,
-                          Colors.purple,
-                          Colors.teal,
+                          Colors.white,
+                          Colors.purple.shade100,
+                          Colors.purple.shade200,
+                          Colors.white,
                         ],
                         speed: const Duration(milliseconds: 400),
                       ),
@@ -451,21 +459,32 @@ class ProfileView extends GetView<ProfileController> {
                 const SizedBox(height: 20),
 
                 // Edit Profile Button
-                ElevatedButton.icon(
-                  onPressed: () {
-                    Get.toNamed('/edit-profile');
-                  },
-                  icon: const Icon(Icons.edit, size: 20),
-                  label: Text('edit_profile'.tr),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.purple,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 12,
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Color(0xFF667eea), Color(0xFF764ba2)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25),
+                    borderRadius: BorderRadius.circular(25),
+                  ),
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      Get.toNamed('/edit-profile');
+                    },
+                    icon: const Icon(Icons.edit, size: 20),
+                    label: Text('edit_profile'.tr),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      foregroundColor: Colors.white,
+                      shadowColor: Colors.transparent,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 12,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(25),
+                      ),
                     ),
                   ),
                 ),
@@ -843,6 +862,26 @@ class ProfileView extends GetView<ProfileController> {
                   Get.defaultDialog(
                     title: 'logout'.tr,
                     middleText: 'Are you sure you want to sign out?',
+                    textConfirm: 'Sign Out',
+                    textCancel: 'Cancel',
+                    confirmTextColor: Colors.white,
+                    buttonColor: Colors.red,
+                    onConfirm: () {
+                      controller.signOut();
+                      Get.back();
+                    },
+                  );
+                },
+              ),
+              const Divider(height: 1),
+              _buildActionTile(
+                icon: Icons.logout,
+                title: 'delete_account'.tr,
+                subtitle: 'Permanently delete your account',
+                onTap: () {
+                  Get.defaultDialog(
+                    title: 'delete_account'.tr,
+                    middleText: 'Are you sure you want to delete your account?',
                     textConfirm: 'Sign Out',
                     textCancel: 'Cancel',
                     confirmTextColor: Colors.white,

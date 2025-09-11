@@ -4,7 +4,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mindrena/app/data/UserModel.dart';
-import 'package:mindrena/app/data/auth_service.dart';
+import 'package:mindrena/app/services/auth_service.dart';
 
 class SignInController extends GetxController {
   // Controllers for TextFields
@@ -19,21 +19,87 @@ class SignInController extends GetxController {
   var generalError = ''.obs; // General error message for login failure
   var mode = Get.arguments ?? 'single'; // Game mode
 
-  // AuthService instance (single instance)
-  final AuthService _authService = AuthService();
+  // Use shared auth service instead of individual instances
+  final AuthService _authService = AuthService.instance;
 
-  @override
-  void onInit() async {
-    super.onInit();
+  // Google Sign-In Method
+  Future<void> signInWithGoogle() async {
     try {
-      await _authService.initialize();
-      // Check if already signed in
-      final user = _authService.currentUser;
-      if (user != null) {
-        await _handleFirebaseUser(user); // See below
+      signingIn.value = true;
+      clearErrorMessages();
+
+      // Use the shared auth service
+      final UserCredential? userCredential = await _authService
+          .signInWithGoogle();
+
+      if (userCredential == null) {
+        // User canceled the sign-in
+        signingIn.value = false;
+        return;
       }
+
+      if (userCredential.user != null) {
+        await _handleFirebaseUser(userCredential.user!);
+      }
+    } on FirebaseAuthException catch (e) {
+      _handleFirebaseAuthException(e);
     } catch (e) {
-      print('Failed to initialize AuthService: $e');
+      // Check if it's the specific API error 10 (DEVELOPER_ERROR)
+      if (e.toString().contains('ApiException: 10')) {
+        print(
+          'Detected Google Sign-In configuration error, clearing auth cache...',
+        );
+        await _clearAuthCacheAndRetry();
+      } else {
+        generalError.value = '${'google_sign_in_error'.tr}: $e';
+        print('Google Sign-In Error: $e');
+      }
+    } finally {
+      signingIn.value = false;
+    }
+  }
+
+  // Clear auth cache and optionally retry
+  Future<void> _clearAuthCacheAndRetry() async {
+    try {
+      await _authService.clearAuthCache();
+      generalError.value = 'auth_cache_cleared'.tr;
+      Get.snackbar(
+        'info'.tr,
+        'auth_cache_cleared_retry'.tr,
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.orange,
+        colorText: Colors.white,
+      );
+    } catch (e) {
+      generalError.value = '${'google_sign_in_error'.tr}: $e';
+      print('Error clearing auth cache: $e');
+    }
+  }
+
+  // Handle Firebase Auth exceptions
+  void _handleFirebaseAuthException(FirebaseAuthException e) {
+    switch (e.code) {
+      case 'account-exists-with-different-credential':
+        generalError.value = 'account_exists_different_credential'.tr;
+        break;
+      case 'invalid-credential':
+        generalError.value = 'invalid_credential'.tr;
+        break;
+      case 'operation-not-allowed':
+        generalError.value = 'google_sign_in_not_enabled'.tr;
+        break;
+      case 'user-disabled':
+        generalError.value = 'user_account_disabled'.tr;
+        break;
+      case 'user-not-found':
+        generalError.value = 'no_user_found'.tr;
+        break;
+      case 'wrong-password':
+        generalError.value = 'wrong_password'.tr;
+        break;
+      default:
+        generalError.value = '${'authentication_error'.tr}: ${e.message}';
     }
   }
 
@@ -93,33 +159,6 @@ class SignInController extends GetxController {
     }
   }
 
-  // Google Sign-In function
-  Future<void> signInWithGoogle() async {
-    // Clear any previous error messages
-    generalError.value = '';
-
-    // Start loading
-    signingIn.value = true;
-
-    try {
-      final User? user = await _authService.signInWithGoogle();
-
-      if (user != null) {
-        // Successfully signed in
-        Get.offAllNamed('/home');
-      } else {
-        // Sign in failed but no exception was thrown
-        generalError.value =
-            (_authService.lastError ?? 'google_sign_in_failed').tr;
-      }
-    } catch (e) {
-      generalError.value = 'google_sign_in_error'.trParams({'error': '$e'});
-    } finally {
-      // Stop loading
-      signingIn.value = false;
-    }
-  }
-
   // Input validation function
   bool validateInput() {
     bool isValid = true;
@@ -143,29 +182,6 @@ class SignInController extends GetxController {
     }
 
     return isValid;
-  }
-
-  Future<void> goGoogleSignIn() async {
-    generalError.value = '';
-    signingIn.value = true;
-    try {
-      final user = await _authService.signInWithGoogle();
-      if (user != null) {
-        await _handleFirebaseUser(user);
-      } else {
-        Get.snackbar(
-          'error'.tr,
-          'failed_to_sign_in_google'.tr,
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-        );
-      }
-    } catch (e) {
-      generalError.value = 'google_sign_in_error'.trParams({'error': '$e'});
-    } finally {
-      signingIn.value = false;
-    }
   }
 
   // Clear error messages on text change

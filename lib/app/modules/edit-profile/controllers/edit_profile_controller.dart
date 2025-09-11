@@ -6,6 +6,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mindrena/app/data/UserModel.dart';
 import 'package:mindrena/app/modules/profile/controllers/profile_controller.dart';
@@ -544,7 +545,8 @@ class EditProfileController extends GetxController {
         username: newUsername,
         avatarUrl: newAvatarUrl,
       );
-
+      var storage = GetStorage();
+      storage.write('user', user.value!.toMap());
       await Get.find<ProfileController>().fetchUserProfile();
       Get.back();
     } catch (e) {

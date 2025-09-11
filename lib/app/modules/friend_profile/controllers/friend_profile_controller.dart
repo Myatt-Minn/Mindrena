@@ -1,26 +1,80 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:mindrena/app/data/UserModel.dart';
 import 'package:mindrena/app/data/messageModel.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 class FriendProfileController extends GetxController {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
   final user = Rxn<UserModel>(); // Reactive variable to hold friend's data
+  var currentUser = Rxn<UserModel>(); // Current logged-in user
   var isLoading = true.obs; // To show a loading indicator
   var selectedTab = 0.obs; // For tab selection in profile
   var purchasedAvatars = <Map<String, String>>[].obs;
   var purchasedStickers = <Map<String, String>>[].obs;
   var trophies = <Map<String, String>>[].obs;
+  var relationshipStatus = 'unknown'.obs; // Friend relationship status
 
   @override
   void onInit() async {
     super.onInit();
     final friendData = Get.arguments as UserModel?;
     if (friendData != null) {
+      await _loadCurrentUser();
       await fetchFriendProfile(friendData.uid!);
+      _updateRelationshipStatus();
     }
     isLoading.value = false;
+  }
+
+  /// Load current user data
+  Future<void> _loadCurrentUser() async {
+    try {
+      final firebaseUser = _auth.currentUser;
+      if (firebaseUser != null) {
+        final doc = await _firestore
+            .collection('users')
+            .doc(firebaseUser.uid)
+            .get();
+        if (doc.exists) {
+          currentUser.value = UserModel.fromMap(doc.data()!);
+          print('Current user loaded: ${currentUser.value?.username}');
+        }
+      }
+    } catch (e) {
+      print('Error loading current user: $e');
+    }
+  }
+
+  /// Update relationship status based on current user and friend data
+  void _updateRelationshipStatus() {
+    if (currentUser.value == null || user.value == null) {
+      relationshipStatus.value = 'unknown';
+      return;
+    }
+
+    final friendUid = user.value!.uid!;
+    final current = currentUser.value!;
+
+    if (current.isFriend(friendUid)) {
+      relationshipStatus.value = 'friend';
+    } else if (current.hasPendingRequest(friendUid)) {
+      relationshipStatus.value = 'pending_received';
+    } else if (current.hasSentRequest(friendUid)) {
+      relationshipStatus.value = 'pending_sent';
+    } else {
+      relationshipStatus.value = 'none';
+    }
+
+    print(
+      'Relationship status with ${user.value?.username}: ${relationshipStatus.value}',
+    );
   }
 
   Future<void> fetchFriendProfile(String friendId) async {
@@ -31,6 +85,7 @@ class FriendProfileController extends GetxController {
       if (document.exists) {
         user.value = UserModel.fromMap(document.data() as Map<String, dynamic>);
         await _loadPurchasedItems();
+        _updateRelationshipStatus(); // Update relationship status after fetching
       } else {
         print("Friend does not exist");
       }
@@ -97,6 +152,60 @@ class FriendProfileController extends GetxController {
   /// Change tab in profile view
   void changeTab(int index) {
     selectedTab.value = index;
+  }
+
+  /// Send friend request to the current profile user
+  Future<void> sendFriendRequest(BuildContext context) async {
+    if (currentUser.value == null || user.value == null) {
+      Get.snackbar('Error', 'Unable to send friend request');
+      return;
+    }
+
+    if (relationshipStatus.value != 'none') {
+      Get.snackbar(
+        'Info',
+        'Friend request already exists or you are already friends',
+      );
+      return;
+    }
+
+    try {
+      final batch = _firestore.batch();
+
+      // Add to current user's sent requests
+      final currentUserRef = _firestore
+          .collection('users')
+          .doc(currentUser.value!.uid);
+      currentUser.value!.addSentRequest(user.value!.uid!);
+      batch.update(currentUserRef, {
+        'sentRequests': currentUser.value!.sentRequests,
+      });
+
+      // Add to target user's friend requests
+      final targetUserRef = _firestore.collection('users').doc(user.value!.uid);
+      batch.update(targetUserRef, {
+        'friendRequests': FieldValue.arrayUnion([currentUser.value!.uid]),
+      });
+
+      await batch.commit();
+
+      // Update relationship status
+      relationshipStatus.value = 'pending_sent';
+      showTopSnackBar(
+        Overlay.of(context),
+        animationDuration: Duration(milliseconds: 100),
+        snackBarPosition: SnackBarPosition.bottom,
+        CustomSnackBar.success(
+          message: 'Friend request sent to ${user.value!.username}',
+          backgroundColor: Colors.green,
+
+          textStyle: TextStyle(color: Colors.white),
+        ),
+      );
+    } catch (e) {
+      print('Error sending friend request: $e');
+      Get.snackbar('Error', 'Failed to send friend request');
+    }
   }
 
   /// Create or find conversation and navigate to chat

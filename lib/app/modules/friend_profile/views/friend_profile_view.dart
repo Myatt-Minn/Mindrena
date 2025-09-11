@@ -413,6 +413,55 @@ class FriendProfileView extends GetView<FriendProfileController> {
                   ),
                 ),
               ),
+              Positioned(
+                top: 16,
+                left: 16,
+                child: Material(
+                  color: Colors.transparent,
+                  child: Builder(
+                    builder: (context) => Obx(
+                      () => InkWell(
+                        borderRadius: BorderRadius.circular(30),
+                        onTap: () => _handleFriendAction(context),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 10,
+                          ),
+                          decoration: BoxDecoration(
+                            color: _getFriendButtonColor(),
+                            borderRadius: BorderRadius.circular(8),
+                            boxShadow: [
+                              BoxShadow(
+                                color: _getFriendButtonColor().withOpacity(0.2),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            children: [
+                              Icon(
+                                _getFriendButtonIcon(),
+                                color: Colors.white,
+                                size: 24,
+                              ),
+                              Text(
+                                _getFriendButtonText(),
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
@@ -916,5 +965,92 @@ class FriendProfileView extends GetView<FriendProfileController> {
         }),
       ],
     );
+  }
+
+  /// Handle friend action based on current relationship status
+  void _handleFriendAction(BuildContext context) {
+    switch (controller.relationshipStatus.value) {
+      case 'none':
+        controller.sendFriendRequest(context);
+        break;
+      case 'friend':
+        // Already friends, show info
+        Get.snackbar(
+          'Info',
+          'You are already friends with ${controller.user.value?.username ?? 'this user'}',
+          backgroundColor: Colors.blue,
+          colorText: Colors.white,
+        );
+        break;
+      case 'pending_sent':
+        // Already sent request, show info
+        Get.snackbar(
+          'Info',
+          'Friend request already sent to ${controller.user.value?.username ?? 'this user'}',
+          backgroundColor: Colors.orange,
+          colorText: Colors.white,
+        );
+        break;
+      case 'pending_received':
+        // This shouldn't happen normally from profile view since they should be in friends tab
+        Get.snackbar(
+          'Info',
+          '${controller.user.value?.username ?? 'This user'} has sent you a friend request. Check your Friends tab.',
+          backgroundColor: Colors.orange,
+          colorText: Colors.white,
+        );
+        break;
+      default:
+        Get.snackbar('Error', 'Unable to perform action');
+        break;
+    }
+  }
+
+  /// Get button color based on relationship status
+  Color _getFriendButtonColor() {
+    switch (controller.relationshipStatus.value) {
+      case 'friend':
+        return Colors.green;
+      case 'pending_sent':
+        return Colors.orange;
+      case 'pending_received':
+        return Colors.blue;
+      case 'none':
+        return Colors.purple;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  /// Get button icon based on relationship status
+  IconData _getFriendButtonIcon() {
+    switch (controller.relationshipStatus.value) {
+      case 'friend':
+        return Icons.check;
+      case 'pending_sent':
+        return Icons.access_time;
+      case 'pending_received':
+        return Icons.reply;
+      case 'none':
+        return Icons.person_add;
+      default:
+        return Icons.help;
+    }
+  }
+
+  /// Get button text based on relationship status
+  String _getFriendButtonText() {
+    switch (controller.relationshipStatus.value) {
+      case 'friend':
+        return 'Friend';
+      case 'pending_sent':
+        return 'Sent';
+      case 'pending_received':
+        return 'Respond';
+      case 'none':
+        return 'Add';
+      default:
+        return 'Unknown';
+    }
   }
 }

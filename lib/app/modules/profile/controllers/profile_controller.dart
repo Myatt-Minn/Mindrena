@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:mindrena/app/data/UserModel.dart';
+import 'package:mindrena/app/services/auth_service.dart';
 
 class ProfileController extends GetxController {
   //TODO: Implement ProfileController
@@ -15,6 +16,9 @@ class ProfileController extends GetxController {
   var purchasedAvatars = <Map<String, String>>[].obs;
   var purchasedStickers = <Map<String, String>>[].obs;
   var trophies = <Map<String, String>>[].obs;
+
+  // Use shared auth service instead of individual instances
+  final AuthService _authService = AuthService.instance;
 
   @override
   void onInit() async {
@@ -47,18 +51,6 @@ class ProfileController extends GetxController {
           });
     } catch (e) {
       print("Error fetching user profile: $e");
-    }
-  }
-
-  Future<void> signOut() async {
-    try {
-      await FirebaseAuth.instance.signOut();
-      Get.offAllNamed('/sign-in'); // Navigate to sign-in page after sign out
-    } catch (e) {
-      Get.snackbar(
-        'error'.tr,
-        'sign_out_error'.trParams({'error': e.toString()}),
-      );
     }
   }
 
@@ -122,6 +114,14 @@ class ProfileController extends GetxController {
       }
     } catch (e) {
       print('Error loading purchased items: $e');
+    }
+  }
+
+  Future<void> signOut() async {
+    try {
+      await _authService.signOut();
+    } catch (e) {
+      print("Error signing out: $e");
     }
   }
 

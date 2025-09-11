@@ -4,7 +4,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mindrena/app/data/UserModel.dart';
-import 'package:mindrena/app/data/auth_service.dart';
 
 class NormalSignInController extends GetxController {
   // Controllers for TextFields
@@ -19,28 +18,11 @@ class NormalSignInController extends GetxController {
   var generalError = ''.obs; // General error message for login failure
   var mode = Get.arguments ?? 'single'; // Game mode
 
-  // AuthService instance
-  final AuthService _authService = AuthService();
-
-  @override
-  void onInit() {
-    super.onInit();
-    _initializeAuthService();
-  }
-
   @override
   void onClose() {
     emailController.dispose();
     passwordController.dispose();
     super.onClose();
-  }
-
-  Future<void> _initializeAuthService() async {
-    try {
-      await _authService.initialize();
-    } catch (e) {
-      print('Failed to initialize AuthService: $e');
-    }
   }
 
   // Toggle password visibility
@@ -191,11 +173,11 @@ class NormalSignInController extends GetxController {
           .doc(user.uid)
           .get();
       String fcmToken = await FirebaseMessaging.instance.getToken() ?? '';
-
+      var defaultUseName = user.email?.split('@').first ?? 'User';
       if (!userDoc.exists) {
         final newUser = UserModel(
           uid: user.uid,
-          username: user.displayName ?? 'User',
+          username: user.displayName ?? defaultUseName,
           email: user.email ?? '',
           role: 'user',
           avatarUrl: user.photoURL ?? '',
