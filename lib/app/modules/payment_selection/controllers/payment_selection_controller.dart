@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:mindrena/app/data/PaymentModel.dart';
 
 class PaymentSelectionController extends GetxController {
   // Selected coin package from previous screen
@@ -29,19 +30,19 @@ class PaymentSelectionController extends GetxController {
         id: 'promptpay',
         name: 'PromptPay',
         description: 'Pay with PromptPay QR Code',
-        icon: 'assets/promptpay_logo.png', // You'll need to add this asset
+        icon: 'assets/PromptPay-logo.png', // You'll need to add this asset
         accountName: 'Mindrena Game Store',
-        phoneNumber: '086-123-4567',
-        qrCodeUrl: 'assets/promptpay_qr.png', // You'll need to add this asset
+        phoneNumber: '0814517593',
+        qrCodeUrl: 'assets/PromptPayQR.jpeg', // You'll need to add this asset
       ),
       PaymentMethod(
         id: 'kpay',
         name: 'KPay',
         description: 'Pay with KPay Mobile Banking',
-        icon: 'assets/kpay_logo.png', // You'll need to add this asset
+        icon: 'assets/kpayLogo.png', // You'll need to add this asset
         accountName: 'Mindrena Game Store',
-        phoneNumber: '086-123-4567',
-        qrCodeUrl: 'assets/kpay_qr.png', // You'll need to add this asset
+        phoneNumber: '09780293819',
+        qrCodeUrl: 'assets/KpayQR.jpeg', // You'll need to add this asset
       ),
     ];
   }
@@ -64,24 +65,4 @@ class PaymentSelectionController extends GetxController {
       },
     );
   }
-}
-
-class PaymentMethod {
-  final String id;
-  final String name;
-  final String description;
-  final String icon;
-  final String accountName;
-  final String phoneNumber;
-  final String qrCodeUrl;
-
-  PaymentMethod({
-    required this.id,
-    required this.name,
-    required this.description,
-    required this.icon,
-    required this.accountName,
-    required this.phoneNumber,
-    required this.qrCodeUrl,
-  });
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 import '../controllers/memorize_image_game_screen_controller.dart';
 
@@ -202,14 +203,26 @@ class MemorizeImageGameScreenView
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.visibility, color: Colors.orange.shade700, size: 20),
-                const SizedBox(width: 8),
-                Text(
-                  'Memorize this image!',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                Obx(
+                  () => Icon(
+                    controller.isCurrentQuestionVideo
+                        ? Icons.play_arrow
+                        : Icons.visibility,
                     color: Colors.orange.shade700,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Obx(
+                  () => Text(
+                    controller.isCurrentQuestionVideo
+                        ? 'Watch this video!'
+                        : 'Memorize this image!',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.orange.shade700,
+                    ),
                   ),
                 ),
               ],
@@ -217,7 +230,7 @@ class MemorizeImageGameScreenView
           ),
           const SizedBox(height: 20),
 
-          // Image display
+          // Media display (Image or Video)
           Expanded(
             child: Container(
               width: double.infinity,
@@ -236,100 +249,12 @@ class MemorizeImageGameScreenView
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(20),
                 child: Obx(() {
-                  final question = controller.currentQuestion.value;
-                  if (question != null && question['image'] != null) {
-                    final imageUrl = question['image'];
-                    final isPreloaded =
-                        controller.preloadedImages[imageUrl] == true;
-
-                    return Image.network(
-                      imageUrl,
-                      fit: BoxFit.contain,
-                      loadingBuilder: (context, child, loadingProgress) {
-                        if (loadingProgress == null) return child;
-
-                        // Show enhanced loading indicator
-                        return SizedBox(
-                          height: 200,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              CircularProgressIndicator(
-                                value:
-                                    loadingProgress.expectedTotalBytes != null
-                                    ? loadingProgress.cumulativeBytesLoaded /
-                                          loadingProgress.expectedTotalBytes!
-                                    : null,
-                                color: Colors.orange.shade600,
-                                strokeWidth: 3,
-                              ),
-                              const SizedBox(height: 15),
-                              Text(
-                                isPreloaded
-                                    ? 'Loading cached image...'
-                                    : 'Loading image...',
-                                style: TextStyle(
-                                  color: Colors.grey.shade600,
-                                  fontSize: 14,
-                                ),
-                              ),
-                              if (loadingProgress.expectedTotalBytes !=
-                                  null) ...[
-                                const SizedBox(height: 5),
-                                Text(
-                                  '${((loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!) * 100).toInt()}%',
-                                  style: TextStyle(
-                                    color: Colors.orange.shade600,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ],
-                          ),
-                        );
-                      },
-                      errorBuilder: (context, error, stackTrace) {
-                        return SizedBox(
-                          height: 200,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.error_outline,
-                                size: 50,
-                                color: Colors.grey.shade400,
-                              ),
-                              const SizedBox(height: 10),
-                              Text(
-                                'Failed to load image',
-                                style: TextStyle(
-                                  color: Colors.grey.shade600,
-                                  fontSize: 16,
-                                ),
-                              ),
-                              const SizedBox(height: 5),
-                              Text(
-                                'Continuing with game...',
-                                style: TextStyle(
-                                  color: Colors.grey.shade500,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    );
+                  // Check if this is a video question
+                  if (controller.isCurrentQuestionVideo) {
+                    return _buildVideoDisplay();
+                  } else {
+                    return _buildImageDisplay();
                   }
-                  return SizedBox(
-                    height: 200,
-                    child: Center(
-                      child: CircularProgressIndicator(
-                        color: Colors.orange.shade600,
-                      ),
-                    ),
-                  );
                 }),
               ),
             ),
@@ -1315,6 +1240,150 @@ class MemorizeImageGameScreenView
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildVideoDisplay() {
+    return Obx(() {
+      if (controller.isVideoLoading.value) {
+        return SizedBox(
+          height: 200,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(
+                color: Colors.orange.shade600,
+                strokeWidth: 3,
+              ),
+              const SizedBox(height: 15),
+              Text(
+                'Loading video...',
+                style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
+              ),
+            ],
+          ),
+        );
+      }
+
+      if (controller.videoLoadError.value) {
+        return SizedBox(
+          height: 200,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.error_outline, size: 50, color: Colors.grey.shade400),
+              const SizedBox(height: 10),
+              Text(
+                'Failed to load video',
+                style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
+              ),
+              const SizedBox(height: 5),
+              Text(
+                'Continuing with game...',
+                style: TextStyle(color: Colors.grey.shade500, fontSize: 12),
+              ),
+            ],
+          ),
+        );
+      }
+
+      if (controller.youtubeController != null) {
+        return YoutubePlayer(
+          controller: controller.youtubeController!,
+          showVideoProgressIndicator: false,
+          bottomActions: const [],
+          topActions: const [],
+          aspectRatio: 16 / 9,
+        );
+      }
+
+      return SizedBox(
+        height: 200,
+        child: Center(
+          child: CircularProgressIndicator(color: Colors.orange.shade600),
+        ),
+      );
+    });
+  }
+
+  Widget _buildImageDisplay() {
+    final question = controller.currentQuestion.value;
+    if (question != null && question['image'] != null) {
+      final imageUrl = question['image'];
+      final isPreloaded = controller.preloadedImages[imageUrl] == true;
+
+      return Image.network(
+        imageUrl,
+        fit: BoxFit.contain,
+        loadingBuilder: (context, child, loadingProgress) {
+          if (loadingProgress == null) return child;
+
+          // Show enhanced loading indicator
+          return SizedBox(
+            height: 200,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CircularProgressIndicator(
+                  value: loadingProgress.expectedTotalBytes != null
+                      ? loadingProgress.cumulativeBytesLoaded /
+                            loadingProgress.expectedTotalBytes!
+                      : null,
+                  color: Colors.orange.shade600,
+                  strokeWidth: 3,
+                ),
+                const SizedBox(height: 15),
+                Text(
+                  isPreloaded ? 'Loading cached image...' : 'Loading image...',
+                  style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
+                ),
+                if (loadingProgress.expectedTotalBytes != null) ...[
+                  const SizedBox(height: 5),
+                  Text(
+                    '${((loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!) * 100).toInt()}%',
+                    style: TextStyle(
+                      color: Colors.orange.shade600,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          );
+        },
+        errorBuilder: (context, error, stackTrace) {
+          return SizedBox(
+            height: 200,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.error_outline,
+                  size: 50,
+                  color: Colors.grey.shade400,
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  'Failed to load image',
+                  style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  'Continuing with game...',
+                  style: TextStyle(color: Colors.grey.shade500, fontSize: 12),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    }
+    return SizedBox(
+      height: 200,
+      child: Center(
+        child: CircularProgressIndicator(color: Colors.orange.shade600),
       ),
     );
   }

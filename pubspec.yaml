@@ -64,6 +64,8 @@ dependencies:
   firebase_storage: ^12.4.10
   flutter_timer_countdown: ^1.0.7
   html_unescape: ^2.0.0
+  youtube_player_flutter: ^9.1.2
+  google_fonts: ^6.3.1
 
 dev_dependencies:
   flutter_test:

@@ -185,7 +185,7 @@ class MCategorySelectionView extends GetView<MCategorySelectionController> {
                               onTap: () {
                                 Get.toNamed(
                                   '/opponent-type-selection',
-                                  arguments: "MemorizeVideo",
+                                  arguments: "MemorizeVideos",
                                 );
                               },
                             ),

@@ -179,7 +179,7 @@ class PlayerModeSelectionView extends GetView<PlayerModeSelectionController> {
                                       child: ClipRRect(
                                         borderRadius: BorderRadius.circular(12),
                                         child: Image.asset(
-                                          'assets/Two_Player.gif',
+                                          'assets/two_player.gif',
                                           width: 290,
                                         ),
                                       ),
@@ -214,7 +214,7 @@ class PlayerModeSelectionView extends GetView<PlayerModeSelectionController> {
                                       child: ClipRRect(
                                         borderRadius: BorderRadius.circular(12),
                                         child: Image.asset(
-                                          'assets/Single_Player.gif',
+                                          'assets/single_player.gif',
                                           width: 290,
                                         ),
                                       ),

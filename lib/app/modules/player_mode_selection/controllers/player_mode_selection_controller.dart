@@ -57,9 +57,9 @@ class PlayerModeSelectionController extends GetxController {
       // Use a proper context from Get if available, otherwise skip preloading
       final context = Get.context;
       if (context != null) {
-        await precacheImage(const AssetImage('assets/Two_Player.gif'), context);
+        await precacheImage(const AssetImage('assets/two_player.gif'), context);
         await precacheImage(
-          const AssetImage('assets/Single_Player.gif'),
+          const AssetImage('assets/single_player.gif'),
           context,
         );
       }

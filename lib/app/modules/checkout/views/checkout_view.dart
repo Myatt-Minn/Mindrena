@@ -159,14 +159,23 @@ class CheckoutView extends GetView<CheckoutController> {
                     ],
                   ),
                 ),
-                Text(
-                  '฿${package.price.toStringAsFixed(0)}',
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF667eea),
-                  ),
-                ),
+                controller.paymentMethod.value.id == "promptpay"
+                    ? Text(
+                        '฿${package.price.toStringAsFixed(0)}',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF667eea),
+                        ),
+                      )
+                    : Text(
+                        '${package.mmkPrice.toStringAsFixed(0)}Ks',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF667eea),
+                        ),
+                      ),
               ],
             ),
           ],
@@ -217,22 +226,15 @@ class CheckoutView extends GetView<CheckoutController> {
             // QR Code placeholder
             Container(
               width: double.infinity,
-              height: 200,
+              height: 350,
               decoration: BoxDecoration(
                 color: Colors.grey.shade200,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: Colors.grey.shade300),
               ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.qr_code, size: 100, color: Colors.grey.shade400),
-                  const SizedBox(height: 8),
-                  Text(
-                    'QR Code for ${paymentMethod.name}',
-                    style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
-                  ),
-                ],
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.asset(paymentMethod.qrCodeUrl, fit: BoxFit.cover),
               ),
             ),
           ],

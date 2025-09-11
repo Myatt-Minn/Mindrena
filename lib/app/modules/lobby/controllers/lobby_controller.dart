@@ -320,16 +320,26 @@ Good luck and have fun! 🎮''',
         collectionName = 'image_questions';
       } else if (category == 'Sounds') {
         collectionName = 'audio_questions';
-      } else if (category == 'Memorize Images' || category == 'MemorizeImage') {
-        collectionName = 'memorize_images_questions';
+      } else if (category == 'Memorize Images' ||
+          category == 'MemorizeImage' ||
+          category == 'MemorizeVideo' ||
+          category == 'MemorizeVideos') {
+        collectionName = 'memorize_questions';
       } else {
         collectionName = 'questions';
       }
       print('DEBUG: Using collection: $collectionName for category: $category');
 
+      // Transform category name for database query if needed
+      String queryCategory = category;
+      if (category == 'MemorizeVideo') {
+        queryCategory = 'MemorizeVideos'; // Transform to match database
+      }
+      print('DEBUG: Querying for category: $queryCategory');
+
       final questionsQuery = await _firestore
           .collection(collectionName)
-          .where('category', isEqualTo: category)
+          .where('category', isEqualTo: queryCategory)
           .get();
 
       if (questionsQuery.docs.isEmpty) {
@@ -419,8 +429,11 @@ Good luck and have fun! 🎮''',
         collectionName = 'image_questions';
       } else if (category == 'Sounds') {
         collectionName = 'audio_questions';
-      } else if (category == 'Memorize Images' || category == 'MemorizeImage') {
-        collectionName = 'memorize_images_questions';
+      } else if (category == 'Memorize Images' ||
+          category == 'MemorizeImage' ||
+          category == 'MemorizeVideo' ||
+          category == 'MemorizeVideos') {
+        collectionName = 'memorize_questions';
       } else {
         collectionName = 'questions';
       }
@@ -428,9 +441,16 @@ Good luck and have fun! 🎮''',
         'DEBUG: _getRandomQuestionsImproved using collection: $collectionName for category: $category',
       );
 
+      // Transform category name for database query if needed
+      String queryCategory = category;
+      if (category == 'MemorizeVideo') {
+        queryCategory = 'MemorizeVideos'; // Transform to match database
+      }
+      print('DEBUG: Querying for category: $queryCategory');
+
       final questionsQuery = await _firestore
           .collection(collectionName)
-          .where('category', isEqualTo: category)
+          .where('category', isEqualTo: queryCategory)
           .get();
 
       if (questionsQuery.docs.isEmpty) {
@@ -534,8 +554,11 @@ Good luck and have fun! 🎮''',
         collectionName = 'image_questions';
       } else if (category == 'Sounds') {
         collectionName = 'audio_questions';
-      } else if (category == 'Memorize Images' || category == 'MemorizeImage') {
-        collectionName = 'memorize_images_questions';
+      } else if (category == 'Memorize Images' ||
+          category == 'MemorizeImage' ||
+          category == 'MemorizeVideo' ||
+          category == 'MemorizeVideos') {
+        collectionName = 'memorize_questions';
       } else {
         collectionName = 'questions';
       }
@@ -543,9 +566,16 @@ Good luck and have fun! 🎮''',
         'DEBUG: _getRandomQuestionsFallback using collection: $collectionName for category: $category',
       );
 
+      // Transform category name for database query if needed
+      String queryCategory = category;
+      if (category == 'MemorizeVideo') {
+        queryCategory = 'MemorizeVideos'; // Transform to match database
+      }
+      print('DEBUG: Querying for category: $queryCategory');
+
       final questionsQuery = await _firestore
           .collection(collectionName)
-          .where('category', isEqualTo: category)
+          .where('category', isEqualTo: queryCategory)
           .get();
 
       if (questionsQuery.docs.isEmpty) {
@@ -672,7 +702,10 @@ Good luck and have fun! 🎮''',
               String routeName;
               if (category == 'Memorize Images' ||
                   category == 'MemorizeImages' ||
-                  category == 'MemorizeImage') {
+                  category == 'MemorizeImage' ||
+                  category == 'MemorizeVideos' ||
+                  category == 'MemorizeVideo' ||
+                  category == 'Memorize Videos') {
                 routeName = '/memorize-image-game-screen';
               } else {
                 routeName = '/game-screen';

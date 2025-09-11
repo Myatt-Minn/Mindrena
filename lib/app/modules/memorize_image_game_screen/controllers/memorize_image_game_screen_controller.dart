@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:mindrena/app/modules/home/controllers/home_controller.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 import '../../../data/UserModel.dart';
 
@@ -60,6 +61,11 @@ class MemorizeImageGameScreenController extends GetxController {
   // Audio players
   late AudioPlayer _countdownPlayer;
   late AudioPlayer _gameCompletePlayer;
+
+  // YouTube player controller for MemorizeVideos category
+  YoutubePlayerController? _youtubeController;
+  final isVideoLoading = false.obs;
+  final videoLoadError = false.obs;
 
   // Track if game completion sound has been played
   var _gameCompleteSoundPlayed = false;
@@ -130,6 +136,7 @@ class MemorizeImageGameScreenController extends GetxController {
     _questionMoveDebounce?.cancel();
     _countdownPlayer.dispose();
     _gameCompletePlayer.dispose();
+    _youtubeController?.dispose();
     super.onClose();
   }
 
@@ -226,7 +233,8 @@ class MemorizeImageGameScreenController extends GetxController {
       // Reset memorize image specific state
       isImageDisplayPhase.value = true;
       isQuestionPhase.value = false;
-      imageDisplayTimeLeft.value = 7;
+      // Set display time based on category
+      imageDisplayTimeLeft.value = category.value == 'MemorizeVideos' ? 15 : 7;
       questionPhaseTimeLeft.value = 10;
 
       print(
@@ -305,13 +313,100 @@ class MemorizeImageGameScreenController extends GetxController {
       return;
     }
 
-    print('Starting image display phase for 7 seconds');
+    // Set different display times based on category
+    int displayTime = 7; // Default for images
+    if (category.value == 'MemorizeVideos') {
+      displayTime = 15; // 15 seconds for videos
+    }
+
+    print('Starting image display phase for $displayTime seconds');
     isImageDisplayPhase.value = true;
     isQuestionPhase.value = false;
-    imageDisplayTimeLeft.value = 7;
+    imageDisplayTimeLeft.value = displayTime;
 
-    // Check if current image is preloaded before starting timer
-    _waitForCurrentImageThenStartTimer();
+    // Check if this is a video category
+    if (category.value == 'MemorizeVideos') {
+      _initializeYouTubeVideo();
+    } else {
+      // Check if current image is preloaded before starting timer
+      _waitForCurrentImageThenStartTimer();
+    }
+  }
+
+  Future<void> _initializeYouTubeVideo() async {
+    final currentVideo = currentQuestion.value?['image'];
+
+    if (currentVideo != null) {
+      try {
+        isVideoLoading.value = true;
+        videoLoadError.value = false;
+
+        // Dispose previous controller if exists
+        _youtubeController?.dispose();
+
+        // Extract video ID from YouTube URL
+        final videoId = YoutubePlayer.convertUrlToId(currentVideo.toString());
+
+        if (videoId != null) {
+          _youtubeController = YoutubePlayerController(
+            initialVideoId: videoId,
+            flags: const YoutubePlayerFlags(
+              autoPlay: true,
+              mute: false,
+              loop: false,
+              hideControls: true,
+              controlsVisibleAtStart: false,
+              enableCaption: false,
+            ),
+          );
+
+          isVideoLoading.value = false;
+          print('YouTube video initialized successfully: $videoId');
+
+          // Start the display timer with dynamic time (7 seconds for images, 15 for videos)
+          _imageDisplayTimer = Timer.periodic(const Duration(seconds: 1), (
+            timer,
+          ) {
+            if (imageDisplayTimeLeft.value > 0) {
+              imageDisplayTimeLeft.value--;
+            } else {
+              timer.cancel();
+              // Pause the video when transitioning to question phase
+              _youtubeController?.pause();
+              _startQuestionPhase();
+            }
+          });
+        } else {
+          throw Exception('Invalid YouTube URL');
+        }
+      } catch (e) {
+        print('Error initializing YouTube video: $e');
+        videoLoadError.value = true;
+        isVideoLoading.value = false;
+
+        // Start timer anyway to continue the game
+        _imageDisplayTimer = Timer.periodic(const Duration(seconds: 1), (
+          timer,
+        ) {
+          if (imageDisplayTimeLeft.value > 0) {
+            imageDisplayTimeLeft.value--;
+          } else {
+            timer.cancel();
+            _startQuestionPhase();
+          }
+        });
+      }
+    } else {
+      // No video URL, start timer anyway
+      _imageDisplayTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+        if (imageDisplayTimeLeft.value > 0) {
+          imageDisplayTimeLeft.value--;
+        } else {
+          timer.cancel();
+          _startQuestionPhase();
+        }
+      });
+    }
   }
 
   Future<void> _waitForCurrentImageThenStartTimer() async {
@@ -333,7 +428,7 @@ class MemorizeImageGameScreenController extends GetxController {
       }
     }
 
-    // Start the 7-second image display timer
+    // Start the image display timer
     _imageDisplayTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (imageDisplayTimeLeft.value > 0) {
         imageDisplayTimeLeft.value--;
@@ -742,4 +837,13 @@ class MemorizeImageGameScreenController extends GetxController {
     if (opponentId == null) return '0';
     return (scores[opponentId] ?? 0).toString();
   }
+
+  // Check if current question is a video
+  bool get isCurrentQuestionVideo {
+    return category.value == 'MemorizeVideos' &&
+        currentQuestion.value?['image'] != null;
+  }
+
+  // Get YouTube controller
+  YoutubePlayerController? get youtubeController => _youtubeController;
 }

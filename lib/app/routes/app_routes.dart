@@ -33,6 +33,9 @@ abstract class Routes {
   static const GUESS_IT_FAST = _Paths.GUESS_IT_FAST;
   static const PAYMENT_SELECTION = _Paths.PAYMENT_SELECTION;
   static const CHECKOUT = _Paths.CHECKOUT;
+  static const FRIEND_PROFILE = _Paths.FRIEND_PROFILE;
+  static const CHAT = _Paths.CHAT;
+  static const LEADER_BOARD = _Paths.LEADER_BOARD;
 }
 
 abstract class _Paths {
@@ -67,4 +70,7 @@ abstract class _Paths {
   static const GUESS_IT_FAST = '/guess-it-fast';
   static const PAYMENT_SELECTION = '/payment-selection';
   static const CHECKOUT = '/checkout';
+  static const FRIEND_PROFILE = '/friend-profile';
+  static const CHAT = '/chat';
+  static const LEADER_BOARD = '/leader-board';
 }

@@ -126,7 +126,7 @@ class PaymentSelectionView extends GetView<PaymentSelectionController> {
                     ),
                   ),
                   Text(
-                    'Total: ฿${package.price.toStringAsFixed(0)}',
+                    'Total: ฿${package.price.toStringAsFixed(0)} | ${package.mmkPrice.toStringAsFixed(0)}Ks',
                     style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
                   ),
                 ],
@@ -196,12 +196,9 @@ class PaymentSelectionView extends GetView<PaymentSelectionController> {
                                 color: Colors.grey.shade200,
                                 borderRadius: BorderRadius.circular(10),
                               ),
-                              child: Icon(
-                                method.id == 'promptpay'
-                                    ? Icons.qr_code
-                                    : Icons.phone_android,
-                                color: Colors.grey.shade600,
-                                size: 24,
+                              child: Image.asset(
+                                method.icon,
+                                fit: BoxFit.contain,
                               ),
                             ),
                             const SizedBox(width: 16),

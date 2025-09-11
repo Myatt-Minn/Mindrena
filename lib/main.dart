@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:mindrena/app/data/My_Translations.dart';
 import 'package:mindrena/app/data/consts_config.dart';
+import 'package:mindrena/app/data/populateMemorizeQuestions.dart';
 import 'package:mindrena/app/data/sendNotificationHandler.dart';
 import 'package:mindrena/app/modules/splash/bindings/splash_binding.dart';
 import 'package:mindrena/firebase_options.dart';
@@ -32,7 +33,7 @@ void main() async {
 
   SendNotificationHandler.initialized();
   await SendNotificationHandler().initNotification();
-
+  await populateMemorizeQuestions();
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,

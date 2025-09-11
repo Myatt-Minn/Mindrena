@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
+import 'package:mindrena/app/data/shopItemModel.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../controllers/shop_controller.dart';
@@ -222,15 +223,13 @@ class ShopView extends GetView<ShopController> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF667eea), Color(0xFF764ba2)],
-                    ),
-                    borderRadius: BorderRadius.circular(15),
+                    color: Colors.amber.shade100,
+                    shape: BoxShape.circle,
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.monetization_on,
-                    color: Colors.white,
-                    size: 24,
+                    color: Colors.amber.shade700,
+                    size: 30,
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -404,11 +403,18 @@ class ShopView extends GetView<ShopController> {
   /// Build shop item card
   Widget _buildShopItemCard(ShopItem item) {
     return Obx(() {
-      final isPurchased = controller.isItemPurchased(item.id);
+      late final bool isPurchased;
+      if (item.price == 0) {
+        isPurchased = true;
+      } else {
+        isPurchased = controller.isItemPurchased(item.id);
+      }
+
       final canAfford = controller.canAffordItem(item.price);
       final isCurrentAvatar =
           item.type == ShopItemType.avatar &&
           controller.currentUserAvatar.value == item.imageUrl;
+      final isBeingPurchased = controller.isItemBeingPurchased(item.id);
 
       return Container(
         decoration: BoxDecoration(
@@ -485,6 +491,46 @@ class ShopView extends GetView<ShopController> {
                       ),
                     ),
                   ),
+
+                  // Loading overlay when purchasing
+                  if (isBeingPurchased)
+                    Positioned.fill(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.7),
+                          borderRadius: const BorderRadius.vertical(
+                            top: Radius.circular(20),
+                          ),
+                        ),
+                        child: Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              SizedBox(
+                                width: 30,
+                                height: 30,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 3,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Colors.white,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Purchasing...',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+
                   if (isPurchased)
                     Positioned(
                       top: 8,
@@ -557,7 +603,18 @@ class ShopView extends GetView<ShopController> {
                     const Spacer(),
                     Row(
                       children: [
-                        Icon(Icons.stars, color: Colors.orange, size: 16),
+                        Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: Colors.amber.shade100,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.monetization_on,
+                            color: Colors.amber.shade700,
+                            size: 12,
+                          ),
+                        ),
                         const SizedBox(width: 4),
                         Text(
                           '${item.price}',
@@ -569,7 +626,7 @@ class ShopView extends GetView<ShopController> {
                         ),
                         const Spacer(),
                         GestureDetector(
-                          onTap: isPurchased
+                          onTap: (isPurchased || isBeingPurchased)
                               ? null
                               : () => controller.purchaseItem(item),
                           child: Container(
@@ -580,22 +637,44 @@ class ShopView extends GetView<ShopController> {
                             decoration: BoxDecoration(
                               color: isPurchased
                                   ? Colors.grey[300]
+                                  : isBeingPurchased
+                                  ? Colors.grey[400]
                                   : canAfford
                                   ? const Color(0xFF667eea)
                                   : Colors.red[300],
                               borderRadius: BorderRadius.circular(15),
                             ),
-                            child: Text(
-                              isPurchased
-                                  ? 'Owned'
-                                  : canAfford
-                                  ? 'Buy'
-                                  : 'Need ${item.price - controller.userPoints.value}',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
-                              ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                if (isBeingPurchased) ...[
+                                  SizedBox(
+                                    width: 12,
+                                    height: 12,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 4),
+                                ],
+                                Text(
+                                  isPurchased
+                                      ? 'Owned'
+                                      : isBeingPurchased
+                                      ? 'Buying...'
+                                      : canAfford
+                                      ? 'Buy'
+                                      : 'Need ${item.price - controller.userCoins.value}',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ),
@@ -624,7 +703,7 @@ class ShopView extends GetView<ShopController> {
         padding: const EdgeInsets.all(16),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          childAspectRatio: 0.6,
+          childAspectRatio: 0.64,
           crossAxisSpacing: 10,
           mainAxisSpacing: 10,
         ),
@@ -717,30 +796,51 @@ class ShopView extends GetView<ShopController> {
                 Column(
                   children: [
                     if (package.originalPrice != null) ...[
-                      Text(
-                        '฿${package.originalPrice!.toStringAsFixed(0)}',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey.shade500,
-                          decoration: TextDecoration.lineThrough,
-                        ),
-                      ),
-                      Text(
-                        '${package.discountPercentage}% OFF',
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: Colors.red.shade600,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            '฿${package.originalPrice!.toStringAsFixed(0)}',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey.shade500,
+                              decoration: TextDecoration.lineThrough,
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            '${package.discountPercentage}% OFF',
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: Colors.red.shade600,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
-                    Text(
-                      '฿${package.price.toStringAsFixed(0)}',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF667eea),
-                      ),
+                    Row(
+                      children: [
+                        Text(
+                          '฿${package.price.toStringAsFixed(0)}',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF667eea),
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        Text("||"),
+                        const SizedBox(width: 4),
+                        Text(
+                          '${package.mmkPrice.toStringAsFixed(0)}Ks',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.green.shade600,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),

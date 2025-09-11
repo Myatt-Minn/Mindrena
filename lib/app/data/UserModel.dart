@@ -49,6 +49,24 @@ class UserModel {
 
   // fromMap function to convert Firestore data to UserModel
   factory UserModel.fromMap(Map<String, dynamic> map) {
+    // Helper function to parse createdAt from different sources
+    DateTime parseCreatedAt() {
+      final createdAt = map['createdAt'];
+      if (createdAt is Timestamp) {
+        return createdAt.toDate();
+      } else if (createdAt is DateTime) {
+        return createdAt;
+      } else if (createdAt is String) {
+        try {
+          return DateTime.parse(createdAt);
+        } catch (e) {
+          return DateTime.now();
+        }
+      } else {
+        return DateTime.now();
+      }
+    }
+
     return UserModel(
       uid: map['uid'] ?? '',
       username: map['username'] ?? '',
@@ -63,7 +81,7 @@ class UserModel {
       friendRequests: List<String>.from(map['friendRequests'] ?? []),
       sentRequests: List<String>.from(map['sentRequests'] ?? []),
       fcmToken: map['fcmToken'] ?? '',
-      createdAt: (map['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      createdAt: parseCreatedAt(),
     );
   }
 

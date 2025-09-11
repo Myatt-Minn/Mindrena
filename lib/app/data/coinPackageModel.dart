@@ -3,6 +3,7 @@ class CoinPackage {
   final String id;
   final int coins;
   final double price; // Price in THB
+  final double mmkPrice; // Fixed price in MMK
   final double? originalPrice; // Original price for discount display
   final bool isPopular;
 
@@ -10,6 +11,7 @@ class CoinPackage {
     required this.id,
     required this.coins,
     required this.price,
+    required this.mmkPrice,
     this.originalPrice,
     this.isPopular = false,
   });

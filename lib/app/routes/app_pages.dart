@@ -3,12 +3,16 @@ import 'package:get/get.dart';
 import '../modules/auth_gate/bindings/auth_gate_binding.dart';
 import '../modules/auth_gate/views/auth_gate_view.dart';
 import '../modules/auth_gate/views/no_internet.dart';
+import '../modules/chat/bindings/chat_binding.dart';
+import '../modules/chat/views/chat_view.dart';
 import '../modules/checkout/bindings/checkout_binding.dart';
 import '../modules/checkout/views/checkout_view.dart';
 import '../modules/edit-profile/bindings/edit_profile_binding.dart';
 import '../modules/edit-profile/views/edit_profile_view.dart';
 import '../modules/f_category_selection/bindings/f_category_selection_binding.dart';
 import '../modules/f_category_selection/views/f_category_selection_view.dart';
+import '../modules/friend_profile/bindings/friend_profile_binding.dart';
+import '../modules/friend_profile/views/friend_profile_view.dart';
 import '../modules/friends/bindings/friends_binding.dart';
 import '../modules/friends/views/friends_view.dart';
 import '../modules/g_category_selection/bindings/g_category_selection_binding.dart';
@@ -17,6 +21,8 @@ import '../modules/game_screen/bindings/game_screen_binding.dart';
 import '../modules/game_screen/views/game_screen_view.dart';
 import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
+import '../modules/leader_board/bindings/leader_board_binding.dart';
+import '../modules/leader_board/views/leader_board_view.dart';
 import '../modules/lobby/bindings/lobby_binding.dart';
 import '../modules/lobby/views/lobby_view.dart';
 import '../modules/m_category_selection/bindings/m_category_selection_binding.dart';
@@ -208,6 +214,21 @@ class AppPages {
       name: _Paths.CHECKOUT,
       page: () => const CheckoutView(),
       binding: CheckoutBinding(),
+    ),
+    GetPage(
+      name: _Paths.FRIEND_PROFILE,
+      page: () => const FriendProfileView(),
+      binding: FriendProfileBinding(),
+    ),
+    GetPage(
+      name: _Paths.CHAT,
+      page: () => const ChatView(),
+      binding: ChatBinding(),
+    ),
+    GetPage(
+      name: _Paths.LEADER_BOARD,
+      page: () => const LeaderBoardView(),
+      binding: LeaderBoardBinding(),
     ),
   ];
 }

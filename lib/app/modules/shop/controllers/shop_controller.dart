@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:mindrena/app/data/coinPackageModel.dart';
+import 'package:mindrena/app/data/shopItemModel.dart';
 import 'package:quickalert/quickalert.dart';
 
 class ShopController extends GetxController {
@@ -16,6 +17,8 @@ class ShopController extends GetxController {
   var userPoints = 0.obs;
   var userCoins = 0.obs;
   var isLoading = true.obs;
+  var isPurchasing = false.obs; // Add this for purchase loading
+  var purchasingItemId = ''.obs; // Track which item is being purchased
   var selectedTab = 0.obs;
   var purchasedItems = <String>[].obs;
   var purchasedAvatars =
@@ -105,7 +108,7 @@ class ShopController extends GetxController {
       ShopItem(
         id: 'avatar_4',
         name: 'Lucas Reed',
-        description: 'Nice Red Guy',
+        description: 'Sharp Red Guy',
         price: 800,
         imageUrl: 'assets/cha6.jpg',
         type: ShopItemType.avatar,
@@ -119,11 +122,27 @@ class ShopController extends GetxController {
         type: ShopItemType.avatar,
       ),
       ShopItem(
-        id: 'avatar_5',
+        id: 'avatar_6',
         name: 'Isabella Lane',
         description: 'Ambitious Gray Girl',
         price: 900,
         imageUrl: 'assets/cha8.jpeg',
+        type: ShopItemType.avatar,
+      ),
+      ShopItem(
+        id: 'avatar_7',
+        name: 'Nathaniel Blue',
+        description: 'Nice Blue Guy',
+        price: 0,
+        imageUrl: 'assets/cha1.png',
+        type: ShopItemType.avatar,
+      ),
+      ShopItem(
+        id: 'avatar_8',
+        name: 'Adrian Cole',
+        description: 'Smart Orange Guy',
+        price: 0,
+        imageUrl: 'assets/cha2.png',
         type: ShopItemType.avatar,
       ),
     ];
@@ -132,34 +151,98 @@ class ShopController extends GetxController {
     stickerItems.value = [
       ShopItem(
         id: 'sticker_1',
-        name: 'Victory Sticker',
-        description: 'Show your victory!',
+        name: 'Happy',
+        description: 'Happy!',
         price: 100,
         imageUrl: 'assets/happy.png',
         type: ShopItemType.sticker,
       ),
       ShopItem(
         id: 'sticker_2',
-        name: 'Fire Sticker',
-        description: 'You\'re on fire!',
+        name: 'Confused',
+        description: 'Confused...',
         price: 150,
         imageUrl: 'assets/confused.png',
         type: ShopItemType.sticker,
       ),
       ShopItem(
         id: 'sticker_3',
-        name: 'Crown Sticker',
-        description: 'You\'re the king!',
+        name: 'Shocked',
+        description: 'So shocked!',
         price: 200,
         imageUrl: 'assets/shocked.png',
         type: ShopItemType.sticker,
       ),
       ShopItem(
         id: 'sticker_4',
-        name: 'Star Sticker',
-        description: 'You\'re a star!',
+        name: 'Angry',
+        description: 'You\'re angry!',
         price: 120,
         imageUrl: 'assets/angry.png',
+        type: ShopItemType.sticker,
+      ),
+      ShopItem(
+        id: 'sticker_5',
+        name: 'Sad',
+        description: 'Sad!',
+        price: 100,
+        imageUrl: 'assets/sad.png',
+        type: ShopItemType.sticker,
+      ),
+      ShopItem(
+        id: 'sticker_6',
+        name: 'No',
+        description: 'No...',
+        price: 150,
+        imageUrl: 'assets/no.png',
+        type: ShopItemType.sticker,
+      ),
+      ShopItem(
+        id: 'sticker_7',
+        name: 'Blushing',
+        description: 'So blushing!',
+        price: 200,
+        imageUrl: 'assets/blushing.png',
+        type: ShopItemType.sticker,
+      ),
+      ShopItem(
+        id: 'sticker_8',
+        name: 'Mocking',
+        description: 'You\'re mocking!',
+        price: 120,
+        imageUrl: 'assets/mocking.png',
+        type: ShopItemType.sticker,
+      ),
+      ShopItem(
+        id: 'sticker_9',
+        name: 'No',
+        description: 'No...',
+        price: 150,
+        imageUrl: 'assets/no_b.png',
+        type: ShopItemType.sticker,
+      ),
+      ShopItem(
+        id: 'sticker_10',
+        name: 'Angry',
+        description: 'So angry!',
+        price: 200,
+        imageUrl: 'assets/angry_g.png',
+        type: ShopItemType.sticker,
+      ),
+      ShopItem(
+        id: 'sticker_11',
+        name: 'Sad',
+        description: 'You\'re Sad!',
+        price: 120,
+        imageUrl: 'assets/sad_g.png',
+        type: ShopItemType.sticker,
+      ),
+      ShopItem(
+        id: 'sticker_12',
+        name: 'Yes',
+        description: 'Yes!',
+        price: 120,
+        imageUrl: 'assets/yes.png',
         type: ShopItemType.sticker,
       ),
     ];
@@ -172,6 +255,7 @@ class ShopController extends GetxController {
         id: 'coins_100',
         coins: 100,
         price: 30.0, // 30 THB
+        mmkPrice: 2000.0, // 2000 MMK
         originalPrice: 35.0,
         isPopular: false,
       ),
@@ -179,6 +263,7 @@ class ShopController extends GetxController {
         id: 'coins_500',
         coins: 500,
         price: 120.0, // 120 THB
+        mmkPrice: 8000.0, // 8000 MMK
         originalPrice: 150.0,
         isPopular: true,
       ),
@@ -186,6 +271,7 @@ class ShopController extends GetxController {
         id: 'coins_1000',
         coins: 1000,
         price: 200.0, // 200 THB
+        mmkPrice: 15000.0, // 15000 MMK
         originalPrice: 250.0,
         isPopular: false,
       ),
@@ -193,6 +279,7 @@ class ShopController extends GetxController {
         id: 'coins_2500',
         coins: 2500,
         price: 450.0, // 450 THB
+        mmkPrice: 35000.0, // 35000 MMK
         originalPrice: 600.0,
         isPopular: false,
       ),
@@ -219,6 +306,11 @@ class ShopController extends GetxController {
     return userCoins.value >= price;
   }
 
+  /// Check if a specific item is being purchased
+  bool isItemBeingPurchased(String itemId) {
+    return isPurchasing.value && purchasingItemId.value == itemId;
+  }
+
   /// Purchase an item
   Future<void> purchaseItem(ShopItem item) async {
     try {
@@ -241,6 +333,13 @@ class ShopController extends GetxController {
       // Show confirmation dialog
       final confirmed = await _showPurchaseConfirmation(item);
       if (!confirmed) return;
+
+      // Start loading state
+      isPurchasing.value = true;
+      purchasingItemId.value = item.id;
+
+      // Show loading dialog
+      _showLoadingDialog(item);
 
       // Deduct coins directly (no more point conversion)
       final newCoins = userCoins.value - item.price;
@@ -271,6 +370,8 @@ class ShopController extends GetxController {
           updateData['purchasedAvatars'] = newPurchasedAvatars;
           purchasedAvatars.add(avatarInfo);
         } else {
+          // Hide loading dialog
+          Get.back();
           _showErrorMessage('Failed to upload avatar. Please try again.');
           return;
         }
@@ -294,10 +395,21 @@ class ShopController extends GetxController {
       userCoins.value = newCoins; // Update coins directly
       purchasedItems.add(item.id);
 
+      // Hide loading dialog
+      Get.back();
+
       _showSuccessMessage('${item.name} purchased successfully!');
     } catch (e) {
       print('Error purchasing item: $e');
+      // Hide loading dialog if it's showing
+      if (Get.isDialogOpen ?? false) {
+        Get.back();
+      }
       _showErrorMessage('Failed to purchase item. Please try again.');
+    } finally {
+      // Reset loading state
+      isPurchasing.value = false;
+      purchasingItemId.value = '';
     }
   }
 
@@ -308,7 +420,7 @@ class ShopController extends GetxController {
       type: QuickAlertType.confirm,
       title: 'Confirm Purchase',
       text: 'Purchase ${item.name} for ${item.price} coins?',
-      confirmBtnText: 'Purchase',
+      confirmBtnText: 'Confirm',
       cancelBtnText: 'Cancel',
       confirmBtnColor: Colors.purple,
       onConfirmBtnTap: () {
@@ -316,6 +428,95 @@ class ShopController extends GetxController {
       },
     );
     return result ?? false; // Return false if result is null
+  }
+
+  /// Show loading dialog during purchase
+  void _showLoadingDialog(ShopItem item) {
+    Get.dialog(
+      WillPopScope(
+        onWillPop: () async => false, // Prevent dismissing during purchase
+        child: Dialog(
+          backgroundColor: Colors.transparent,
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Loading animation
+                SizedBox(
+                  width: 60,
+                  height: 60,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 4,
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      Color(0xFF667eea),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+
+                // Loading text
+                Text(
+                  item.type == ShopItemType.avatar
+                      ? 'Purchasing Avatar...'
+                      : 'Purchasing Sticker...',
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF2E3A47),
+                  ),
+                ),
+                const SizedBox(height: 8),
+
+                Text(
+                  item.type == ShopItemType.avatar
+                      ? 'Uploading your new avatar to your profile'
+                      : 'Adding sticker to your collection',
+                  style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                  textAlign: TextAlign.center,
+                ),
+
+                const SizedBox(height: 16),
+
+                // Item preview
+                Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    border: Border.all(color: Colors.grey[300]!, width: 2),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(13),
+                    child: Image.asset(
+                      item.imageUrl,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          color: Colors.grey[200],
+                          child: Icon(
+                            item.type == ShopItemType.avatar
+                                ? Icons.person
+                                : Icons.emoji_emotions,
+                            color: Colors.grey[400],
+                            size: 30,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+      barrierDismissible: false,
+    );
   }
 
   /// Show success message
@@ -385,25 +586,3 @@ class ShopController extends GetxController {
     }
   }
 }
-
-/// Shop item model
-class ShopItem {
-  final String id;
-  final String name;
-  final String description;
-  final int price;
-  final String imageUrl;
-  final ShopItemType type;
-
-  ShopItem({
-    required this.id,
-    required this.name,
-    required this.description,
-    required this.price,
-    required this.imageUrl,
-    required this.type,
-  });
-}
-
-/// Shop item types
-enum ShopItemType { avatar, sticker }

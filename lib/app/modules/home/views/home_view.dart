@@ -318,24 +318,31 @@ class HomeView extends GetView<HomeController> {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             _buildActionButton(
-                              icon: 'assets/profile.gif',
+                              icon: 'assets/profile.png',
                               label: 'profile'.tr,
                               onTap: () {
                                 Get.toNamed('/profile');
                               },
                             ),
                             _buildActionButton(
-                              icon: 'assets/stalls.gif',
+                              icon: 'assets/shop.png',
                               label: 'shop'.tr,
                               onTap: () {
                                 Get.toNamed('/shop');
                               },
                             ),
                             _buildActionButton(
-                              icon: 'assets/three_friends.gif',
+                              icon: 'assets/friends.png',
                               label: 'friends'.tr,
                               onTap: () {
                                 Get.toNamed('/friends');
+                              },
+                            ),
+                            _buildActionButton(
+                              icon: 'assets/leaderboard.png',
+                              label: 'Ranking'.tr,
+                              onTap: () {
+                                Get.toNamed('/leader-board');
                               },
                             ),
                           ],
