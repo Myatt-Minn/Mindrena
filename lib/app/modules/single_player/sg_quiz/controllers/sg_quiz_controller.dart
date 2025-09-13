@@ -45,8 +45,20 @@ class SgQuizController extends GetxController {
       return 22;
     } else if (selectedCategory == 'Science & Math') {
       return 19;
+    } else if (selectedCategory == 'Anime & Manga') {
+      return 31;
+    } else if (selectedCategory == 'Cartoon & Animations') {
+      return 32;
+    } else if (selectedCategory == 'Film & TV') {
+      return 11;
+    } else if (selectedCategory == 'Music') {
+      return 12;
+    } else if (selectedCategory == 'Video Games') {
+      return 15;
     }
     return 0;
+  }
+0;
   }
 
   //get questions
