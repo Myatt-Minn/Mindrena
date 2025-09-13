@@ -202,6 +202,104 @@ class SgFCategorySelectionView extends GetView<SgFCategorySelectionController> {
                       },
                     ),
 
+                      const SizedBox(height: 20),
+
+                    _buildCategoryButton(
+                      emoji: '🎌',
+                      title: 'Anime & Manga',
+                      subtitle: 'Otaku World',
+                      description:
+                          'Challenge your knowledge of anime and manga series',
+                      color: Colors.red,
+                      onTap: () {
+                        Get.toNamed(
+                          '/sg-f-difficulty-selection',
+                          arguments: {
+                            'category': 'Anime & Manga',
+                            'type': controller.selectedType.value,
+                          },
+                        );
+                      },
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    _buildCategoryButton(
+                      emoji: '🧸',
+                      title: 'Cartoon & Animations',
+                      subtitle: 'Animated Fun',
+                      description: 'From classic cartoons to modern animations',
+                      color: Colors.blue,
+                      onTap: () {
+                        Get.toNamed(
+                          '/sg-f-difficulty-selection',
+                          arguments: {
+                            'category': 'Cartoon & Animations',
+                            'type': controller.selectedType.value,
+                          },
+                        );
+                      },
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    _buildCategoryButton(
+                      emoji: '🎬',
+                      title: 'Film & TV',
+                      subtitle: 'Movies and Series',
+                      description:
+                          'Test your knowledge of the big and small screen',
+                      color: Colors.indigo,
+                      onTap: () {
+                        Get.toNamed(
+                          '/sg-f-difficulty-selection',
+                          arguments: {
+                            'category': 'Film & TV',
+                            'type': controller.selectedType.value,
+                          },
+                        );
+                      },
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    _buildCategoryButton(
+                      emoji: '🎵',
+                      title: 'Music',
+                      subtitle: 'Sound Waves',
+                      description:
+                          'From classical to pop, test your music knowledge',
+                      color: Colors.pink,
+                      onTap: () {
+                        Get.toNamed(
+                          '/sg-f-difficulty-selection',
+                          arguments: {
+                            'category': 'Music',
+                            'type': controller.selectedType.value,
+                          },
+                        );
+                      },
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    _buildCategoryButton(
+                      emoji: '🎮',
+                      title: 'Video Games',
+                      subtitle: 'Gaming World',
+                      description: 'From retro classics to modern AAA titles',
+                      color: Colors.purple,
+                      onTap: () {
+                        Get.toNamed(
+                          '/sg-f-difficulty-selection',
+                          arguments: {
+                            'category': 'Video Games',
+                            'type': controller.selectedType.value,
+                          },
+                        );
+                      },
+                    ),
+
                     const SizedBox(height: 40),
 
                     // Additional info section
