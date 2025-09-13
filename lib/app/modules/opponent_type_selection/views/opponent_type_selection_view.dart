@@ -155,7 +155,7 @@ class OpponentTypeSelectionView
 
                     // Opponent type selection buttons
                     _buildOpponentTypeButton(
-                      emoji: 'assets/gaming.gif',
+                      emoji: 'assets/randomvs.png',
                       title: 'Online Random Opponent',
                       subtitle: 'Quick Match',
                       description:
@@ -176,7 +176,7 @@ class OpponentTypeSelectionView
                     const SizedBox(height: 20),
 
                     _buildOpponentTypeButton(
-                      emoji: 'assets/friends.gif',
+                      emoji: 'assets/friendvs.png',
                       title: 'Invite Friend',
                       subtitle: 'Play with Friends',
                       description: 'Send game invitations to your friends',

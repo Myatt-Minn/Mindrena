@@ -276,6 +276,43 @@ class LobbyView extends GetView<LobbyController> {
 
                       const SizedBox(height: 40),
 
+                      // Avatar ability selection button
+                      Container(
+                        width: double.infinity,
+                        margin: const EdgeInsets.only(bottom: 16),
+                        child: Obx(
+                          () => ElevatedButton.icon(
+                            onPressed: () =>
+                                controller.showAvatarSelectionDialog(),
+                            icon: Icon(
+                              controller.selectedAvatarAbility.value != null
+                                  ? Icons.star
+                                  : Icons.person,
+                            ),
+                            label: Text(
+                              controller.selectedAvatarAbility.value != null
+                                  ? 'Ability: ${controller.selectedAvatarAbility.value!.name}'
+                                  : 'Choose Avatar Ability',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor:
+                                  controller.selectedAvatarAbility.value != null
+                                  ? Colors.purple.shade600
+                                  : Colors.grey.shade500,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+
                       // Ready button or Loading animation
                       if (controller.players.length == 2 &&
                           controller.gameStatus.value == 'waiting')

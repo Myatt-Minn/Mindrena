@@ -661,18 +661,58 @@ class MemorizeImageGameScreenController extends GetxController {
 
   void _calculateFinalResults() {
     try {
-      List<Map<String, dynamic>> results = [];
+      finalResults.clear();
 
-      for (String playerId in playerIds) {
-        final player = players.firstWhereOrNull((p) => p.uid == playerId);
-        if (player != null) {
-          final score = scores[playerId] ?? 0;
-          results.add({'player': player, 'score': score});
+      for (int i = 0; i < players.length; i++) {
+        final player = players[i];
+        final playerId = playerIds.length > i ? playerIds[i] : player.uid!;
+        final playerScore = scores[playerId] ?? 0;
+        final playerAnswers = answers[playerId] ?? [];
+
+        // Calculate correct answers count
+        int correctAnswers = 0;
+        for (int j = 0; j < playerAnswers.length && j < questions.length; j++) {
+          final userAnswer = int.tryParse(playerAnswers[j]) ?? -1;
+          final correctAnswer = questions[j]['correctIndex'] ?? -1;
+          if (userAnswer == correctAnswer && userAnswer != -1) {
+            correctAnswers++;
+          }
         }
+
+        // Calculate accuracy percentage
+        final totalAnswered = playerAnswers
+            .where((answer) => answer != '-1')
+            .length;
+        final accuracy = totalAnswered > 0
+            ? (correctAnswers / totalAnswered * 100).round()
+            : 0;
+
+        finalResults.add({
+          'player': player,
+          'score': playerScore,
+          'correctAnswers': correctAnswers,
+          'totalQuestions': questions.length,
+          'accuracy': accuracy,
+          'rank': 1, // Will be calculated after sorting
+        });
       }
 
-      results.sort((a, b) => (b['score'] as int).compareTo(a['score'] as int));
-      finalResults.value = results;
+      // Sort by score descending
+      finalResults.sort(
+        (a, b) => (b['score'] as int).compareTo(a['score'] as int),
+      );
+
+      // Assign ranks
+      for (int i = 0; i < finalResults.length; i++) {
+        finalResults[i]['rank'] = i + 1;
+      }
+
+      print('Final results calculated: ${finalResults.length} players');
+      for (final result in finalResults) {
+        print(
+          'Player: ${result['player'].username}, Score: ${result['score']}, Correct: ${result['correctAnswers']}/${result['totalQuestions']}, Accuracy: ${result['accuracy']}%, Rank: ${result['rank']}',
+        );
+      }
     } catch (e) {
       print('Error calculating final results: $e');
     }
@@ -680,7 +720,7 @@ class MemorizeImageGameScreenController extends GetxController {
 
   Future<void> _playCountdownSound() async {
     try {
-      await _countdownPlayer.setAsset('assets/gameQuestion.mp3');
+      await _countdownPlayer.setAsset('assets/countdown.mp3');
       await _countdownPlayer.play();
       print('Countdown sound played successfully');
     } catch (e) {
@@ -690,7 +730,7 @@ class MemorizeImageGameScreenController extends GetxController {
 
   Future<void> _playGameCompleteSound() async {
     try {
-      await _gameCompletePlayer.setAsset('assets/gameComplete.mp3');
+      await _gameCompletePlayer.setAsset('assets/game_complete.mp3');
       await _gameCompletePlayer.play();
       print('Game complete sound played successfully');
     } catch (e) {

@@ -1,8 +1,8 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:lottie/lottie.dart';
-import 'package:mindrena/app/modules/auth_gate/controllers/auth_gate_controller.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../controllers/profile_controller.dart';
@@ -849,8 +849,13 @@ class ProfileView extends GetView<ProfileController> {
                 title: 'switch_player_mode'.tr,
                 subtitle: 'Go back to Player Mode Selection',
                 onTap: () {
-                  Get.delete<AuthGateController>(force: true);
-                  Get.offAllNamed('/player-mode-selection');
+                  var storage = GetStorage();
+                  if (storage.read('player_mode') == 'two') {
+                    storage.write('player_mode', 'one');
+                    Get.offAllNamed('/single-player');
+                  } else {
+                    Get.offAllNamed('/home');
+                  }
                 },
               ),
               const Divider(height: 1),
@@ -987,7 +992,7 @@ class ProfileView extends GetView<ProfileController> {
                       ),
                       child: ClipOval(
                         child: Image.network(
-                          avatar['url']!,
+                          (avatar['url'] as String?) ?? '',
                           fit: BoxFit.cover,
                           errorBuilder: (context, error, stackTrace) {
                             return Icon(
@@ -1001,7 +1006,7 @@ class ProfileView extends GetView<ProfileController> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      avatar['name']!,
+                      (avatar['name'] as String?) ?? 'Unknown Avatar',
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,

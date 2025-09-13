@@ -81,7 +81,7 @@ Future<void> populateAudioQuestions() async {
       "audio":
           "https://firebasestorage.googleapis.com/v0/b/xstore-faa86.appspot.com/o/audios%2FSemi_Truck_Sound_Effect_Truck_Sound_Effect_Semi_Truck_Horn_Sound.m4a?alt=media&token=cefeb8af-9ed7-4955-97df-7d56274d665d",
       "options": ["Car Horn", "Truck Horn", "Bike Horn", "Train Horn"],
-      "correctIndex": 2,
+      "correctIndex": 1,
     },
     {
       "category": "Sounds",

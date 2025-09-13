@@ -1,6 +1,7 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -171,6 +172,8 @@ class PlayerModeSelectionView extends GetView<PlayerModeSelectionController> {
                               () => controller.isLoaded.value
                                   ? GestureDetector(
                                       onTap: () {
+                                        var storage = GetStorage();
+                                        storage.write('player_mode', 'two');
                                         Get.offAllNamed(
                                           '/auth-gate',
                                           arguments: 'two',
@@ -206,6 +209,8 @@ class PlayerModeSelectionView extends GetView<PlayerModeSelectionController> {
                               () => controller.isLoaded.value
                                   ? GestureDetector(
                                       onTap: () {
+                                        var storage = GetStorage();
+                                        storage.write('player_mode', 'one');
                                         Get.offAllNamed(
                                           '/auth-gate',
                                           arguments: 'single',

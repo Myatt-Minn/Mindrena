@@ -2,8 +2,11 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:mindrena/app/controllers/avatar_ability_controller.dart';
+import 'package:mindrena/app/data/shopItemModel.dart';
 import 'package:mindrena/app/modules/home/controllers/home_controller.dart';
 
 import '../../../data/UserModel.dart';
@@ -35,6 +38,16 @@ class GameScreenController extends GetxController {
   final isMovingToNextQuestion = false.obs;
   final lastProcessedQuestionIndex = (-1).obs;
 
+  // Avatar ability system
+  final showAbilityButton = false.obs;
+  final abilityUsed = false.obs;
+  final isOpponentFrozen = false.obs;
+  final freezeTimeLeft = 0.obs;
+  final hintText = ''.obs;
+  final showHint = false.obs;
+  final eliminatedAnswers = <int>[].obs;
+  final doublePointsActive = false.obs;
+
   // Track if game has started (to play sound for first question)
   var _gameHasStarted = false;
 
@@ -62,13 +75,13 @@ class GameScreenController extends GetxController {
 
     // Initialize game complete audio player
     _gameCompletePlayer = AudioPlayer();
-    try {
-      final homeController = Get.find<HomeController>();
-      homeController.stopBackgroundMusic();
-      print('Background music stopped for game screen');
-    } catch (e) {
-      print('Could not stop background music: $e');
-    }
+    // try {
+    //   final homeController = Get.find<HomeController>();
+    //   homeController.stopBackgroundMusic();
+    //   print('Background music stopped for game screen');
+    // } catch (e) {
+    //   print('Could not stop background music: $e');
+    // }
     // Clear sent invitations since game is starting
     try {
       final homeController = Get.find<HomeController>();
@@ -88,6 +101,9 @@ class GameScreenController extends GetxController {
     if (gameId.value.isNotEmpty) {
       _initializeGame();
     }
+
+    // Initialize avatar ability system
+    _initializeAvatarAbility();
   }
 
   @override
@@ -449,6 +465,12 @@ class GameScreenController extends GetxController {
         // Cap maximum points at 10
         pointsEarned = pointsEarned.clamp(1, 10);
 
+        // Apply double points if active
+        if (doublePointsActive.value) {
+          pointsEarned *= 2;
+          doublePointsActive.value = false; // Reset after use
+        }
+
         print(
           'Correct answer! Adding $pointsEarned points (based on ${timeLeft.value} seconds remaining)',
         );
@@ -571,6 +593,9 @@ class GameScreenController extends GetxController {
 
   Future<void> _moveToNextQuestion() async {
     try {
+      // Reset ability effects for new question
+      _resetAbilityEffects();
+
       final nextQuestionIndex = currentQuestionIndex.value + 1;
       print(
         'Moving to next question: $nextQuestionIndex (total: ${questions.length})',
@@ -878,5 +903,167 @@ class GameScreenController extends GetxController {
     } catch (e) {
       print('Error playing game complete sound: $e');
     }
+  }
+
+  /// Initialize avatar ability system
+  void _initializeAvatarAbility() {
+    try {
+      final abilityController = Get.find<AvatarAbilityController>();
+      abilityController.resetForNewGame();
+
+      // Show ability button if player has an ability
+      showAbilityButton.value = abilityController.canUseAbility();
+    } catch (e) {
+      // AvatarAbilityController might not be available
+      print('Avatar ability controller not found: $e');
+      showAbilityButton.value = false;
+    }
+  }
+
+  /// Use avatar ability
+  void useAvatarAbility() {
+    try {
+      final abilityController = Get.find<AvatarAbilityController>();
+      if (!abilityController.canUseAbility()) return;
+
+      final abilityType = abilityController.getCurrentAbilityType();
+      final effects = abilityController.getAbilityEffects();
+
+      switch (abilityType) {
+        case AbilityType.skipQuestion:
+          _skipQuestion();
+          break;
+        case AbilityType.extraTime:
+          _addExtraTime(effects?['extraSeconds'] ?? 5);
+          break;
+        case AbilityType.showHint:
+          _showQuestionHint();
+          break;
+        case AbilityType.eliminate50:
+          _eliminate50Percent();
+          break;
+        case AbilityType.freezeOpponent:
+          _freezeOpponent(effects?['freezeDuration'] ?? 5);
+          break;
+        case AbilityType.doublePoints:
+          _activateDoublePoints();
+          break;
+        default:
+          break;
+      }
+
+      // Mark ability as used
+      abilityController.useAbility();
+      abilityUsed.value = true;
+      showAbilityButton.value = false;
+
+      Get.snackbar(
+        'Ability Used!',
+        'Your avatar ability has been activated',
+        backgroundColor: Colors.purple.shade100,
+        colorText: Colors.purple.shade700,
+        duration: const Duration(seconds: 2),
+      );
+    } catch (e) {
+      print('Error using avatar ability: $e');
+    }
+  }
+
+  /// Skip current question
+  void _skipQuestion() {
+    if (currentQuestion.value != null) {
+      // Move to next question immediately
+      _moveToNextQuestion();
+    }
+  }
+
+  /// Add extra time to current question
+  void _addExtraTime(int seconds) {
+    timeLeft.value = timeLeft.value + seconds;
+    Get.snackbar(
+      'Time Boost!',
+      '+$seconds seconds added',
+      backgroundColor: Colors.blue.shade100,
+      colorText: Colors.blue.shade700,
+      duration: const Duration(seconds: 2),
+    );
+  }
+
+  /// Show hint for current question
+  void _showQuestionHint() {
+    if (currentQuestion.value != null) {
+      final question = currentQuestion.value!;
+      final correctIndex = question['correctIndex'] as int;
+      final options = List<String>.from(question['options']);
+
+      // Generate a hint based on the correct answer
+      hintText.value =
+          'The correct answer starts with "${options[correctIndex][0]}"';
+      showHint.value = true;
+    }
+  }
+
+  /// Eliminate 50% of wrong answers
+  void _eliminate50Percent() {
+    if (currentQuestion.value != null) {
+      final question = currentQuestion.value!;
+      final correctIndex = question['correctIndex'] as int;
+      final options = List<String>.from(question['options']);
+
+      // Find wrong answer indices
+      List<int> wrongIndices = [];
+      for (int i = 0; i < options.length; i++) {
+        if (i != correctIndex) {
+          wrongIndices.add(i);
+        }
+      }
+
+      // Eliminate 2 wrong answers randomly
+      wrongIndices.shuffle();
+      eliminatedAnswers.value = wrongIndices.take(2).toList();
+    }
+  }
+
+  /// Freeze opponent
+  void _freezeOpponent(int seconds) {
+    isOpponentFrozen.value = true;
+    freezeTimeLeft.value = seconds;
+
+    // Countdown timer for freeze
+    Timer.periodic(const Duration(seconds: 1), (timer) {
+      freezeTimeLeft.value--;
+      if (freezeTimeLeft.value <= 0) {
+        isOpponentFrozen.value = false;
+        timer.cancel();
+      }
+    });
+
+    Get.snackbar(
+      'Opponent Frozen!',
+      'Your opponent is frozen for $seconds seconds',
+      backgroundColor: Colors.cyan.shade100,
+      colorText: Colors.cyan.shade700,
+      duration: const Duration(seconds: 2),
+    );
+  }
+
+  /// Activate double points for current question
+  void _activateDoublePoints() {
+    doublePointsActive.value = true;
+    Get.snackbar(
+      'Double Points!',
+      'You will get double points for this question',
+      backgroundColor: Colors.amber.shade100,
+      colorText: Colors.amber.shade700,
+      duration: const Duration(seconds: 2),
+    );
+  }
+
+  /// Reset ability effects for new question
+  void _resetAbilityEffects() {
+    showHint.value = false;
+    hintText.value = '';
+    eliminatedAnswers.clear();
+    // Note: doublePointsActive and freezeOpponent persist until used/expired
   }
 }

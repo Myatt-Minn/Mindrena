@@ -108,31 +108,76 @@ class GameScreenView extends GetView<GameScreenController> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               _buildPlayerInfo(true),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.blue.shade50,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.blue.shade200),
-                ),
-                child: Obx(
-                  () => Text(
-                    '${controller.timeLeft.value}s',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: controller.timeLeft.value <= 3
-                          ? Colors.red.shade600
-                          : Colors.blue.shade700,
+              Column(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.shade50,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: Colors.blue.shade200),
+                    ),
+                    child: Obx(
+                      () => Text(
+                        '${controller.timeLeft.value}s',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: controller.timeLeft.value <= 3
+                              ? Colors.red.shade600
+                              : Colors.blue.shade700,
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                  // Avatar ability button
+                  const SizedBox(height: 8),
+                  Obx(
+                    () => controller.showAbilityButton.value
+                        ? _buildAbilityButton()
+                        : const SizedBox.shrink(),
+                  ),
+                ],
               ),
               _buildPlayerInfo(false),
             ],
+          ),
+
+          // Show hint if active
+          Obx(
+            () => controller.showHint.value
+                ? Container(
+                    margin: const EdgeInsets.only(top: 12),
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.amber.shade50,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.amber.shade300),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.lightbulb,
+                          color: Colors.amber.shade700,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'Hint: ${controller.hintText.value}',
+                            style: TextStyle(
+                              color: Colors.amber.shade700,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                : const SizedBox.shrink(),
           ),
         ],
       ),
@@ -450,12 +495,18 @@ class GameScreenView extends GetView<GameScreenController> {
       final correctIndex =
           controller.currentQuestion.value?['correctIndex'] ?? -1;
       final isCorrect = index == correctIndex;
+      final isEliminated = controller.eliminatedAnswers.contains(index);
 
       Color? backgroundColor;
       Color? borderColor;
       Color? textColor;
 
-      if (isAnswerSubmitted) {
+      // Handle eliminated answers
+      if (isEliminated && !isAnswerSubmitted) {
+        backgroundColor = Colors.red.shade50.withOpacity(0.3);
+        borderColor = Colors.red.shade200;
+        textColor = Colors.red.shade400;
+      } else if (isAnswerSubmitted) {
         if (isCorrect) {
           backgroundColor = Colors.green.shade50;
           borderColor = Colors.green.shade300;
@@ -488,7 +539,7 @@ class GameScreenView extends GetView<GameScreenController> {
           borderRadius: BorderRadius.circular(16),
           child: InkWell(
             borderRadius: BorderRadius.circular(16),
-            onTap: isAnswerSubmitted
+            onTap: (isAnswerSubmitted || isEliminated)
                 ? null
                 : () {
                     controller.submitAnswer(index);
@@ -511,7 +562,13 @@ class GameScreenView extends GetView<GameScreenController> {
                           : Colors.transparent,
                       border: Border.all(color: borderColor),
                     ),
-                    child: isSelected || (isAnswerSubmitted && isCorrect)
+                    child: isEliminated && !isAnswerSubmitted
+                        ? Icon(
+                            Icons.close,
+                            color: Colors.red.shade600,
+                            size: 16,
+                          )
+                        : isSelected || (isAnswerSubmitted && isCorrect)
                         ? Icon(
                             isAnswerSubmitted && isCorrect
                                 ? Icons.check
@@ -534,11 +591,16 @@ class GameScreenView extends GetView<GameScreenController> {
                   const SizedBox(width: 16),
                   Expanded(
                     child: Text(
-                      option,
+                      isEliminated && !isAnswerSubmitted
+                          ? 'ELIMINATED'
+                          : option,
                       style: TextStyle(
                         color: textColor,
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
+                        decoration: isEliminated && !isAnswerSubmitted
+                            ? TextDecoration.lineThrough
+                            : null,
                       ),
                     ),
                   ),
@@ -1125,7 +1187,7 @@ class GameScreenView extends GetView<GameScreenController> {
                 ),
                 icon: const Icon(Icons.home, size: 20),
                 label: const Text(
-                  'Exit Game',
+                  'Exit',
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
               ),
@@ -1142,6 +1204,46 @@ class GameScreenView extends GetView<GameScreenController> {
           ),
         ),
       ],
+    );
+  }
+
+  /// Build avatar ability button
+  Widget _buildAbilityButton() {
+    return GestureDetector(
+      onTap: () => controller.useAvatarAbility(),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.purple.shade400, Colors.purple.shade600],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.purple.shade300.withOpacity(0.5),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.star, color: Colors.white, size: 16),
+            const SizedBox(width: 4),
+            Text(
+              'Use Ability',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

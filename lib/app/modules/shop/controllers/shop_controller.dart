@@ -21,8 +21,8 @@ class ShopController extends GetxController {
   var purchasingItemId = ''.obs; // Track which item is being purchased
   var selectedTab = 0.obs;
   var purchasedItems = <String>[].obs;
-  var purchasedAvatars =
-      <Map<String, String>>[].obs; // Store avatar info: {id, name, url}
+  var purchasedAvatars = <Map<String, dynamic>>[]
+      .obs; // Store avatar info including special abilities
   var purchasedStickers =
       <Map<String, String>>[].obs; // Store sticker info: {id, name, url}
   var currentUserAvatar = ''.obs;
@@ -59,9 +59,9 @@ class ShopController extends GetxController {
         purchasedItems.value = List<String>.from(
           userData['purchasedItems'] ?? [],
         );
-        purchasedAvatars.value = List<Map<String, String>>.from(
+        purchasedAvatars.value = List<Map<String, dynamic>>.from(
           (userData['purchasedAvatars'] ?? []).map(
-            (item) => Map<String, String>.from(item),
+            (item) => Map<String, dynamic>.from(item),
           ),
         );
         purchasedStickers.value = List<Map<String, String>>.from(
@@ -79,7 +79,7 @@ class ShopController extends GetxController {
 
   /// Initialize shop items
   void _initializeShopItems() {
-    // Avatar items
+    // Avatar items with special abilities
     avatarItems.value = [
       ShopItem(
         id: 'avatar_1',
@@ -88,6 +88,14 @@ class ShopController extends GetxController {
         price: 500,
         imageUrl: 'assets/cha3.jpg',
         type: ShopItemType.avatar,
+        specialAbility: AvatarAbility(
+          id: 'skip_question',
+          name: 'Skip Master',
+          description: 'Skip any question without penalty',
+          iconPath: 'assets/skip_icon.png',
+          type: AbilityType.skipQuestion,
+          effects: {'usesPerGame': 1},
+        ),
       ),
       ShopItem(
         id: 'avatar_2',
@@ -96,6 +104,14 @@ class ShopController extends GetxController {
         price: 750,
         imageUrl: 'assets/cha4.jpg',
         type: ShopItemType.avatar,
+        specialAbility: AvatarAbility(
+          id: 'extra_time',
+          name: 'Time Booster',
+          description: 'Add 5 extra seconds to any question',
+          iconPath: 'assets/time_icon.png',
+          type: AbilityType.extraTime,
+          effects: {'usesPerGame': 1, 'extraSeconds': 5},
+        ),
       ),
       ShopItem(
         id: 'avatar_3',
@@ -104,6 +120,14 @@ class ShopController extends GetxController {
         price: 600,
         imageUrl: 'assets/cha5.jpeg',
         type: ShopItemType.avatar,
+        specialAbility: AvatarAbility(
+          id: 'show_hint',
+          name: 'Hint Revealer',
+          description: 'Get a helpful hint for any question',
+          iconPath: 'assets/hint_icon.png',
+          type: AbilityType.showHint,
+          effects: {'usesPerGame': 1},
+        ),
       ),
       ShopItem(
         id: 'avatar_4',
@@ -112,6 +136,14 @@ class ShopController extends GetxController {
         price: 800,
         imageUrl: 'assets/cha6.jpg',
         type: ShopItemType.avatar,
+        specialAbility: AvatarAbility(
+          id: 'eliminate_50',
+          name: '50/50 Lifeline',
+          description: 'Remove 2 incorrect answers',
+          iconPath: 'assets/fifty_icon.png',
+          type: AbilityType.eliminate50,
+          effects: {'usesPerGame': 1},
+        ),
       ),
       ShopItem(
         id: 'avatar_5',
@@ -120,6 +152,14 @@ class ShopController extends GetxController {
         price: 900,
         imageUrl: 'assets/cha7.jpg',
         type: ShopItemType.avatar,
+        specialAbility: AvatarAbility(
+          id: 'freeze_opponent',
+          name: 'Ice Breaker',
+          description: 'Freeze opponent for 5 seconds',
+          iconPath: 'assets/freeze_icon.png',
+          type: AbilityType.freezeOpponent,
+          effects: {'usesPerGame': 1, 'freezeDuration': 5},
+        ),
       ),
       ShopItem(
         id: 'avatar_6',
@@ -128,6 +168,14 @@ class ShopController extends GetxController {
         price: 900,
         imageUrl: 'assets/cha8.jpeg',
         type: ShopItemType.avatar,
+        specialAbility: AvatarAbility(
+          id: 'double_points',
+          name: 'Point Multiplier',
+          description: 'Double points for one question',
+          iconPath: 'assets/double_icon.png',
+          type: AbilityType.doublePoints,
+          effects: {'usesPerGame': 1, 'multiplier': 2},
+        ),
       ),
       ShopItem(
         id: 'avatar_7',
@@ -136,6 +184,14 @@ class ShopController extends GetxController {
         price: 0,
         imageUrl: 'assets/cha1.png',
         type: ShopItemType.avatar,
+        specialAbility: AvatarAbility(
+          id: 'skip_question_basic',
+          name: 'Basic Skip',
+          description: 'Skip any question without penalty',
+          iconPath: 'assets/skip_icon.png',
+          type: AbilityType.skipQuestion,
+          effects: {'usesPerGame': 1},
+        ),
       ),
       ShopItem(
         id: 'avatar_8',
@@ -144,6 +200,14 @@ class ShopController extends GetxController {
         price: 0,
         imageUrl: 'assets/cha2.png',
         type: ShopItemType.avatar,
+        specialAbility: AvatarAbility(
+          id: 'show_hint_basic',
+          name: 'Basic Hint',
+          description: 'Get a helpful hint for any question',
+          iconPath: 'assets/hint_icon.png',
+          type: AbilityType.showHint,
+          effects: {'usesPerGame': 1},
+        ),
       ),
     ];
 
@@ -365,6 +429,16 @@ class ShopController extends GetxController {
             'id': item.id,
             'name': item.name,
             'url': uploadedUrl,
+            'specialAbility': item.specialAbility != null
+                ? {
+                    'id': item.specialAbility!.id,
+                    'name': item.specialAbility!.name,
+                    'description': item.specialAbility!.description,
+                    'iconPath': item.specialAbility!.iconPath,
+                    'type': item.specialAbility!.type.toString(),
+                    'effects': item.specialAbility!.effects,
+                  }
+                : null,
           };
           final newPurchasedAvatars = [...purchasedAvatars, avatarInfo];
           updateData['purchasedAvatars'] = newPurchasedAvatars;
@@ -547,7 +621,7 @@ class ShopController extends GetxController {
   }
 
   /// Get purchased avatars for use in other controllers
-  List<Map<String, String>> getPurchasedAvatars() {
+  List<Map<String, dynamic>> getPurchasedAvatars() {
     return purchasedAvatars.toList();
   }
 

@@ -6,8 +6,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:mindrena/app/controllers/avatar_ability_controller.dart';
 import 'package:mindrena/app/data/UserModel.dart';
+import 'package:mindrena/app/data/shopItemModel.dart';
 import 'package:mindrena/app/modules/home/controllers/home_controller.dart';
+import 'package:mindrena/app/modules/shop/controllers/shop_controller.dart';
 import 'package:quickalert/quickalert.dart';
 
 class LobbyController extends GetxController {
@@ -29,6 +32,11 @@ class LobbyController extends GetxController {
   var playerStates = <String, String>{}.obs; // Track ready states
   var isGameReady = false.obs; // Track if game is ready for interaction
 
+  // Avatar ability selection
+  var purchasedAvatars = <Map<String, dynamic>>[].obs;
+  var selectedAvatarAbility = Rx<AvatarAbility?>(null);
+  var showAvatarSelection = false.obs;
+
   // Stream subscriptions
   StreamSubscription? _matchmakingSubscription;
   StreamSubscription? _gameSubscription;
@@ -40,14 +48,12 @@ class LobbyController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    // Stop background music when game starts
-    try {
-      final homeController = Get.find<HomeController>();
-      homeController.stopBackgroundMusic();
-      print('Background music stopped for game screen');
-    } catch (e) {
-      print('Could not stop background music: $e');
+
+    // Initialize ShopController first
+    if (!Get.isRegistered<ShopController>()) {
+      Get.put(ShopController());
     }
+
     // Parse arguments - support both old string format and new map format
     final arguments = Get.arguments;
     if (arguments is Map<String, dynamic>) {
@@ -60,8 +66,30 @@ class LobbyController extends GetxController {
       friendName = null;
     }
 
+    // Load purchased avatars after initialization
+    _loadPurchasedAvatars();
+
     startMatchmaking();
     _showGameMechanicsInfo();
+  }
+
+  @override
+  void onReady() {
+    super.onReady();
+
+    // Stop background music when entering lobby - do this in onReady to ensure it happens every time
+    _stopBackgroundMusic();
+  }
+
+  /// Stop background music when entering lobby
+  void _stopBackgroundMusic() {
+    try {
+      final homeController = Get.find<HomeController>();
+      homeController.stopBackgroundMusic();
+      print('Background music stopped for lobby');
+    } catch (e) {
+      print('Could not stop background music: $e');
+    }
   }
 
   void _showGameMechanicsInfo() {
@@ -76,18 +104,12 @@ class LobbyController extends GetxController {
           context: Get.context!,
           type: QuickAlertType.info,
           title: 'Game Mechanics',
-          text: '''Welcome to the Quiz Game! 🎉
-
-Here's how it works:
-
+          text: '''
 🕐 Timer: You get 10 seconds to answer each question
-
-⏰ Progression: The next question will only appear after the timer hits zero
 
 🎯 Scoring: You earn points equal to the remaining seconds when you answer correctly! 
    • Answer with 8 seconds left = 8 points
    • Answer with 3 seconds left = 3 points
-   • Minimum: 1 point, Maximum: 10 points per question
 
 ⚠️ Timeout: If the timer runs out and you haven't answered, you get no points
 
@@ -96,6 +118,7 @@ Here's how it works:
 Good luck and have fun! 🎮''',
           confirmBtnText: 'Got it!',
           confirmBtnColor: Colors.purple,
+
           onConfirmBtnTap: () {
             Get.back();
             // Mark that the user has seen this info
@@ -869,6 +892,9 @@ Good luck and have fun! 🎮''',
       final user = _auth.currentUser;
       if (user == null) return;
 
+      // Resume background music when leaving lobby
+      _resumeBackgroundMusic();
+
       // Cancel subscriptions
       _matchmakingSubscription?.cancel();
       _gameSubscription?.cancel();
@@ -903,10 +929,21 @@ Good luck and have fun! 🎮''',
         }
       }
 
-      Get.back();
+      Get.back(); // Navigate back to previous screen
     } catch (e) {
       Get.snackbar('Error', 'Failed to leave lobby: $e');
       Get.back(); // Go back anyway
+    }
+  }
+
+  /// Resume background music when leaving lobby
+  void _resumeBackgroundMusic() {
+    try {
+      final homeController = Get.find<HomeController>();
+      homeController.resumeBackgroundMusic();
+      print('Background music resumed when leaving lobby');
+    } catch (e) {
+      print('Could not resume background music: $e');
     }
   }
 
@@ -937,5 +974,570 @@ Good luck and have fun! 🎮''',
 
   bool isPlayerReady(String playerId) {
     return playerStates[playerId] == 'ready';
+  }
+
+  /// Load purchased avatars with abilities
+  Future<void> _loadPurchasedAvatars() async {
+    try {
+      print('Loading purchased avatars...');
+
+      // Ensure ShopController is available and initialized
+      if (!Get.isRegistered<ShopController>()) {
+        print('ShopController not registered, creating one...');
+        Get.put(ShopController());
+        await Future.delayed(
+          const Duration(milliseconds: 500),
+        ); // Give it time to initialize
+      }
+
+      final shopController = Get.find<ShopController>();
+      final avatars = shopController.getPurchasedAvatars();
+      print('Loaded ${avatars.length} purchased avatars');
+
+      // Debug: Print avatar data
+      for (var avatar in avatars) {
+        print('Avatar: ${avatar['name']} - ID: ${avatar['id']}');
+        print('  URL: ${avatar['url']}');
+        print('  Special Ability: ${avatar['specialAbility']}');
+        if (avatar['specialAbility'] != null) {
+          print('  Ability Name: ${avatar['specialAbility']['name']}');
+          print(
+            '  Ability Description: ${avatar['specialAbility']['description']}',
+          );
+        }
+        print('---');
+      }
+
+      purchasedAvatars.value = avatars;
+    } catch (e) {
+      print('Could not load purchased avatars: $e');
+      // Try to reload after a delay
+      Future.delayed(const Duration(seconds: 1), () {
+        _loadPurchasedAvatars();
+      });
+    }
+  }
+
+  /// Show avatar selection dialog
+  void showAvatarSelectionDialog() {
+    showAvatarSelection.value = true;
+
+    // Refresh avatars when dialog opens
+    _loadPurchasedAvatars();
+
+    Get.dialog(
+      Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        backgroundColor: Colors.transparent,
+        child: Container(
+          constraints: const BoxConstraints(maxHeight: 600, maxWidth: 400),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Colors.purple.shade50,
+                Colors.blue.shade50,
+                Colors.pink.shade50,
+              ],
+            ),
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.purple.withOpacity(0.3),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Header with close button
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Colors.purple.shade600, Colors.blue.shade600],
+                  ),
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(24),
+                    topRight: Radius.circular(24),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(
+                        Icons.auto_awesome,
+                        color: Colors.white,
+                        size: 24,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Choose Your Avatar',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          Text(
+                            'Select an avatar to unlock special abilities',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.white.withOpacity(0.8),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () => Get.back(),
+                      icon: const Icon(Icons.close, color: Colors.white),
+                      style: IconButton.styleFrom(
+                        backgroundColor: Colors.white.withOpacity(0.2),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Content
+              Flexible(
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    children: [
+                      Flexible(child: _buildAvatarSelectionGrid()),
+                      const SizedBox(height: 20),
+
+                      // Action buttons
+                      Row(
+                        children: [
+                          Expanded(
+                            child: OutlinedButton.icon(
+                              onPressed: () {
+                                selectedAvatarAbility.value = null;
+                                Get.back();
+                              },
+                              icon: const Icon(Icons.block),
+                              label: const Text('No Ability'),
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: Colors.grey.shade600,
+                                side: BorderSide(color: Colors.grey.shade300),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 12,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: ElevatedButton.icon(
+                              onPressed: () {
+                                _saveSelectedAbility();
+                                Get.back();
+                              },
+                              icon: const Icon(Icons.check_circle),
+                              label: const Text('Confirm'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.purple.shade600,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 12,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                elevation: 0,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Build avatar selection grid
+  Widget _buildAvatarSelectionGrid() {
+    return Obx(() {
+      if (purchasedAvatars.isEmpty) {
+        return Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Icon(
+                  Icons.shopping_bag_outlined,
+                  size: 40,
+                  color: Colors.grey.shade400,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'No avatars purchased yet',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey.shade700,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Visit the shop to buy avatars\nwith special abilities!',
+                style: TextStyle(fontSize: 14, color: Colors.grey.shade500),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton.icon(
+                onPressed: () {
+                  _loadPurchasedAvatars();
+                },
+                icon: const Icon(Icons.refresh),
+                label: const Text('Refresh'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue.shade500,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 12,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      }
+
+      return Column(
+        children: [
+          // Selected ability display
+          if (selectedAvatarAbility.value != null) ...[
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.purple.shade100, Colors.blue.shade100],
+                ),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.purple.shade300, width: 2),
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.star, color: Colors.purple.shade600, size: 20),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Selected: ${selectedAvatarAbility.value!.name}',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.purple.shade700,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    selectedAvatarAbility.value!.description,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.purple.shade600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
+
+          // Avatar grid
+          Expanded(
+            child: GridView.builder(
+              shrinkWrap: true,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
+                childAspectRatio: 0.71,
+              ),
+              itemCount: purchasedAvatars.length,
+              itemBuilder: (context, index) {
+                final avatar = purchasedAvatars[index];
+                final isSelected =
+                    selectedAvatarAbility.value?.id ==
+                    avatar['specialAbility']?['id'];
+
+                return GestureDetector(
+                  onTap: () {
+                    print('Tapped avatar: ${avatar['name']}');
+                    if (avatar['specialAbility'] != null) {
+                      final abilityData = avatar['specialAbility'];
+                      print('Setting ability: ${abilityData['name']}');
+                      selectedAvatarAbility.value = AvatarAbility(
+                        id: abilityData['id'],
+                        name: abilityData['name'],
+                        description: abilityData['description'],
+                        iconPath: abilityData['iconPath'],
+                        type: _parseAbilityType(
+                          (abilityData['type'] as String?) ??
+                              'AbilityType.skipQuestion',
+                        ),
+                        effects: Map<String, dynamic>.from(
+                          abilityData['effects'],
+                        ),
+                      );
+                    }
+                  },
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: isSelected
+                            ? Colors.purple.shade600
+                            : Colors.grey.shade300,
+                        width: isSelected ? 3 : 1,
+                      ),
+                      color: isSelected ? Colors.purple.shade50 : Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          color: isSelected
+                              ? Colors.purple.withOpacity(0.3)
+                              : Colors.grey.withOpacity(0.1),
+                          blurRadius: isSelected ? 10 : 5,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        // Avatar image with selection indicator (fixed height)
+                        SizedBox(
+                          height: 100, // Fixed height for image area
+                          child: Stack(
+                            children: [
+                              Container(
+                                width: double.infinity,
+                                height: double.infinity,
+                                margin: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.grey.shade200,
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(12),
+                                  child:
+                                      (avatar['url'] as String?)?.isNotEmpty ==
+                                          true
+                                      ? Image.network(
+                                          avatar['url'] as String,
+                                          fit: BoxFit.cover,
+                                          width: double.infinity,
+                                          height: double.infinity,
+                                          errorBuilder:
+                                              (context, error, stackTrace) {
+                                                print(
+                                                  'Error loading avatar image: ${avatar['url']} - Error: $error',
+                                                );
+                                                return Container(
+                                                  color: Colors.grey.shade300,
+                                                  child: Icon(
+                                                    Icons.person,
+                                                    size: 40,
+                                                    color: Colors.grey.shade600,
+                                                  ),
+                                                );
+                                              },
+                                          loadingBuilder: (context, child, loadingProgress) {
+                                            if (loadingProgress == null)
+                                              return child;
+                                            return Container(
+                                              color: Colors.grey.shade200,
+                                              child: Center(
+                                                child: CircularProgressIndicator(
+                                                  value:
+                                                      loadingProgress
+                                                              .expectedTotalBytes !=
+                                                          null
+                                                      ? loadingProgress
+                                                                .cumulativeBytesLoaded /
+                                                            loadingProgress
+                                                                .expectedTotalBytes!
+                                                      : null,
+                                                  strokeWidth: 2,
+                                                  color: Colors.purple.shade600,
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        )
+                                      : Container(
+                                          color: Colors.grey.shade300,
+                                          child: Icon(
+                                            Icons.person,
+                                            size: 40,
+                                            color: Colors.grey.shade600,
+                                          ),
+                                        ),
+                                ),
+                              ),
+                              if (isSelected)
+                                Positioned(
+                                  top: 8,
+                                  right: 8,
+                                  child: Container(
+                                    padding: const EdgeInsets.all(4),
+                                    decoration: BoxDecoration(
+                                      color: Colors.purple.shade600,
+                                      shape: BoxShape.circle,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.white,
+                                          blurRadius: 4,
+                                          spreadRadius: 2,
+                                        ),
+                                      ],
+                                    ),
+                                    child: const Icon(
+                                      Icons.check,
+                                      color: Colors.white,
+                                      size: 16,
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+
+                        // Avatar name and ability info
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: Column(
+                            children: [
+                              Text(
+                                (avatar['name'] as String?) ?? 'Unknown Avatar',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                  color: isSelected
+                                      ? Colors.purple.shade700
+                                      : Colors.grey.shade800,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              if (avatar['specialAbility'] != null) ...[
+                                const SizedBox(height: 4),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 4,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: isSelected
+                                        ? Colors.purple.shade600
+                                        : Colors.purple.shade100,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Text(
+                                    (avatar['specialAbility']['name']
+                                            as String?) ??
+                                        'Unknown Ability',
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: isSelected
+                                          ? Colors.white
+                                          : Colors.purple.shade700,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                              const SizedBox(height: 8),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      );
+    });
+  }
+
+  /// Parse ability type from string
+  AbilityType _parseAbilityType(String typeString) {
+    switch (typeString) {
+      case 'AbilityType.skipQuestion':
+        return AbilityType.skipQuestion;
+      case 'AbilityType.extraTime':
+        return AbilityType.extraTime;
+      case 'AbilityType.showHint':
+        return AbilityType.showHint;
+      case 'AbilityType.eliminate50':
+        return AbilityType.eliminate50;
+      case 'AbilityType.freezeOpponent':
+        return AbilityType.freezeOpponent;
+      case 'AbilityType.doublePoints':
+        return AbilityType.doublePoints;
+      default:
+        return AbilityType.skipQuestion;
+    }
+  }
+
+  /// Save selected ability to controller
+  void _saveSelectedAbility() {
+    try {
+      final abilityController = Get.find<AvatarAbilityController>();
+      abilityController.selectAbility(selectedAvatarAbility.value);
+    } catch (e) {
+      // Create controller if it doesn't exist
+      Get.put(AvatarAbilityController());
+      final abilityController = Get.find<AvatarAbilityController>();
+      abilityController.selectAbility(selectedAvatarAbility.value);
+    }
   }
 }

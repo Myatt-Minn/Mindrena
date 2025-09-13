@@ -9,7 +9,6 @@ import 'package:just_audio/just_audio.dart';
 import 'package:mindrena/app/data/AdDataModel.dart';
 import 'package:mindrena/app/data/UserModel.dart';
 import 'package:mindrena/app/data/adOnboardingDialog.dart';
-import 'package:mindrena/app/data/consts_config.dart';
 
 class HomeController extends GetxController {
   //TODO: Implement HomeController
@@ -36,7 +35,7 @@ class HomeController extends GetxController {
 
     // Initialize audio player
     _audioPlayer = AudioPlayer();
-    _storage.remove('music_enabled'); // Reset music preference for testing
+
     // Load music preferences from storage
     final storedValue = _storage.read('music_enabled');
     print('Stored music preference: $storedValue');
@@ -257,64 +256,350 @@ class HomeController extends GetxController {
 
       final inviter = UserModel.fromMap(inviterDoc.data()!);
 
-      // Show invitation dialog
+      // Show modern invitation dialog
       Get.dialog(
-        AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          title: Row(
-            children: [
-              Icon(Icons.people, color: Colors.purple),
-              SizedBox(width: 8),
-              Text('Game Invitation'),
-            ],
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              CircleAvatar(
-                radius: 30,
-                backgroundImage: inviter.avatarUrl.isNotEmpty
-                    ? NetworkImage(inviter.avatarUrl)
-                    : null,
-                child: inviter.avatarUrl.isEmpty
-                    ? Icon(Icons.person, size: 30)
-                    : null,
+        Material(
+          color: Colors.transparent,
+          child: Center(
+            child: Container(
+              margin: const EdgeInsets.all(20),
+              constraints: const BoxConstraints(maxWidth: 350),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Colors.white,
+                    Colors.purple.shade50,
+                    Colors.blue.shade50,
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(30),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.purple.withOpacity(0.3),
+                    blurRadius: 30,
+                    offset: const Offset(0, 15),
+                  ),
+                ],
               ),
-              SizedBox(height: 16),
-              Text(
-                '${inviter.username} invited you to play!',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Header with animated gradient
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [Colors.purple.shade600, Colors.blue.shade600],
+                      ),
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(30),
+                        topRight: Radius.circular(30),
+                      ),
+                    ),
+                    child: Column(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: const Icon(
+                            Icons.celebration,
+                            color: Colors.white,
+                            size: 32,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        const Text(
+                          'Game Invitation!',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          'You\'ve been challenged!',
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.9),
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Content with avatar and details
+                  Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      children: [
+                        // Enhanced avatar with glow effect
+                        Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Container(
+                              width: 80,
+                              height: 80,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                gradient: LinearGradient(
+                                  colors: [
+                                    Colors.purple.withOpacity(0.3),
+                                    Colors.blue.withOpacity(0.3),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Container(
+                              width: 70,
+                              height: 70,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: Colors.white,
+                                  width: 3,
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.purple.withOpacity(0.4),
+                                    blurRadius: 15,
+                                    offset: const Offset(0, 5),
+                                  ),
+                                ],
+                              ),
+                              child: CircleAvatar(
+                                radius: 32,
+                                backgroundColor: Colors.purple.shade100,
+                                backgroundImage: inviter.avatarUrl.isNotEmpty
+                                    ? NetworkImage(inviter.avatarUrl)
+                                    : null,
+                                child: inviter.avatarUrl.isEmpty
+                                    ? Icon(
+                                        Icons.person,
+                                        size: 35,
+                                        color: Colors.purple.shade400,
+                                      )
+                                    : null,
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        // Inviter name with style
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                Colors.purple.withOpacity(0.1),
+                                Colors.blue.withOpacity(0.1),
+                              ],
+                            ),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: Colors.purple.withOpacity(0.3),
+                            ),
+                          ),
+                          child: Text(
+                            inviter.username,
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.purple.shade700,
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 8),
+
+                        Text(
+                          'wants to challenge you!',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey.shade700,
+                          ),
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        // Category display with icon
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.blue.shade50,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: Colors.blue.withOpacity(0.3),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.quiz,
+                                color: Colors.blue.shade600,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                invitationData['category'],
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.blue.shade700,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        const SizedBox(height: 24),
+
+                        // Action buttons with modern style
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(16),
+                                  border: Border.all(
+                                    color: Colors.red.withOpacity(0.3),
+                                  ),
+                                ),
+                                child: TextButton.icon(
+                                  onPressed: () {
+                                    declineInvitation(invitationId);
+                                    Get.back();
+                                  },
+                                  icon: const Icon(
+                                    Icons.close,
+                                    color: Colors.red,
+                                    size: 20,
+                                  ),
+                                  label: const Text(
+                                    'Decline',
+                                    style: TextStyle(
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  style: TextButton.styleFrom(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 12,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      Colors.green.shade500,
+                                      Colors.green.shade600,
+                                    ],
+                                  ),
+                                  borderRadius: BorderRadius.circular(16),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.green.withOpacity(0.4),
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
+                                child: ElevatedButton.icon(
+                                  onPressed: () {
+                                    acceptInvitation(
+                                      invitationData,
+                                      invitationId,
+                                    );
+                                    Get.back();
+                                  },
+                                  icon: const Icon(
+                                    Icons.check_circle,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                  label: const Text(
+                                    'Accept',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.transparent,
+                                    shadowColor: Colors.transparent,
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 12,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 12),
+
+                        // Expiry timer display
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.orange.shade50,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: Colors.orange.withOpacity(0.3),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.timer,
+                                size: 14,
+                                color: Colors.orange.shade600,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                'Expires in 5 minutes',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.orange.shade700,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-              SizedBox(height: 8),
-              Text(
-                'Category: ${invitationData['category']}',
-                style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                declineInvitation(invitationId);
-                Get.back();
-              },
-              child: Text('Decline', style: TextStyle(color: Colors.red)),
             ),
-            ElevatedButton(
-              onPressed: () {
-                acceptInvitation(invitationData, invitationId);
-                Get.back();
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: ConstsConfig.primarycolor,
-                foregroundColor: Colors.white,
-              ),
-              child: Text('Accept'),
-            ),
-          ],
+          ),
         ),
         barrierDismissible: false,
       );
@@ -460,43 +745,45 @@ class HomeController extends GetxController {
         }
       }
 
-      // Show custom friends selection dialog
+      // Show modern custom friends selection dialog
       Get.dialog(
         Material(
           color: Colors.transparent,
           child: Center(
             child: Container(
               margin: const EdgeInsets.all(20),
-              constraints: const BoxConstraints(maxWidth: 400, maxHeight: 600),
+              constraints: const BoxConstraints(maxWidth: 420, maxHeight: 650),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: [Colors.white, Colors.purple.shade50],
+                  colors: [
+                    Colors.white,
+                    Colors.purple.shade50,
+                    Colors.blue.shade50,
+                  ],
                 ),
                 borderRadius: BorderRadius.circular(30),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
-                    blurRadius: 25,
-                    offset: const Offset(0, 10),
+                    color: Colors.purple.withOpacity(0.3),
+                    blurRadius: 30,
+                    offset: const Offset(0, 15),
                   ),
                 ],
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Header Section
+                  // Enhanced Header Section
                   Container(
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
-                        colors: [
-                          Colors.purple.shade400,
-                          Colors.purple.shade600,
-                        ],
+
+                        colors: [Colors.purple.shade600, Colors.blue.shade600],
                       ),
                       borderRadius: const BorderRadius.only(
                         topLeft: Radius.circular(30),
@@ -506,13 +793,17 @@ class HomeController extends GetxController {
                     child: Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.all(12),
+                          padding: const EdgeInsets.all(14),
                           decoration: BoxDecoration(
                             color: Colors.white.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(15),
+                            borderRadius: BorderRadius.circular(18),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.3),
+                              width: 1,
+                            ),
                           ),
                           child: const Icon(
-                            Icons.group_add,
+                            Icons.people_alt,
                             color: Colors.white,
                             size: 28,
                           ),
@@ -530,254 +821,460 @@ class HomeController extends GetxController {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              Text(
-                                'Choose friends to play $category',
-                                style: TextStyle(
-                                  color: Colors.white.withOpacity(0.9),
-                                  fontSize: 14,
+                              const SizedBox(height: 4),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.2),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Text(
+                                  category,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
                               ),
                             ],
                           ),
                         ),
-                        IconButton(
-                          onPressed: () => Get.back(),
-                          icon: const Icon(
-                            Icons.close,
-                            color: Colors.white,
-                            size: 24,
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: IconButton(
+                            onPressed: () => Get.back(),
+                            icon: const Icon(
+                              Icons.close,
+                              color: Colors.white,
+                              size: 24,
+                            ),
                           ),
                         ),
                       ],
                     ),
                   ),
 
-                  // Friends List Section
+                  // Enhanced Friends List Section
                   Flexible(
                     child: Container(
-                      padding: const EdgeInsets.all(20),
+                      padding: const EdgeInsets.all(24),
                       child: friendsData.isEmpty
                           ? Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Container(
-                                  padding: const EdgeInsets.all(20),
+                                  width: 100,
+                                  height: 100,
                                   decoration: BoxDecoration(
-                                    color: Colors.grey.shade100,
-                                    borderRadius: BorderRadius.circular(20),
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        Colors.grey.shade100,
+                                        Colors.grey.shade200,
+                                      ],
+                                    ),
+                                    borderRadius: BorderRadius.circular(25),
                                   ),
                                   child: Icon(
                                     Icons.people_outline,
-                                    size: 60,
+                                    size: 50,
                                     color: Colors.grey.shade400,
                                   ),
                                 ),
-                                const SizedBox(height: 16),
+                                const SizedBox(height: 20),
                                 Text(
-                                  'No Friends Found',
+                                  'No Friends Yet',
                                   style: TextStyle(
-                                    fontSize: 18,
+                                    fontSize: 20,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.grey.shade700,
                                   ),
                                 ),
                                 const SizedBox(height: 8),
                                 Text(
-                                  'Add some friends first to\ninvite them to play!',
+                                  'Add some friends first to\ninvite them to epic battles!',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: Colors.grey.shade600,
+                                    height: 1.4,
+                                  ),
+                                ),
+                                const SizedBox(height: 24),
+                                Container(
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        Colors.blue.shade400,
+                                        Colors.blue.shade600,
+                                      ],
+                                    ),
+                                    borderRadius: BorderRadius.circular(16),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.blue.withOpacity(0.3),
+                                        blurRadius: 12,
+                                        offset: const Offset(0, 6),
+                                      ),
+                                    ],
+                                  ),
+                                  child: ElevatedButton.icon(
+                                    onPressed: () {
+                                      Get.back();
+                                      Get.toNamed('/friends');
+                                    },
+                                    icon: const Icon(
+                                      Icons.person_add,
+                                      color: Colors.white,
+                                    ),
+                                    label: const Text(
+                                      'Find Friends',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.transparent,
+                                      shadowColor: Colors.transparent,
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 24,
+                                        vertical: 12,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ],
                             )
-                          : ListView.builder(
-                              shrinkWrap: true,
-                              itemCount: friendsData.length,
-                              itemBuilder: (context, index) {
-                                final friend = friendsData[index];
-                                final isAlreadyInvited = sentInvitations
-                                    .contains(friend.uid);
-
-                                return Container(
-                                  margin: const EdgeInsets.only(bottom: 12),
+                          : Column(
+                              children: [
+                                // Friends counter header
+                                Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 12,
+                                  ),
                                   decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(20),
-                                    border: Border.all(
-                                      color: isAlreadyInvited
-                                          ? Colors.green.withOpacity(0.3)
-                                          : Colors.grey.withOpacity(0.2),
-                                      width: 2,
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        Colors.purple.withOpacity(0.1),
+                                        Colors.blue.withOpacity(0.1),
+                                      ],
                                     ),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(0.05),
-                                        blurRadius: 10,
-                                        offset: const Offset(0, 4),
+                                    borderRadius: BorderRadius.circular(16),
+                                    border: Border.all(
+                                      color: Colors.purple.withOpacity(0.2),
+                                    ),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.group,
+                                        color: Colors.purple.shade600,
+                                        size: 20,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        '${friendsData.length} Friends Available',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.purple.shade700,
+                                        ),
+                                      ),
+                                      const Spacer(),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 8,
+                                          vertical: 4,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: Colors.orange.shade100,
+                                          borderRadius: BorderRadius.circular(
+                                            8,
+                                          ),
+                                        ),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Icon(
+                                              Icons.timer,
+                                              size: 12,
+                                              color: Colors.orange.shade600,
+                                            ),
+                                            const SizedBox(width: 4),
+                                            Text(
+                                              '5min',
+                                              style: TextStyle(
+                                                fontSize: 11,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.orange.shade700,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ],
                                   ),
-                                  child: ListTile(
-                                    contentPadding: const EdgeInsets.all(16),
-                                    leading: Stack(
-                                      children: [
-                                        CircleAvatar(
-                                          radius: 25,
-                                          backgroundColor:
-                                              Colors.purple.shade100,
-                                          backgroundImage:
-                                              friend.avatarUrl.isNotEmpty
-                                              ? NetworkImage(friend.avatarUrl)
-                                              : null,
-                                          child: friend.avatarUrl.isEmpty
-                                              ? Icon(
-                                                  Icons.person,
-                                                  color: Colors.purple.shade400,
-                                                  size: 28,
-                                                )
-                                              : null,
+                                ),
+
+                                const SizedBox(height: 16),
+
+                                // Enhanced friends list
+                                Expanded(
+                                  child: ListView.builder(
+                                    shrinkWrap: true,
+                                    itemCount: friendsData.length,
+                                    itemBuilder: (context, index) {
+                                      final friend = friendsData[index];
+                                      final isAlreadyInvited = sentInvitations
+                                          .contains(friend.uid);
+
+                                      return Container(
+                                        margin: const EdgeInsets.only(
+                                          bottom: 12,
                                         ),
-                                        if (isAlreadyInvited)
-                                          Positioned(
-                                            bottom: 0,
-                                            right: 0,
-                                            child: Container(
-                                              padding: const EdgeInsets.all(2),
-                                              decoration: BoxDecoration(
-                                                color: Colors.green,
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                                border: Border.all(
-                                                  color: Colors.white,
-                                                  width: 2,
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.circular(
+                                            20,
+                                          ),
+                                          border: Border.all(
+                                            color: isAlreadyInvited
+                                                ? Colors.green.withOpacity(0.4)
+                                                : Colors.grey.withOpacity(0.2),
+                                            width: isAlreadyInvited ? 2 : 1,
+                                          ),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: isAlreadyInvited
+                                                  ? Colors.green.withOpacity(
+                                                      0.1,
+                                                    )
+                                                  : Colors.black.withOpacity(
+                                                      0.05,
+                                                    ),
+                                              blurRadius: 10,
+                                              offset: const Offset(0, 4),
+                                            ),
+                                          ],
+                                        ),
+                                        child: ListTile(
+                                          contentPadding: const EdgeInsets.all(
+                                            16,
+                                          ),
+                                          leading: Stack(
+                                            children: [
+                                              Container(
+                                                decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  gradient: LinearGradient(
+                                                    colors: [
+                                                      Colors.purple.withOpacity(
+                                                        0.1,
+                                                      ),
+                                                      Colors.blue.withOpacity(
+                                                        0.1,
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                                child: CircleAvatar(
+                                                  radius: 28,
+                                                  backgroundColor:
+                                                      Colors.transparent,
+                                                  backgroundImage:
+                                                      friend
+                                                          .avatarUrl
+                                                          .isNotEmpty
+                                                      ? NetworkImage(
+                                                          friend.avatarUrl,
+                                                        )
+                                                      : null,
+                                                  child:
+                                                      friend.avatarUrl.isEmpty
+                                                      ? Icon(
+                                                          Icons.person,
+                                                          color: Colors
+                                                              .purple
+                                                              .shade400,
+                                                          size: 30,
+                                                        )
+                                                      : null,
                                                 ),
                                               ),
-                                              child: const Icon(
-                                                Icons.check,
-                                                size: 12,
-                                                color: Colors.white,
-                                              ),
+                                              if (isAlreadyInvited)
+                                                Positioned(
+                                                  bottom: 0,
+                                                  right: 0,
+                                                  child: Container(
+                                                    padding:
+                                                        const EdgeInsets.all(3),
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.green,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            12,
+                                                          ),
+                                                      border: Border.all(
+                                                        color: Colors.white,
+                                                        width: 2,
+                                                      ),
+                                                    ),
+                                                    child: const Icon(
+                                                      Icons.check,
+                                                      size: 14,
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                                ),
+                                            ],
+                                          ),
+                                          title: Text(
+                                            friend.username,
+                                            style: const TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black87,
                                             ),
                                           ),
-                                      ],
-                                    ),
-                                    title: Text(
-                                      friend.username,
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black87,
-                                      ),
-                                    ),
-                                    subtitle: Text(
-                                      friend.email,
-                                      style: TextStyle(
-                                        fontSize: 13,
-                                        color: Colors.grey.shade600,
-                                      ),
-                                    ),
-                                    trailing: isAlreadyInvited
-                                        ? Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 16,
-                                              vertical: 8,
+                                          subtitle: Padding(
+                                            padding: const EdgeInsets.only(
+                                              top: 4,
                                             ),
-                                            decoration: BoxDecoration(
-                                              color: Colors.green.withOpacity(
-                                                0.1,
-                                              ),
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                              border: Border.all(
-                                                color: Colors.green.withOpacity(
-                                                  0.3,
+                                            child: Row(
+                                              children: [
+                                                Icon(
+                                                  Icons.email_outlined,
+                                                  size: 14,
+                                                  color: Colors.grey.shade500,
                                                 ),
-                                              ),
-                                            ),
-                                            child: const Text(
-                                              'Invited',
-                                              style: TextStyle(
-                                                color: Colors.green,
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          )
-                                        : Container(
-                                            decoration: BoxDecoration(
-                                              gradient: LinearGradient(
-                                                colors: [
-                                                  Colors.purple.shade400,
-                                                  Colors.purple.shade600,
-                                                ],
-                                              ),
-                                              borderRadius:
-                                                  BorderRadius.circular(15),
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Colors.purple
-                                                      .withOpacity(0.3),
-                                                  blurRadius: 8,
-                                                  offset: const Offset(0, 4),
+                                                const SizedBox(width: 4),
+                                                Expanded(
+                                                  child: Text(
+                                                    friend.email,
+                                                    style: TextStyle(
+                                                      fontSize: 13,
+                                                      color:
+                                                          Colors.grey.shade600,
+                                                    ),
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                  ),
                                                 ),
                                               ],
                                             ),
-                                            child: Material(
-                                              color: Colors.transparent,
-                                              child: InkWell(
-                                                borderRadius:
-                                                    BorderRadius.circular(15),
-                                                onTap: () {
-                                                  Get.back(); // Close dialog
-                                                  _sendInvitation(
-                                                    friend,
-                                                    category,
-                                                  );
-                                                },
-                                                child: const Padding(
-                                                  padding: EdgeInsets.all(12),
-                                                  child: Icon(
-                                                    Icons.send,
-                                                    color: Colors.white,
-                                                    size: 20,
+                                          ),
+                                          trailing: isAlreadyInvited
+                                              ? Container(
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                        horizontal: 16,
+                                                        vertical: 8,
+                                                      ),
+                                                  decoration: BoxDecoration(
+                                                    gradient: LinearGradient(
+                                                      colors: [
+                                                        Colors.green.shade400,
+                                                        Colors.green.shade600,
+                                                      ],
+                                                    ),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          20,
+                                                        ),
+                                                  ),
+                                                  child: const Row(
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
+                                                    children: [
+                                                      Icon(
+                                                        Icons.check_circle,
+                                                        size: 16,
+                                                        color: Colors.white,
+                                                      ),
+                                                      SizedBox(width: 4),
+                                                      Text(
+                                                        'Sent',
+                                                        style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontSize: 12,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                )
+                                              : Container(
+                                                  decoration: BoxDecoration(
+                                                    gradient: LinearGradient(
+                                                      colors: [
+                                                        Colors.purple.shade400,
+                                                        Colors.purple.shade600,
+                                                      ],
+                                                    ),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          16,
+                                                        ),
+                                                    boxShadow: [
+                                                      BoxShadow(
+                                                        color: Colors.purple
+                                                            .withOpacity(0.4),
+                                                        blurRadius: 8,
+                                                        offset: const Offset(
+                                                          0,
+                                                          4,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  child: Material(
+                                                    color: Colors.transparent,
+                                                    child: InkWell(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            16,
+                                                          ),
+                                                      onTap: () {
+                                                        _sendInvitation(
+                                                          friend,
+                                                          category,
+                                                        );
+                                                      },
+                                                      child: const Padding(
+                                                        padding: EdgeInsets.all(
+                                                          14,
+                                                        ),
+                                                        child: Icon(
+                                                          Icons.sports_esports,
+                                                          color: Colors.white,
+                                                          size: 22,
+                                                        ),
+                                                      ),
+                                                    ),
                                                   ),
                                                 ),
-                                              ),
-                                            ),
-                                          ),
+                                        ),
+                                      );
+                                    },
                                   ),
-                                );
-                              },
+                                ),
+                              ],
                             ),
                     ),
                   ),
-
-                  // Footer Section
-                  if (friendsData.isNotEmpty)
-                    Container(
-                      padding: const EdgeInsets.all(20),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.info_outline,
-                            size: 16,
-                            color: Colors.grey.shade600,
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              'Invitations expire in 5 minutes',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey.shade600,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
                 ],
               ),
             ),
@@ -891,7 +1388,7 @@ class HomeController extends GetxController {
     try {
       await _audioPlayer.setAsset('assets/background_music.mp3');
       await _audioPlayer.setLoopMode(LoopMode.all);
-      await _audioPlayer.setVolume(0.3); // Set volume to 30%
+      await _audioPlayer.setVolume(0.2); // Set volume to 20%
       await _audioPlayer.play();
       isMusicPlaying.value = true;
 

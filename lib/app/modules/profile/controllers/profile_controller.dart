@@ -13,7 +13,7 @@ class ProfileController extends GetxController {
       0.obs; // Reactive variable for coins (independent from points)
   var selectedTab = 0.obs; // For tab selection in profile
   var purchasedItems = <String>[].obs;
-  var purchasedAvatars = <Map<String, String>>[].obs;
+  var purchasedAvatars = <Map<String, dynamic>>[].obs;
   var purchasedStickers = <Map<String, String>>[].obs;
   var trophies = <Map<String, String>>[].obs;
 
@@ -74,9 +74,9 @@ class ProfileController extends GetxController {
         );
 
         // Load purchased avatars
-        purchasedAvatars.value = List<Map<String, String>>.from(
+        purchasedAvatars.value = List<Map<String, dynamic>>.from(
           (userData['purchasedAvatars'] ?? []).map(
-            (item) => Map<String, String>.from(item),
+            (item) => Map<String, dynamic>.from(item),
           ),
         );
 

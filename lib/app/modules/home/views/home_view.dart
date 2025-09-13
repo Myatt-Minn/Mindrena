@@ -309,7 +309,7 @@ class HomeView extends GetView<HomeController> {
 
                       // Profile/Settings section
                       Container(
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(14),
                         decoration: BoxDecoration(
                           color: Colors.white.withOpacity(0.8),
                           borderRadius: BorderRadius.circular(15),
@@ -340,7 +340,7 @@ class HomeView extends GetView<HomeController> {
                             ),
                             _buildActionButton(
                               icon: 'assets/leaderboard.png',
-                              label: 'Ranking'.tr,
+                              label: 'Leaderboard'.tr,
                               onTap: () {
                                 Get.toNamed('/leader-board');
                               },
